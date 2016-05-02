@@ -24,9 +24,11 @@ Easy identity sharing is important, possibly through the use of expirable human 
 
 Easy public chat sharing is important, possibly through the use of expirable human readable mnemoics to join chat.
 
-**Database** - The DHT for the peers and files are cached locally using encrypted BoltDB databases. Memory only cache may be a desirable feature in the future.
+**Decentralized Database** - A DHT sharded across participating peers as encrypted blocks. DHT should feature private shards and shards with expiration timers.
 
-**Filetransfer** - A basic system to do file transfer between peers, 1-to-1 and m-to-n. Files should be broken into blocks, tracked using merkel trees and transfered in a manner similar to torrents. Can implement using existing torrent code or leverage existing storage networks.
+**Local Database** - The DHT for the peers and files are cached locally using encrypted BoltDB databases. Alternatively, a memory only cache may be used.
+
+**File Transfer** - A basic system to do file transfer between peers, 1-to-1 and m-to-n. Files should be broken into blocks, tracked using merkel trees and transfered in a manner similar to torrents. Can implement using existing torrent code or leverage existing storage networks.
 
 **Streaming** - 1-to-1 peer streaming of data/music/video, possibly using WebRTC. *WebRTC* can be intergrated using existing websockets p2p connections, the onion address bypasses the need for NAT transversal, allowing serverless p2p webRTC connections to be established without a stun/turn server. WebRTC must be modified to only offer onion service ice candidates, early research has begun on this topic.
 
