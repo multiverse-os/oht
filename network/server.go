@@ -3,6 +3,7 @@ package network
 import (
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -14,10 +15,13 @@ const (
 
 type Server struct {
 	Websocket *gin.Engine
+	lock      sync.Mutex
 	Port      int
 }
 
 func (server *Server) Start(port int) {
+	server.lock.Lock()
+	defer server.lock.Unlock()
 	server.Port = port
 	gin.SetMode(gin.ReleaseMode)
 	server.Websocket = gin.Default()

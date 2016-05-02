@@ -97,6 +97,9 @@ func main() {
 				fmt.Println("    /peers - List all active peers (Not Implemented)")
 				fmt.Println("    /whisper - Direct message peer (Not Implemented)")
 				fmt.Println("    /connect - Direct connect to peer (Not Implemented)")
+				fmt.Println("    /quit")
+			} else if message.Body == "/q" || message.Body == "/quit" {
+				os.Exit(0)
 			} else {
 				log.Println("[", message.Timestamp, "] ", message.Username, " : ", message.Body)
 				network.Manager.Broadcast <- message
