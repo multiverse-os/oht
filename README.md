@@ -10,6 +10,8 @@ Leveraging the onion network peers can connect directly without port forwarding 
 ## Progress
 oht is under active development, the software only provides the necessary tor binaries for Linux and OSX. Peer to peer communication is currently handled through websockets and a basic web interface. 
 
+Where possible we will opt to intergrate into existing solutions over reinventing the wheel if intergration can be done while still acheiving the defined goals. The development should be focused on providing tools to fill the gaps missing for developers to quickly build decentralized applications. 
+
 ### Features
 There are some basic but optional features, some completed and others to be completed. The goal of the features is to be modular, optional so decentralized applications can be scaffolded quickly.
 
@@ -19,15 +21,21 @@ There are some basic but optional features, some completed and others to be comp
 
 Easy identity sharing is important, possibly through the use of expirable human readable mnemoics to add contacts.
 
-*Direct/Multiuser Chat* - A global chat, custom multiuser chat and direct messaging encrypted with the account asymmetric key. Presence, offline messages and several levels of encryption. 
+*Direct/Multiuser Chat* - A global chat, custom multiuser chat and direct messaging encrypted with the account asymmetric key. Presence, offline messages and several levels of encryption. Chats can be locked based on a list of public keys. 
+
+Chat should support inline images, or images loading over Tor in a sidebar. Easy API for bots and plugins to extend the chat feature into new functionality. 
+
+Easy public chat sharing is important, possibly through the use of expirable human readable mnemoics to join chat.
+
+*Database* - Encrypted database using BoltDB or optional in memory database. 
+
+*Filetransfer* - A system to do basic file transfer between peers. Files should be broken into blocks and transfered in a manner similar to Bittorrent. Possibly use existing Bittorrent code or leverage existing networks. 
+
+*Streaming* - 1-to-1 peer streaming of data/music/video, possibly use WebRTC. *WebRTC* can be intergrated using the websockets peer to peer connections serverless p2p web RTC connections can be established without a stun/turn server. WebRTC must be modified to only offer onion service ice candidates. 
 
 *User Interface* - Web interface available through an individual onion address. Terminal command line interface and console for interacting with the DHT. Basic GUI client using QT/wxWidgets or possibly a standalone browser executable for desktop clients. 
 
 *Localization* - Localization built into the framework
-
-*Database* - Encrypted database using BoltDB or optional in memory database. 
-
-*WebRTC* - Using the websockets peer to peer connections serverless p2p web RTC connections can be established without a stun/turn server. WebRTC must be modified to only offer onion service ice candidates.
 
 ### Roadmap 
 Currently the basic DHT functionality is still not yet implemented, this core functionality is the first major milestone. The peer to peer communication should be lower level and use protobuf. The websockets is useful for the webui but it is not ideal for peer to peer communication.
