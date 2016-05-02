@@ -12,6 +12,7 @@ type EventFunc func(Manager *NetworkManager, Peer *Peer)
 
 type NetworkManager struct {
 	PrivateKey *ecdsa.PrivateKey
+	Server     *Server
 
 	MaxPeers        int
 	MaxPendingPeers int
@@ -30,6 +31,7 @@ type NetworkManager struct {
 var Manager = NetworkManager{
 	// Need to add a new message with custom type to send out
 	// Info about current node, like onion address
+	Server:          &Server{},
 	MaxPeers:        8,
 	MaxPendingPeers: 8,
 	Broadcast:       make(chan Message, maxMessageSize),
@@ -42,7 +44,8 @@ var Manager = NetworkManager{
 	lastLookup:      time.Now(),
 }
 
-func (Manager *NetworkManager) Run() {
+func (Manager *NetworkManager) Start(port int) {
+	Manager.Server.Initialize(port)
 	for {
 		select {
 		case p := <-Manager.Register:
@@ -76,6 +79,7 @@ func (Manager *NetworkManager) Run() {
 			fmt.Printf("whisper> ")
 		}
 	}
+
 }
 
 func (Manager *NetworkManager) DumpPeers() {

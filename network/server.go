@@ -1,7 +1,6 @@
 package network
 
 import (
-	"crypto/ecdsa"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"time"
@@ -14,19 +13,12 @@ const (
 )
 
 type Server struct {
-	PrivateKey *ecdsa.PrivateKey
-	Websocket  *gin.Engine
-	Port       int
-	lock       sync.Mutex
+	Websocket *gin.Engine
+	Port      int
 }
 
-func (server *Server) Start() {
-	server.lock.Lock()
-	defer server.lock.Unlock()
-	server.startListening()
-}
-
-func (server *Server) startListening() {
+func (server *Server) Initialize(port int) {
+	server.Port = port
 	gin.SetMode(gin.ReleaseMode)
 	server.Websocket = gin.Default()
 	server.Websocket.GET("/ws", func(c *gin.Context) {

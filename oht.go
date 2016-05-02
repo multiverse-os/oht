@@ -22,7 +22,7 @@ import (
 )
 
 var (
-	name          = "onionwave"
+	name          = "oht"
 	version_major = 0
 	version_minor = 1
 	version_patch = 0
@@ -32,7 +32,7 @@ var (
 	wui         = flag.Bool("wui", true, "Start the process with a web ui")
 	username    = flag.String("username", "user", "Specify a username")
 	peerAddress = flag.String("peer", "", "Specify a peer address for direct connection")
-	listenPort  = flag.String("listen", "12312", "Specify a listen port")
+	listenPort  = flag.Int("listen", 12312, "Specify a listen port")
 	webUIPort   = flag.String("wuiport", "8080", "Specify a webui port")
 	socksPort   = flag.String("socks", "12052", "Specify a socks proxy port")
 	controlPort = flag.String("control", "9555", "Specify a control port")
@@ -63,8 +63,7 @@ func main() {
 		os.Exit(1)
 	}()
 	// Start P2P Networking
-	go network.Manager.Run()
-	network.InitializeServer(tor.ListenPort)
+	go network.Manager.Start(tor.ListenPort)
 	log.Printf("\nListening for peers :  " + tor.OnionHost)
 	// Connect Directly To Peer (Will be required for bootstraping)
 	if *peerAddress != "" {

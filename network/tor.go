@@ -21,7 +21,7 @@ type TorProcess struct {
 	Pid                   string
 	OnionHost             string
 	OnionWebUIHost        string
-	ListenPort            string
+	ListenPort            int
 	WebUIPort             string
 	SocksPort             string
 	ControlPort           string
@@ -36,7 +36,7 @@ type TorProcess struct {
 	AuthCookie            string
 }
 
-func InitializeTor(listenPort string, socksPort string, controlPort string, webUIPort string) (tor *TorProcess) {
+func InitializeTor(listenPort int, socksPort string, controlPort string, webUIPort string) (tor *TorProcess) {
 
 	if !common.FileExist(common.DefaultDataDir() + "/tor") {
 		os.MkdirAll(common.DefaultDataDir()+"/tor", os.ModePerm)
