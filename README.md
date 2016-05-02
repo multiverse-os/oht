@@ -9,7 +9,7 @@ The goal of oht is to function as a decentralized application framework for rapi
 
 
 ## Progress
-oht is under active development, currently only the necessary tor binaries for Linux and OSX are supplied. Peer to peer communication is currently handled through websockets and routed through Tor in a manner similar to ricochet. A basic web interface exists served over a onion service. Basic account system exist using ecdsa keypairs. Software builds out configuration files in appropriate locations.
+oht is under active development, currently only the necessary tor binaries for Linux and OSX are supplied. Peer to peer communication is currently handled through websockets and routed through Tor in a manner similar to ricochet. A basic web interface exists served over a onion service. Basic account system exist using ecdsa keypairs. oht builds out configuration files in a correct structure and in appropriate locations.
 
 ### Features
 Below is a list of the functional requirements to meet the goal of the project. The features below are at varrying stages of completion. Features will be designed to modular and optional so decentralized applications can be scaffolded quickly using only the features needed.
