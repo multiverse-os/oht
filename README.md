@@ -1,5 +1,7 @@
 # oht
-oht is an onion distributed hash table used to create secure decentralized application framework. **This software is experimental, use with caution.** *Everything is in flux at this stage and the protocol specifications are still subject to major changes.* Utilizing a similar design pattern as ricochet or onionshare, oht creates an onion routed distributed hash table to connect peers to create a DHT in a secure and anonymous way. 
+oht is an onion distributed hash table used to create secure decentralized application framework. **This software is experimental, use with caution.** *Everything is in flux at this stage and the protocol specifications are still subject to major changes.* 
+
+Utilizing a similar design pattern as ricochet or onionshare, oht creates an onion routed distributed hash table to connect peers to create a DHT in a secure and anonymous way. 
 
 The goal of oht is to function as a application framework for designing onion routed decentralized applications. The design is focused on creating a general purpose framework that can create decentralized web application replacements, multiuser chat or even VOIP.
 
