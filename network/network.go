@@ -11,21 +11,18 @@ import (
 type EventFunc func(Manager *NetworkManager, Peer *Peer)
 
 type NetworkManager struct {
-	PrivateKey *ecdsa.PrivateKey
-	Server     *Server
-
+	PrivateKey      *ecdsa.PrivateKey
+	Server          *Server
 	MaxPeers        int
 	MaxPendingPeers int
-
-	Peers      map[*Peer]bool
-	Broadcast  chan Message
-	Receive    chan Message
-	Register   chan *Peer
-	Unregister chan *Peer
-	OnConnect  EventFunc
-	OnClose    EventFunc
-
-	lastLookup time.Time
+	Peers           map[*Peer]bool
+	Broadcast       chan Message
+	Receive         chan Message
+	Register        chan *Peer
+	Unregister      chan *Peer
+	OnConnect       EventFunc
+	OnClose         EventFunc
+	lastLookup      time.Time
 }
 
 var Manager = NetworkManager{
@@ -45,7 +42,7 @@ var Manager = NetworkManager{
 }
 
 func (Manager *NetworkManager) Start(port int) {
-	Manager.Server.Initialize(port)
+	Manager.Server.Start(port)
 	for {
 		select {
 		case p := <-Manager.Register:

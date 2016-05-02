@@ -17,7 +17,7 @@ type Server struct {
 	Port      int
 }
 
-func (server *Server) Initialize(port int) {
+func (server *Server) Start(port int) {
 	server.Port = port
 	gin.SetMode(gin.ReleaseMode)
 	server.Websocket = gin.Default()
