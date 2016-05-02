@@ -81,7 +81,7 @@ func main() {
 	// Start console
 	if *console == true {
 		log.Println("\nWelcome to " + name + " console. Type \"/help\" to learn about the available commands.")
-		prompt := "whisper> "
+		prompt := "oht> "
 		// Going to need a function to dump all the peers
 		cli := bufio.NewScanner(os.Stdin)
 		fmt.Printf(prompt)

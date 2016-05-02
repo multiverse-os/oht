@@ -48,7 +48,7 @@ func (Manager *NetworkManager) Start(port int) {
 		case p := <-Manager.Register:
 			Manager.Peers[p] = true
 			log.Println("Peer connection established: ", p.OnionHost)
-			fmt.Printf("whisper> ")
+			fmt.Printf("oht> ")
 			if Manager.OnConnect != nil {
 				go Manager.OnConnect(Manager, p)
 			}
@@ -73,7 +73,7 @@ func (Manager *NetworkManager) Start(port int) {
 		case m := <-Manager.Receive:
 			log.Println("")
 			log.Println("[", m.Timestamp, "] ", m.Username, " : ", m.Body)
-			fmt.Printf("whisper> ")
+			fmt.Printf("oht> ")
 		}
 	}
 
