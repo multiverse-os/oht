@@ -15,9 +15,9 @@ Where possible we will opt to intergrate into existing solutions over reinventin
 ### Features
 There are some basic but optional features, some completed and others to be completed. The goal of the features is to be modular, optional so decentralized applications can be scaffolded quickly.
 
-*Accounts* - Accounts based on assymetric keys. Early design used the onion service key but this will be upgraded soon because of possible security issues. Elliptic curve similar to telehash or Bitcoin seems like a good choice since it could intergrate into existing services easier. Some backup system that leverages the DHT would be interesting to experiment with. GNUnet naming system or flexibile name system using a variety of existing solutions. 
+*Accounts* - Accounts based on encrypted assymetric keys. Elliptic curve similar to telehash or Bitcoin/Ethereum. Some backup system that leverages the DHT would be interesting to experiment with. GNUnet naming system or flexibile name system using a variety of existing solutions.
 
-*Contact List* - Contact list with optional availability, optional transversal through contact network. Include variable metadata. 
+*Contact List* - Contact list with optional availability, optional transversal through contact network. Include variable metadata.
 
 Easy identity sharing is important, possibly through the use of expirable human readable mnemoics to add contacts.
 
