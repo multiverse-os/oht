@@ -33,6 +33,11 @@ There are a few major roadblocks in creating a trustless decentralized applicati
 * *Service Discovery* - currently there is no practical way for peers to connect without leveraging a a trusted seed for peers. One possible solution is leveraging a separate larger established DHT to maintain a list of potential peers.
 * *Consensus* - It would be preferable to to have some optional method of consensus for DHT settings over hard coding the settings. One possible solution is leveraging a seperate larger established DHT to maintain a cryptographically verified configuration.
 
+## Building Decentralized Applications
+The best way to use the codebase in its current stage is to fork the repository. 
+
+The goal is for oht to be analagous to Rails for creating web applications: oht would be a framework for creating decentalized applications. This would include tools to build a boilerplate project, or possibly a package of configuration files and templates that can be loaded into the client. 
+
 ## Contribute
 
 Everyone is encouraged to test out the software, report bugs and submit pull requests. 
