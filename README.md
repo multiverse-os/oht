@@ -43,7 +43,11 @@ Currently the basic DHT functionality is still not yet implemented, this core fu
 There are a few major roadblocks in creating a trustless decentralized application:
 
 * *Service Discovery* - currently there is no practical way for peers to connect without leveraging a a trusted seed for peers. One possible solution is leveraging a separate larger established DHT to maintain a list of potential peers.
+
 * *Consensus* - It would be preferable to to have some optional method of consensus for DHT settings over hard coding the settings. One possible solution is leveraging a seperate larger established DHT to maintain a cryptographically verified configuration.
+
+*Notes* for name resolution Bitcoin OP_RETURN based name resolution (https://github.com/telehash/blockname). The issue of service discovery is essentially a consensus issue so an existing blockchain seems to be the most practical. Possibly research Chord4S as it promises to provide decentralized service discovery.
+
 
 ## Building Decentralized Applications
 The best way to use the codebase in its current stage is to fork the repository. 
