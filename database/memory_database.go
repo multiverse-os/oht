@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ethereum/go-ethereum/common"
+	"./../common"
 )
 
 /*
@@ -102,14 +102,6 @@ func (db *MemDatabase) Print() {
 }
 
 func (db *MemDatabase) Close() {
-}
-
-func (db *MemDatabase) LastKnownTD() []byte {
-	data, _ := db.Get([]byte("LastKnownTotalDifficulty"))
-	if len(data) == 0 || data == nil {
-		data = []byte{0x0}
-	}
-	return data
 }
 
 func (db *MemDatabase) NewBatch() Batch {
