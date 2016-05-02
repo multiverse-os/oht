@@ -18,8 +18,8 @@ import (
 
 	"./../common"
 	"./../crypto/ecies"
-	"./../crypto/secp256k1"
 	"./../crypto/sha3"
+	"github.com/btcsuite/btcd/btcec"
 	"github.com/pborman/uuid"
 	"golang.org/x/crypto/ripemd160"
 )
@@ -60,10 +60,6 @@ func Ripemd160(data []byte) []byte {
 	ripemd.Write(data)
 
 	return ripemd.Sum(nil)
-}
-
-func Ecrecover(hash, sig []byte) ([]byte, error) {
-	return secp256k1.RecoverPubkey(hash, sig)
 }
 
 // New methods using proper ecdsa keys from the stdlib
@@ -174,7 +170,7 @@ func Sign(hash []byte, prv *ecdsa.PrivateKey) (sig []byte, err error) {
 
 	seckey := common.LeftPadBytes(prv.D.Bytes(), prv.Params().BitSize/8)
 	defer zeroBytes(seckey)
-	sig, err = secp256k1.Sign(hash, seckey)
+	sig, err = btcec.privKey.Sign(hash, seckey)
 	return
 }
 
