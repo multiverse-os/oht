@@ -27,7 +27,7 @@ Chat should support inline images, or images loading over Tor in a sidebar. Easy
 
 Easy public chat sharing is important, possibly through the use of expirable human readable mnemoics to join chat.
 
-*Database* - Encrypted database using BoltDB or optional in memory database. 
+*Database* - Apart from the DHT, there is local storage using encrypted BoltDB databases.
 
 *Filetransfer* - A system to do basic file transfer between peers. Files should be broken into blocks and transfered in a manner similar to Bittorrent. Possibly use existing Bittorrent code or leverage existing networks. 
 
