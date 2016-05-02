@@ -5,7 +5,7 @@ The goal of oht is to function as a application framework for designing onion ro
 
 Leveraging the onion network peers can connect directly without port forwarding or puncturing a NAT while providing additional security, less meta data and increased anonymity. 
 
-## Progress
+### Progress
 oht is under active development, the software only provides the necessary tor binaries for Linux and OSX. Peer to peer communication is currently handled through websockets and a basic web interface. 
 
 ## Features
