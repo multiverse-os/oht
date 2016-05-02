@@ -16,7 +16,6 @@ func MakeName(name, version string) string {
 func ExpandHomePath(p string) (path string) {
 	path = p
 	sep := fmt.Sprintf("%s", os.PathSeparator)
-	// Check in case of paths like "/something/~/something/"
 	if len(p) > 1 && p[:1+len(sep)] == "~"+sep {
 		usr, _ := user.Current()
 		dir := usr.HomeDir
@@ -50,11 +49,11 @@ func DefaultDataDir() string {
 	}
 	if home != "" {
 		if runtime.GOOS == "darwin" {
-			return filepath.Join(home, "Library", "Onionwave")
+			return filepath.Join(home, "Library", "Oht")
 		} else if runtime.GOOS == "windows" {
-			return filepath.Join(home, "AppData", "Roaming", "Onionwave")
+			return filepath.Join(home, "AppData", "Roaming", "Oht")
 		} else {
-			return filepath.Join(home, ".onionwave")
+			return filepath.Join(home, ".oht")
 		}
 	}
 	// As we cannot guess a stable location, return empty and handle later

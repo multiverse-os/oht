@@ -24,7 +24,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/common"
+	"./../common"
 	"github.com/pborman/uuid"
 )
 
@@ -48,18 +48,11 @@ type plainKeyJSON struct {
 	Version    int    `json:"version"`
 }
 
-type encryptedKeyJSONV3 struct {
+type encryptedKeyJSON struct {
 	Address string `json:"address"`
 	Crypto  cryptoJSON
 	Id      string `json:"id"`
 	Version int    `json:"version"`
-}
-
-type encryptedKeyJSONV1 struct {
-	Address string `json:"address"`
-	Crypto  cryptoJSON
-	Id      string `json:"id"`
-	Version string `json:"version"`
 }
 
 type cryptoJSON struct {

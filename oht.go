@@ -8,12 +8,15 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"strconv"
 	"syscall"
 	"time"
 
+	"./accounts"
 	"./common"
 	"./config"
 	"./contacts"
+	"./crypto"
 	"./database"
 	"./network"
 	"./webui"
@@ -33,9 +36,9 @@ var (
 	username    = flag.String("username", "user", "Specify a username")
 	peerAddress = flag.String("peer", "", "Specify a peer address for direct connection")
 	listenPort  = flag.Int("listen", 12312, "Specify a listen port")
-	webUIPort   = flag.String("wuiport", "8080", "Specify a webui port")
-	socksPort   = flag.String("socks", "12052", "Specify a socks proxy port")
-	controlPort = flag.String("control", "9555", "Specify a control port")
+	webUIPort   = flag.Int("wuiport", 8080, "Specify a webui port")
+	socksPort   = flag.Int("socks", 12052, "Specify a socks proxy port")
+	controlPort = flag.Int("control", 9555, "Specify a control port")
 )
 
 func main() {
@@ -62,6 +65,13 @@ func main() {
 		tor.Shutdown()
 		os.Exit(1)
 	}()
+	// Unencrypted Account System Prototype For Low Security And Forward Secrecy
+	ptAccountManager := accounts.NewManager(crypto.NewKeyStorePlain(common.DefaultDataDir()))
+	baseAccount, _ := ptAccountManager.NewAccount("password")
+	log.Println("Base Account Address: %s", baseAccount.Address)
+	// Encrypted
+	//accountManager := accounts.NewManager(crypto.NewKeyStorePlain(common.DefaultDataDir()))
+
 	// Start P2P Networking
 	go network.Manager.Start(tor.ListenPort)
 	log.Printf("\nListening for peers :  " + tor.OnionHost)
@@ -75,8 +85,8 @@ func main() {
 	}
 	// Start WebUI
 	if *wui == true {
-		webui.InitializeServer(tor.WebUIPort, tor.OnionWebUIHost)
-		log.Printf("\nWeb UI :  " + tor.OnionWebUIHost + ":" + tor.WebUIPort)
+		webui.InitializeServer(tor.OnionWebUIHost, tor.WebUIPort)
+		log.Printf("\nWeb UI :  " + tor.OnionWebUIHost + ":" + strconv.Itoa(tor.WebUIPort))
 	}
 	// Start console
 	if *console == true {

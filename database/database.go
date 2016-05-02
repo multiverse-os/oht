@@ -9,7 +9,7 @@ import (
 )
 
 func InitializeDatabase() {
-	db, err := bolt.Open(common.AbsolutePath(common.DefaultDataDir(), "onionwave.db"), 0600, nil)
+	db, err := bolt.Open(common.AbsolutePath(common.DefaultDataDir(), "oht.db"), 0600, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -23,6 +23,8 @@ package accounts
 // and accounts persistence is derived from stored keys' addresses
 
 import (
+	"./../common"
+	"./../crypto"
 	"crypto/ecdsa"
 	crand "crypto/rand"
 	"errors"
@@ -30,9 +32,6 @@ import (
 	"os"
 	"sync"
 	"time"
-
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 )
 
 var (
@@ -223,13 +222,4 @@ func (am *Manager) Update(addr common.Address, authFrom, authTo string) (err err
 		}
 	}
 	return
-}
-
-func (am *Manager) ImportPreSaleKey(keyJSON []byte, password string) (acc Account, err error) {
-	var key *crypto.Key
-	key, err = crypto.ImportPreSaleKey(am.keyStore, keyJSON, password)
-	if err != nil {
-		return
-	}
-	return Account{Address: key.Address}, nil
 }

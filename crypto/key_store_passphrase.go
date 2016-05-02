@@ -26,6 +26,8 @@ The crypto is documented at https://github.com/ethereum/wiki/wiki/Web3-Secret-St
 package crypto
 
 import (
+	"./../common"
+	"./../crypto/randentropy"
 	"bytes"
 	"crypto/aes"
 	"crypto/sha256"
@@ -33,13 +35,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto/randentropy"
 	"github.com/pborman/uuid"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/scrypt"
 	"io"
-	"reflect"
 	"time"
 )
 
@@ -139,13 +138,13 @@ func (ks keyStorePassphrase) StoreKey(key *Key, auth string) (err error) {
 		KDFParams:    scryptParamsJSON,
 		MAC:          hex.EncodeToString(mac),
 	}
-	encryptedKeyJSONV3 := encryptedKeyJSONV3{
+	encryptedKeyJSON := encryptedKeyJSON{
 		hex.EncodeToString(key.Address[:]),
 		cryptoStruct,
 		key.Id.String(),
 		version,
 	}
-	keyJSON, err := json.Marshal(encryptedKeyJSONV3)
+	keyJSON, err := json.Marshal(encryptedKeyJSON)
 	if err != nil {
 		return err
 	}
@@ -170,25 +169,16 @@ func decryptKeyFromFile(keysDirPath string, keyAddr common.Address, auth string)
 		return
 	}
 
-	v := reflect.ValueOf(m["version"])
-	if v.Kind() == reflect.String && v.String() == "1" {
-		k := new(encryptedKeyJSONV1)
-		err = getKey(keysDirPath, keyAddr, &k)
-		if err != nil {
-			return
-		}
-		return decryptKeyV1(k, auth)
-	} else {
-		k := new(encryptedKeyJSONV3)
-		err = getKey(keysDirPath, keyAddr, &k)
-		if err != nil {
-			return
-		}
-		return decryptKeyV3(k, auth)
+	//v := reflect.ValueOf(m["version"])
+	k := new(encryptedKeyJSON)
+	err = getKey(keysDirPath, keyAddr, &k)
+	if err != nil {
+		return
 	}
+	return decryptKey(k, auth)
 }
 
-func decryptKeyV3(keyProtected *encryptedKeyJSONV3, auth string) (keyBytes []byte, keyId []byte, err error) {
+func decryptKey(keyProtected *encryptedKeyJSON, auth string) (keyBytes []byte, keyId []byte, err error) {
 	if keyProtected.Version != version {
 		return nil, nil, fmt.Errorf("Version not supported: %v", keyProtected.Version)
 	}
@@ -224,40 +214,6 @@ func decryptKeyV3(keyProtected *encryptedKeyJSONV3, auth string) (keyBytes []byt
 	}
 
 	plainText, err := aesCTRXOR(derivedKey[:16], cipherText, iv)
-	if err != nil {
-		return nil, nil, err
-	}
-	return plainText, keyId, err
-}
-
-func decryptKeyV1(keyProtected *encryptedKeyJSONV1, auth string) (keyBytes []byte, keyId []byte, err error) {
-	keyId = uuid.Parse(keyProtected.Id)
-	mac, err := hex.DecodeString(keyProtected.Crypto.MAC)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	iv, err := hex.DecodeString(keyProtected.Crypto.CipherParams.IV)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	cipherText, err := hex.DecodeString(keyProtected.Crypto.CipherText)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	derivedKey, err := getKDFKey(keyProtected.Crypto, auth)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	calculatedMAC := Sha3(derivedKey[16:32], cipherText)
-	if !bytes.Equal(calculatedMAC, mac) {
-		return nil, nil, errors.New("Decryption failed: MAC mismatch")
-	}
-
-	plainText, err := aesCBCDecrypt(Sha3(derivedKey[:16])[:16], cipherText, iv)
 	if err != nil {
 		return nil, nil, err
 	}

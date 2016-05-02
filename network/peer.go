@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -44,8 +45,8 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func ConnectToPeer(peerHost string, socksPort string) {
-	sock := &Socks4a{Network: "tcp", Address: "127.0.0.1:" + socksPort}
+func ConnectToPeer(peerHost string, socksPort int) {
+	sock := &Socks4a{Network: "tcp", Address: ("127.0.0.1:" + strconv.Itoa(socksPort))}
 	u := url.URL{Scheme: "ws", Host: peerHost, Path: "/ws"}
 	d := websocket.Dialer{
 		NetDial:          func(network, addr string) (net.Conn, error) { return sock.Dial(peerHost) },

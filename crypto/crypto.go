@@ -14,16 +14,13 @@ import (
 	"os"
 
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto/ecies"
-	"github.com/ethereum/go-ethereum/crypto/secp256k1"
-	"github.com/ethereum/go-ethereum/crypto/sha3"
-	"github.com/ethereum/go-ethereum/rlp"
+	"./../common"
+	"./../crypto/ecies"
+	"./../crypto/secp256k1"
+	"./../crypto/sha3"
 	"github.com/pborman/uuid"
-	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/ripemd160"
 )
 
@@ -50,13 +47,6 @@ func Sha3Hash(data ...[]byte) (h common.Hash) {
 	}
 	d.Sum(h[:0])
 	return h
-}
-
-// Creates an ethereum address given the bytes and the nonce
-func CreateAddress(b common.Address, nonce uint64) common.Address {
-	data, _ := rlp.EncodeToBytes([]interface{}{b, nonce})
-	return common.BytesToAddress(Sha3(data)[12:])
-	//return Sha3(common.NewValue([]interface{}{b, nonce}).Encode())[12:]
 }
 
 func Sha256(data []byte) []byte {
@@ -208,56 +198,6 @@ func ImportBlockTestKey(privKeyBytes []byte) error {
 	}
 	err := ks.StoreKey(key, "")
 	return err
-}
-
-// creates a Key and stores that in the given KeyStore by decrypting a presale key JSON
-func ImportPreSaleKey(keyStore KeyStore, keyJSON []byte, password string) (*Key, error) {
-	key, err := decryptPreSaleKey(keyJSON, password)
-	if err != nil {
-		return nil, err
-	}
-	key.Id = uuid.NewRandom()
-	err = keyStore.StoreKey(key, password)
-	return key, err
-}
-
-func decryptPreSaleKey(fileContent []byte, password string) (key *Key, err error) {
-	preSaleKeyStruct := struct {
-		EncSeed string
-		EthAddr string
-		Email   string
-		BtcAddr string
-	}{}
-	err = json.Unmarshal(fileContent, &preSaleKeyStruct)
-	if err != nil {
-		return nil, err
-	}
-	encSeedBytes, err := hex.DecodeString(preSaleKeyStruct.EncSeed)
-	iv := encSeedBytes[:16]
-	cipherText := encSeedBytes[16:]
-	/*
-		See https://github.com/ethereum/pyethsaletool
-
-		pyethsaletool generates the encryption key from password by
-		2000 rounds of PBKDF2 with HMAC-SHA-256 using password as salt (:().
-		16 byte key length within PBKDF2 and resulting key is used as AES key
-	*/
-	passBytes := []byte(password)
-	derivedKey := pbkdf2.Key(passBytes, passBytes, 2000, 16, sha256.New)
-	plainText, err := aesCBCDecrypt(derivedKey, cipherText, iv)
-	ethPriv := Sha3(plainText)
-	ecKey := ToECDSA(ethPriv)
-	key = &Key{
-		Id:         nil,
-		Address:    PubkeyToAddress(ecKey.PublicKey),
-		PrivateKey: ecKey,
-	}
-	derivedAddr := hex.EncodeToString(key.Address.Bytes()) // needed because .Hex() gives leading "0x"
-	expectedAddr := preSaleKeyStruct.EthAddr
-	if derivedAddr != expectedAddr {
-		err = errors.New(fmt.Sprintf("decrypted addr not equal to expected addr ", derivedAddr, expectedAddr))
-	}
-	return key, err
 }
 
 // AES-128 is selected due to size of encryptKey

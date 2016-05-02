@@ -3,9 +3,10 @@ package webui
 import (
 	"../network"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
-func InitializeServer(port string, wsHost string) {
+func InitializeServer(wsHost string, port int) {
 	gin.SetMode(gin.ReleaseMode)
 	server := gin.Default()
 	server.LoadHTMLFiles("webui/index.html")
@@ -17,5 +18,5 @@ func InitializeServer(port string, wsHost string) {
 	server.GET("/ws", func(c *gin.Context) {
 		network.Manager.Serve(c.Writer, c.Request)
 	})
-	go server.Run("127.0.0.1:" + port)
+	go server.Run("127.0.0.1:" + strconv.Itoa(port))
 }

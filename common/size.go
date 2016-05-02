@@ -80,7 +80,6 @@ func CurrencyToString(num *big.Int) string {
 		denom = "Ada"
 	}
 
-	// TODO add comment clarifying expected behavior
 	if len(fin.String()) > 5 {
 		return fmt.Sprintf("%sE%d %s", fin.String()[0:5], len(fin.String())-5, denom)
 	}
