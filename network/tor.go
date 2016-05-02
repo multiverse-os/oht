@@ -81,7 +81,6 @@ func InitializeTor(listenPort int, socksPort int, controlPort int, webUIPort int
 	scanner := bufio.NewScanner(stdout)
 	for scanner.Scan() {
 		line := scanner.Text()
-		fmt.Println(line)
 		if match, _ := regexp.Match("(100%|Is Tor already running?)", []byte(line)); match {
 			break
 		}

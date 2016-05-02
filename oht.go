@@ -65,12 +65,18 @@ func main() {
 		tor.Shutdown()
 		os.Exit(1)
 	}()
-	// Unencrypted Account System Prototype For Low Security And Forward Secrecy
-	ptAccountManager := accounts.NewManager(crypto.NewKeyStorePlain(common.DefaultDataDir()))
-	baseAccount, _ := ptAccountManager.NewAccount("password")
-	log.Println("Base Account Address: %s", baseAccount.Address)
-	// Encrypted
-	//accountManager := accounts.NewManager(crypto.NewKeyStorePlain(common.DefaultDataDir()))
+	// Unencrypted Account System Prototype For Low Security And Cases Where User Input Is Undesirable
+	// This will be useful for assigning a key to the server struct under network for handshakes
+	unencryptedKeyStore := crypto.NewKeyStorePlain(common.DefaultDataDir())
+	unencryptedAccountManager := accounts.NewManager(unencryptedKeyStore)
+	unencryptedAccount, _ := unencryptedAccountManager.NewAccount("password")
+	log.Println("unencrypted account: %s", unencryptedAccount.Address)
+	// Encrypted Account System Prototype For Encryption And Signatures
+	// This needs a secure password input, should build more fluid way to interact with accoutns
+	encryptedKeyStore := crypto.NewKeyStorePassphrase(common.DefaultDataDir(), crypto.KDFStandard)
+	encryptedAccountManager := accounts.NewManager(encryptedKeyStore)
+	encryptedAccount, _ := encryptedAccountManager.NewAccount("password")
+	log.Println("encrypted account: %s", encryptedAccount.Address)
 
 	// Start P2P Networking
 	go network.Manager.Start(tor.ListenPort)
