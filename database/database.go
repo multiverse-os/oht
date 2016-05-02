@@ -1,11 +1,10 @@
 package database
 
 import (
+	"github.com/boltdb/bolt"
 	"log"
 
 	"../common"
-
-	"github.com/boltdb/bolt"
 )
 
 func InitializeDatabase() {
