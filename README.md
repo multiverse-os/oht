@@ -19,7 +19,7 @@ There are some basic but optional features, some completed and others to be comp
 
 *Direct/Multiuser Chat* - A global chat, custom multiuser chat and direct messaging encrypted with the account asymmetric key. Presence, offline messages and several levels of encryption. 
 
-*User Interface* - Web interface available through an individual onion address. Terminal command line interface and console for interacting with the DHT.
+*User Interface* - Web interface available through an individual onion address. Terminal command line interface and console for interacting with the DHT. Basic GUI client using QT/wxWidgets or possibly a standalone browser executable for desktop clients. 
 
 *Localization* - Localization built into the framework
 
