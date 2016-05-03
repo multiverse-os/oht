@@ -48,6 +48,7 @@ A basic console is the first goal for the UI and will be used as a way of outlin
         /config                      - List configuration values (Not Implemented)
         /set [config] [option]       - Change configuration options (Not Implemented)
         /unset [config]              - Unset configuration option (Not Implemented)
+        /webui [start|stop]          - Control webui (Not Implemented)
     
       NETWORK:
         /peers                       - List all connected peers (Not Implemented)
@@ -76,6 +77,7 @@ A basic console is the first goal for the UI and will be used as a way of outlin
     
       CONTACTS:
         /contacts                    - List all saved contacts (Not Implemented)
+        /request [id] [message]      - Request account to add your id to their contacts (Not Implemented)
         /add [id]                    - Add account to contacts (Not Implemented)
         /rm [id]                     - Remove account from contacts (Not Implemented)
         /whisper [id]                - Direct message peer (Not Implemented)
