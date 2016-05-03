@@ -97,7 +97,7 @@ Building decentralized networks still has a few major roadblocks when trying to 
 
 * **Service Discovery** - Currently here is no simple way for anonymous peers to connect without leveraging a a trusted seed for peers. One possible solution is leveraging a separate larger established DHT to maintain a list of potential peers.
 
-The most interesting idea so far is using a known hard coded onion address key pair to temporarily listen for peers. Requests from active peers will routinely be made to this known onion address. If a reliable way to validate real peers is workable this could be a excellent way to solve the problem.
+The most interesting idea so far is using a known hard coded onion address key pair to temporarily listen for peers. Requests from active peers will routinely be made to this known onion address. If a reliable way to validate real peers is workable this could be a excellent way to solve the problem. This seed or genesis onion address can be used to differentiate onion identity rings. 
 
 * **Consensus** - While not as critical as service discovery, it would be preferable to to have some optional and basic methods of consensus for portions of the DHT. Optionally we can make it easy to leverage existing larger file storage networks or cryptocurrencies.
 
