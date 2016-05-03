@@ -5,7 +5,7 @@ Utilizing a similar design pattern as ricochet or onionshare, oht creates an oni
 
 Onion routing does not only improve security, oht gains other interesting features by leveraging the onion network to route peers. By using onion addresses over ip addresses, peers can directly without port forwarding or worrying about NAT transversal.
 
-The goal of oht is to function as a decentralized application framework for rapid design of onion routed decentralized applications. oht is a general purpose framework that will hopefully be useful for a wide variety of usecases. oht can be used as decentralized web application replacement, decentralized chat, file sharing or decentralized VOIP.
+The goal of oht is to function as a decentralized application framework for rapid design of onion routed decentralized applications. oht is a general purpose framework that will hopefully be useful for a wide variety of usecases. oht can be used as decentralized web application replacement, decentralized chat, file sharing or connecting "IoT" arm computers for secure interconnections or decentralized VOIP.
 
 
 ## Progress
