@@ -18,8 +18,8 @@ import (
 
 	"./../common"
 	"./../crypto/ecies"
+	"./../crypto/secp256k1"
 	"./../crypto/sha3"
-	"github.com/btcsuite/btcd/btcec"
 	"github.com/pborman/uuid"
 	"golang.org/x/crypto/ripemd160"
 )
@@ -154,7 +154,7 @@ func ValidateSignatureValues(v byte, r, s *big.Int) bool {
 }
 
 func SigToPub(hash, sig []byte) (*ecdsa.PublicKey, error) {
-	s, err := Ecrecover(hash, sig)
+	s, err := secp256k1.RecoverPubkey(sig, hash)
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +170,7 @@ func Sign(hash []byte, prv *ecdsa.PrivateKey) (sig []byte, err error) {
 
 	seckey := common.LeftPadBytes(prv.D.Bytes(), prv.Params().BitSize/8)
 	defer zeroBytes(seckey)
-	sig, err = btcec.privKey.Sign(hash, seckey)
+	sig, err = secp256k1.Sign(hash, seckey)
 	return
 }
 

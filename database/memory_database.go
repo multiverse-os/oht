@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package ethdb
+package database
 
 import (
 	"errors"
@@ -96,8 +96,7 @@ func (db *MemDatabase) Print() {
 
 	for key, val := range db.db {
 		fmt.Printf("%x(%d): ", key, len(key))
-		node := common.NewValueFromBytes(val)
-		fmt.Printf("%q\n", node.Val)
+		fmt.Printf("%q\n", val)
 	}
 }
 

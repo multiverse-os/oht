@@ -1,4 +1,4 @@
-// Copyright 2014 The go-ethereum Authors
+// Copyright 2015 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -14,17 +14,20 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package database
+package secp256k1
 
-type Database interface {
-	Put(key []byte, value []byte) error
-	Get(key []byte) ([]byte, error)
-	Delete(key []byte) error
-	Close()
-	NewBatch() Batch
+import "C"
+import "unsafe"
+
+// Callbacks for converting libsecp256k1 internal faults into
+// recoverable Go panics.
+
+//export secp256k1GoPanicIllegal
+func secp256k1GoPanicIllegal(msg *C.char, data unsafe.Pointer) {
+	panic("illegal argument: " + C.GoString(msg))
 }
 
-type Batch interface {
-	Put(key, value []byte) error
-	Write() error
+//export secp256k1GoPanicError
+func secp256k1GoPanicError(msg *C.char, data unsafe.Pointer) {
+	panic("internal error: " + C.GoString(msg))
 }
