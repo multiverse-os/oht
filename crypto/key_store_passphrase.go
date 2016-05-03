@@ -39,7 +39,6 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/scrypt"
 	"io"
-	"time"
 )
 
 const (
