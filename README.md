@@ -39,6 +39,30 @@ Easy public chat sharing is important, possibly through the use of expirable hum
 **Localization** - Localization is important and needs to be designed to exist within the framework from the
 beginning.
 
+### Usage
+
+    oht> /help
+    COMMANDS:
+....
+        /config               - List configuration values (Not Implemented)
+....
+      DHT NETWORK:
+....
+        /peers                - List all connected peers (Not Implemented)
+        /successor            - Next peer in identifier ring (Not Implemented)
+        /predecessor          - Previous peer in identifier ring (Not Implemented)
+        /ftable               - List ftable peers (Not Implemented)
+        /connect [ip address] - Direct connect to peer (Not Implemented)
+....
+      ACCOUNTS:
+....
+        /contacts             - List all saved contacts (Not Implemented)
+        /add     [user]       - Add account to contacts (Not Implemented)
+        /rm      [user]       - Remove account from contacts (Not Implemented)
+        /whisper [user]       - Direct message peer (Not Implemented)
+....
+        /quit
+
 ### Roadmap
 Currently the basic DHT functionality is still not yet implemented, this core functionality is the first major milestone. Before this can be completed the p2p communication needs to be lower level then the current websockets connections, utilize protobuf, authenticate peers and use ephermeral keys for communication. The existing websockets connections will remain and it is useful for the existing webui.
 
