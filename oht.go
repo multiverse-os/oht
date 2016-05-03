@@ -76,17 +76,17 @@ func main() {
 	encryptedKeyStore := crypto.NewKeyStorePassphrase(common.DefaultDataDir(), crypto.KDFStandard)
 	encryptedAccountManager := accounts.NewManager(encryptedKeyStore)
 	encryptedAccount, _ := encryptedAccountManager.NewAccount("password")
-	log.Println("encrypted account: " + encryptedAccount.Address.Hex())
+	log.Println("encrypted account:   " + encryptedAccount.Address.Hex())
 
 	// Start P2P Networking
 	go network.Manager.Start(tor.ListenPort)
-	log.Printf("\nListening for peers :  " + tor.OnionHost)
+	log.Printf("\nListening for peers (Websockets) :  " + tor.OnionHost)
 	// Connect Directly To Peer (Will be required for bootstraping)
 	if *peerAddress != "" {
 		if match, _ := regexp.Match(":", []byte(*peerAddress)); !match {
 			*peerAddress += ":12312"
 		}
-		log.Printf("Connecting to peer  :  " + *peerAddress)
+		log.Printf("Connecting to peer (Websockets)  :  " + *peerAddress)
 		go network.ConnectToPeer(*peerAddress, tor.SocksPort)
 	}
 	// Start WebUI
@@ -108,12 +108,22 @@ func main() {
 				Username:  *username,
 				Body:      cli.Text()}
 			// Check for commands
+			// This should be replaced with a better system but this works during early development
 			if message.Body == "/help" {
-				fmt.Println("Available Commands:\n")
-				fmt.Println("    /peers - List all active peers (Not Implemented)")
-				fmt.Println("    /whisper - Direct message peer (Not Implemented)")
-				fmt.Println("    /connect - Direct connect to peer (Not Implemented)")
-				fmt.Println("    /quit")
+				fmt.Println("COMMANDS:\n")
+				fmt.Println("    /config               - List configuration values (Not Implemented)")
+				fmt.Println("  DHT NETWORK:\n")
+				fmt.Println("    /peers                - List all connected peers (Not Implemented)")
+				fmt.Println("    /successor            - Next peer in identifier ring (Not Implemented)")
+				fmt.Println("    /predecessor          - Previous peer in identifier ring (Not Implemented)")
+				fmt.Println("    /ftable               - List ftable peers (Not Implemented)")
+				fmt.Println("    /connect [ip address] - Direct connect to peer (Not Implemented)")
+				fmt.Println("  ACCOUNTS:\n")
+				fmt.Println("    /contacts             - List all saved contacts (Not Implemented)")
+				fmt.Println("    /add     [user]       - Add account to contacts (Not Implemented)")
+				fmt.Println("    /rm      [user]       - Remove account from contacts (Not Implemented)")
+				fmt.Println("    /whisper [user]       - Direct message peer (Not Implemented)")
+				fmt.Println("\n    /quit")
 			} else if message.Body == "/q" || message.Body == "/quit" {
 				os.Exit(0)
 			} else {
