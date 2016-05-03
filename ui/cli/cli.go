@@ -28,30 +28,21 @@ import (
 	"strings"
 	"time"
 
+	"./../accounts"
+	"./../oth"
+	"./../oth/common"
+	"./../oth/database"
+	"./cmd/utils"
+
 	"github.com/codegangsta/cli"
-	"github.com/ethereum/ethash"
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/logger"
-	"github.com/ethereum/go-ethereum/logger/glog"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/ethereum/go-ethereum/rpc/codec"
-	"github.com/ethereum/go-ethereum/rpc/comms"
 )
 
 const (
-	ClientIdentifier = "Geth"
-	Version          = "1.3.6"
-	VersionMajor     = 1
-	VersionMinor     = 3
-	VersionPatch     = 6
+	ClientIdentifier = "Oth"
+	Version          = "0.1.0"
+	VersionMajor     = 0
+	VersionMinor     = 1
+	VersionPatch     = 0
 )
 
 var (
@@ -67,7 +58,7 @@ func init() {
 		nodeNameVersion = Version + "-" + gitCommit[:8]
 	}
 
-	app = utils.NewApp(Version, "the go-ethereum command line interface")
+	app = utils.NewApp(Version, "the oth command line interface")
 	app.Action = run
 	app.HideVersion = true // we have a command to print the version
 	app.Commands = []cli.Command{
@@ -91,33 +82,6 @@ recover <hex> recovers by hash
 		dumpCommand,
 		monitorCommand,
 		{
-			Action: makedag,
-			Name:   "makedag",
-			Usage:  "generate ethash dag (for testing)",
-			Description: `
-The makedag command generates an ethash DAG in /tmp/dag.
-
-This command exists to support the system testing project.
-Regular users do not need to execute it.
-`,
-		},
-		{
-			Action: gpuinfo,
-			Name:   "gpuinfo",
-			Usage:  "gpuinfo",
-			Description: `
-Prints OpenCL device info for all found GPUs.
-`,
-		},
-		{
-			Action: gpubench,
-			Name:   "gpubench",
-			Usage:  "benchmark GPU",
-			Description: `
-Runs quick benchmark on first GPU found.
-`,
-		},
-		{
 			Action: version,
 			Name:   "version",
 			Usage:  "print ethereum version numbers",
@@ -125,26 +89,6 @@ Runs quick benchmark on first GPU found.
 The output of this command is supposed to be machine-readable.
 `,
 		},
-
-		{
-			Name:  "wallet",
-			Usage: "ethereum presale wallet",
-			Subcommands: []cli.Command{
-				{
-					Action: importWallet,
-					Name:   "import",
-					Usage:  "import ethereum presale wallet",
-				},
-			},
-			Description: `
-
-    get wallet import /path/to/my/presale.wallet
-
-will prompt for your password and imports your ether presale account.
-It can be used non-interactively with the --password option taking a
-passwordfile as argument containing the wallet password in plaintext.
-
-`},
 		{
 			Action: accountList,
 			Name:   "account",
