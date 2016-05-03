@@ -1,7 +1,7 @@
 # oht v0.1.0
 oht is an onion distributed hash table used to create decentralized application framework. **This software is experimental, use with caution.** *The code is in flux at this prealpha stage. The protocol specifications are still subject to major changes.*
 
-Utilizing a similar design pattern as ricochet or onionshare, oht creates an onion routed distributed hash table by having each peer establish an onion service to communicate with peers. This allows for peers to interact with a public DHT in a secure and anonymous manner. However, instead of relying on the onion address keys to authenticate oht opts to use a separate esdca keypair and uses emphermal onion addresses. This provides better security and makes it easier to migrate an account to other terminals.
+Utilizing a similar design pattern as ricochet or onionshare, oht creates an onion routed distributed hash table by having each peer establish an onion service to communicate with peers. This allows for peers to interact with a public DHT in a secure and anonymous manner. However, instead of relying on the onion address keys to authenticate oht opts to use a separate esdca keypair and uses emphermal onion addresses. This provides better security and makes it easier to migrate an account to other terminals. Despite this change, interlopability required to communicate with users available on ricochet is important part of the oht design.  
 
 Onion routing does not only improve security, oht gains other interesting features by leveraging the onion network to route peers. By using onion addresses over ip addresses, peers can directly without port forwarding or worrying about NAT transversal.
 
