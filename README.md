@@ -43,24 +43,24 @@ beginning.
 
     oht> /help
     COMMANDS:
-....
+    
         /config               - List configuration values (Not Implemented)
-....
+    
       DHT NETWORK:
-....
+    
         /peers                - List all connected peers (Not Implemented)
         /successor            - Next peer in identifier ring (Not Implemented)
         /predecessor          - Previous peer in identifier ring (Not Implemented)
         /ftable               - List ftable peers (Not Implemented)
         /connect [ip address] - Direct connect to peer (Not Implemented)
-....
+    
       ACCOUNTS:
-....
+    
         /contacts             - List all saved contacts (Not Implemented)
         /add     [user]       - Add account to contacts (Not Implemented)
         /rm      [user]       - Remove account from contacts (Not Implemented)
         /whisper [user]       - Direct message peer (Not Implemented)
-....
+    
         /quit
 
 ### Roadmap
