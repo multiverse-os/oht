@@ -69,16 +69,16 @@ A basic console is the first goal for the UI and will be used as a way of outlin
         /accounts                    - List all accounts (Not Implemented)
         /generate                    - Generate new account key pair (Not Implemented)
         /delete                      - Delete an account key pair (Not Implemented)
-        /sign [id] [messsage]        - Sign with account key pair (Not Implemented)
-        /verify [id] [message]       - Verify a signed message with keypair (Not Implemented)
+        /sign [id] [message]         - Sign with account key pair (Not Implemented)
+        /verify [id]  [message]      - Verify a signed message with keypair (Not Implemented)
         /encrypt [id] [message]      - Encrypt a message with keypair (Not Implemented)
         /decrypt [id] [message]      - Decrypt a message with keypair (Not Implemented)
     
       CONTACTS:
         /contacts                    - List all saved contacts (Not Implemented)
-        /add     [user]              - Add account to contacts (Not Implemented)
-        /rm      [user]              - Remove account from contacts (Not Implemented)
-        /whisper [user]              - Direct message peer (Not Implemented)
+        /add [id]                    - Add account to contacts (Not Implemented)
+        /rm [id]                     - Remove account from contacts (Not Implemented)
+        /whisper [id]                - Direct message peer (Not Implemented)
         /contactcast [message]       - Message all contacts (Not Implemented)
     
       CHANNELS:
