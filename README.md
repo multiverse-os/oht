@@ -40,26 +40,52 @@ Easy public chat sharing is important, possibly through the use of expirable hum
 beginning.
 
 ### Usage
+A basic console is the first goal for the UI and will be used as a way of outlining the basic functional requirements of the design. Much of the functionality works but just has not yet been tied to the console command. 
 
     oht> /help
     COMMANDS:
+      CONFIG:
+        /config                      - List configuration values (Not Implemented)
+        /set [config] [option]       - Change configuration options (Not Implemented)
+        /unset [config]              - Unset configuration option (Not Implemented)
     
-        /config               - List configuration values (Not Implemented)
+      NETWORK:
+        /peers                       - List all connected peers (Not Implemented)
+        /successor                   - Next peer in identifier ring (Not Implemented)
+        /predecessor                 - Previous peer in identifier ring (Not Implemented)
+        /ftable                      - List ftable peers (Not Implemented)
+        /create                      - Create new ring (Not Implemented)
+        /connect [onion address]     - Join to ring with peer (Not Implemented)
+        /ping [onion address]        - Ping peer (Not Implemented)
+        /ringcast [message]          - Message every peer in ring (Not Implemented)
     
-      DHT NETWORK:
+      DHT:
+        /put [key] [value]           - Put key and value into database (Not Implemented)
+        /get [key]                   - Get value of key (Not Implemented)
+        /delete [key]                - Delete value of key (Not Implemented)
     
-        /peers                - List all connected peers (Not Implemented)
-        /successor            - Next peer in identifier ring (Not Implemented)
-        /predecessor          - Previous peer in identifier ring (Not Implemented)
-        /ftable               - List ftable peers (Not Implemented)
-        /connect [ip address] - Direct connect to peer (Not Implemented)
+      ACCOUNT:
+        /accounts                    - List all accounts (Not Implemented)
+        /generate                    - Generate new account key pair (Not Implemented)
+        /delete                      - Delete an account key pair (Not Implemented)
+        /sign [id] [messsage]        - Sign with account key pair (Not Implemented)
+        /verify [id] [message]       - Verify a signed message with keypair (Not Implemented)
+        /encrypt [id] [message]      - Encrypt a message with keypair (Not Implemented)
+        /decrypt [id] [message]      - Decrypt a message with keypair (Not Implemented)
     
-      ACCOUNTS:
+      CONTACTS:
+        /contacts                    - List all saved contacts (Not Implemented)
+        /add     [user]              - Add account to contacts (Not Implemented)
+        /rm      [user]              - Remove account from contacts (Not Implemented)
+        /whisper [user]              - Direct message peer (Not Implemented)
+        /contactcast [message]       - Message all contacts (Not Implemented)
     
-        /contacts             - List all saved contacts (Not Implemented)
-        /add     [user]       - Add account to contacts (Not Implemented)
-        /rm      [user]       - Remove account from contacts (Not Implemented)
-        /whisper [user]       - Direct message peer (Not Implemented)
+      CHANNELS:
+        /channels                    - List all known channels (Not Implemented)
+        /channel                     - Generates a new channel (Not Implemented)
+        /join [id]                   - Join channel with id (Not Implemented)
+        /leave [id]                  - Leave channel with id (Not Implemented)
+        /channelcast [id] [message]  - Message all channel subscribers (Not Implemented)
     
         /quit
 
