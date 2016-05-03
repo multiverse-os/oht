@@ -70,13 +70,13 @@ func main() {
 	unencryptedKeyStore := crypto.NewKeyStorePlain(common.DefaultDataDir())
 	unencryptedAccountManager := accounts.NewManager(unencryptedKeyStore)
 	unencryptedAccount, _ := unencryptedAccountManager.NewAccount("password")
-	log.Println("unencrypted account: %s", unencryptedAccount.Address)
+	log.Println("unencrypted account: " + unencryptedAccount.Address.Hex())
 	// Encrypted Account System Prototype For Encryption And Signatures
 	// This needs a secure password input, should build more fluid way to interact with accoutns
 	encryptedKeyStore := crypto.NewKeyStorePassphrase(common.DefaultDataDir(), crypto.KDFStandard)
 	encryptedAccountManager := accounts.NewManager(encryptedKeyStore)
 	encryptedAccount, _ := encryptedAccountManager.NewAccount("password")
-	log.Println("encrypted account: %s", encryptedAccount.Address)
+	log.Println("encrypted account: " + encryptedAccount.Address.Hex())
 
 	// Start P2P Networking
 	go network.Manager.Start(tor.ListenPort)

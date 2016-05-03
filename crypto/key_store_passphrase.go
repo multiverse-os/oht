@@ -102,12 +102,12 @@ func (ks keyStorePassphrase) GetKeyAddresses() (addresses []common.Address, err 
 func (ks keyStorePassphrase) StoreKey(key *Key, auth string) (err error) {
 	authArray := []byte(auth)
 	salt := randentropy.GetEntropyCSPRNG(32)
-	now := time.Now()
+	//now := time.Now()
 	derivedKey, err := scrypt.Key(authArray, salt, ks.scryptN, ks.scryptR, ks.scryptP, ks.scryptDKLen)
 	if err != nil {
 		return err
 	}
-	fmt.Println("took: ", time.Since(now))
+	//fmt.Println("took: ", time.Since(now))
 	encryptKey := derivedKey[:16]
 	keyBytes := FromECDSA(key.PrivateKey)
 
