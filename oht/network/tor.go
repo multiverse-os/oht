@@ -13,7 +13,7 @@ import (
 	"strconv"
 	"strings"
 
-	"../common"
+	"./../../oht/common"
 )
 
 type TorProcess struct {
@@ -57,12 +57,12 @@ func InitializeTor(listenPort int, socksPort int, controlPort int, webUIPort int
 		DataDirectory:         common.AbsolutePath(common.DefaultDataDir(), "tor/data"),
 		OnionServiceDirectory: common.AbsolutePath(common.DefaultDataDir(), "tor/onion_service"),
 		OnionWebUIDirectory:   common.AbsolutePath(common.DefaultDataDir(), "tor/onion_webui"),
-		BinaryFile:            common.AbsolutePath("network/tor/bin/linux/64/", "tor"),
+		BinaryFile:            common.AbsolutePath("oht/network/tor/bin/linux/64/", "tor"),
 		ConfigFile:            common.AbsolutePath(common.DefaultDataDir(), "tor/torrc"),
 		PidFile:               common.AbsolutePath(common.DefaultDataDir(), "tor/tor.pid"),
 	}
 	if runtime.GOOS == "darwin" {
-		tor.BinaryFile = common.AbsolutePath("network/tor/bin/osx/", "tor")
+		tor.BinaryFile = common.AbsolutePath("oht/network/tor/bin/osx/", "tor")
 	} else if runtime.GOOS == "windows" {
 		log.Fatal("Tor: No windows binary in the source yet, sorry.")
 	}

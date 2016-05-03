@@ -7,12 +7,14 @@ import (
 	"strconv"
 )
 
-const socks4aVersion = 4
-const socks4aConnect = 1
-const socks4aGranted = 90
-const socks4aRejected = 91
-const socks4aMissingIdentd = 92
-const socks4aFailedIdentd = 93
+const (
+	socks4aVersion       = 4
+	socks4aConnect       = 1
+	socks4aGranted       = 90
+	socks4aRejected      = 91
+	socks4aMissingIdentd = 92
+	socks4aFailedIdentd  = 93
+)
 
 type Socks4a struct {
 	Network string

@@ -1,15 +1,17 @@
 package webui
 
 import (
-	"../network"
-	"github.com/gin-gonic/gin"
 	"strconv"
+
+	"./../../oht/network"
+
+	"github.com/gin-gonic/gin"
 )
 
 func InitializeServer(wsHost string, port int) {
 	gin.SetMode(gin.ReleaseMode)
 	server := gin.Default()
-	server.LoadHTMLFiles("webui/index.html")
+	server.LoadHTMLFiles("ui/webui/index.html")
 	server.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index.html", gin.H{
 			"wsHost": wsHost,

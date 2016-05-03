@@ -13,13 +13,14 @@ import (
 	"time"
 
 	"./accounts"
-	"./common"
-	"./config"
 	"./contacts"
-	"./crypto"
-	"./database"
-	"./network"
-	"./webui"
+	"./ui/webui"
+
+	"./oht/common"
+	"./oht/config"
+	"./oht/crypto"
+	"./oht/database"
+	"./oht/network"
 
 	"github.com/pborman/uuid"
 )
@@ -30,7 +31,7 @@ var (
 	version_minor = 1
 	version_patch = 0
 	version       = fmt.Sprintf("%d.%d.%d", version_major, version_minor, version_patch)
-	//daemon        = flag.Bool("d", true, "Start the process daemonized")
+	//daemon        = flag.Bool("d", false, "Start the process daemonized")
 	console     = flag.Bool("c", true, "Start the process with a console")
 	wui         = flag.Bool("wui", true, "Start the process with a web ui")
 	username    = flag.String("username", "user", "Specify a username")

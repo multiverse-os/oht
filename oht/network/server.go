@@ -1,10 +1,11 @@
 package network
 
 import (
-	"github.com/gin-gonic/gin"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 const (

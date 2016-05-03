@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 
-	"../common"
+	"../oht/common"
 )
 
 type Contact struct {

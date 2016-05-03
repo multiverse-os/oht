@@ -20,7 +20,7 @@ import (
 	"math/big"
 
 	"./../accounts"
-	"./../core/types"
+	"./../oht/types"
 )
 
 // Validator is an interface which defines the standard for msg validation.

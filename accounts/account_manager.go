@@ -23,8 +23,6 @@ package accounts
 // and accounts persistence is derived from stored keys' addresses
 
 import (
-	"./../common"
-	"./../crypto"
 	"crypto/ecdsa"
 	crand "crypto/rand"
 	"errors"
@@ -32,6 +30,9 @@ import (
 	"os"
 	"sync"
 	"time"
+
+	"./../oht/common"
+	"./../oht/crypto"
 )
 
 var (
