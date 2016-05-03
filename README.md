@@ -16,7 +16,7 @@ Below is a list of the functional requirements to meet the goal of the project. 
 
 **Accounts** - Accounts based on encrypted assymetric keys. Elliptic curve similar to telehash or Bitcoin/Ethereum. Some backup system that leverages the DHT would be interesting to experiment with. GNUnet naming system or flexibile name system using a variety of existing solutions.
 
-**Name Resolution** - Name resolution leveraging the oht or an existing name system.
+**Name Resolution** - Name resolution leveraging the oht or an existing name system (GnuNet, Bitcoin/Ethereum)
 
 **Contact List** - Contact list, optional transversal through contacts network by creating relationship chains (bestFriend.friend.aquaitance). Flexible contact meta data to make it easier to extend functionality.
 
