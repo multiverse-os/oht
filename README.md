@@ -92,6 +92,16 @@ A basic console is the first goal for the UI and will be used as a way of outlin
     
         /quit
 
+## Executables
+
+oth comes with several wrappers/executables found in 
+[the `ui` directory](https://github.com/onionhash/oht/ui):
+
+ Command  |         |
+----------|---------|
+`oth-cli` | OTH CLI Interface (ethereum command line interface client) |
+`oth-console` | OTH Console Interface |
+
 ### Roadmap
 Currently the basic DHT functionality is still not yet implemented, this core functionality is the first major milestone. Before this can be completed the p2p communication needs to be lower level then the current websockets connections, utilize protobuf, authenticate peers and use ephermeral keys for communication. The existing websockets connections will remain and it is useful for the existing webui.
 
