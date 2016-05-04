@@ -17,62 +17,56 @@ import (
 )
 
 type TorProcess struct {
-	Process               *os.Process
-	Cmd                   *exec.Cmd
+	process               *os.Process
+	cmd                   *exec.Cmd
 	Pid                   string
 	OnionHost             string
-	OnionWebUIHost        string
+	WebUIOnionHost        string
 	ListenPort            int
 	WebUIPort             int
 	SocksPort             int
 	ControlPort           int
-	AvoidDiskWrites       int
-	HardwareAcceleration  int
-	OnionServiceDirectory string
-	OnionWebUIDirectory   string
-	DataDirectory         string
-	BinaryFile            string
-	ConfigFile            string
-	PidFile               string
-	AuthCookie            string
-}
-
-func initFolder(relativePath string) {
-	if !common.FileExist(common.DefaultDataDir() + relativePath) {
-		os.MkdirAll(common.DefaultDataDir()+relativePath, os.FileMode(0700))
-	}
+	avoidDiskWrites       int
+	hardwareAcceleration  int
+	onionServiceDirectory string
+	webUIOnionDirectory   string
+	dataDirectory         string
+	binaryFile            string
+	configFile            string
+	pidFile               string
+	authCookie            string
 }
 
 func InitializeTor(listenPort int, socksPort int, controlPort int, webUIPort int) (tor *TorProcess) {
-	initFolder("/tor")
-	initFolder("/tor/onion_service")
-	initFolder("/tor/onion_webui")
+	common.CreatePathUnlessExist("/tor", 0700)
+	common.CreatePathUnlessExist("/tor/onion_service", 0700)
+	common.CreatePathUnlessExist("/tor/onion_webui", 0700)
 	tor = &TorProcess{
 		ListenPort:            listenPort,
 		WebUIPort:             webUIPort,
 		SocksPort:             socksPort,
 		ControlPort:           controlPort,
-		AvoidDiskWrites:       0,
-		HardwareAcceleration:  1,
-		DataDirectory:         common.AbsolutePath(common.DefaultDataDir(), "tor/data"),
-		OnionServiceDirectory: common.AbsolutePath(common.DefaultDataDir(), "tor/onion_service"),
-		OnionWebUIDirectory:   common.AbsolutePath(common.DefaultDataDir(), "tor/onion_webui"),
-		BinaryFile:            common.AbsolutePath("oht/network/tor/bin/linux/64/", "tor"),
-		ConfigFile:            common.AbsolutePath(common.DefaultDataDir(), "tor/torrc"),
-		PidFile:               common.AbsolutePath(common.DefaultDataDir(), "tor/tor.pid"),
+		avoidDiskWrites:       0,
+		hardwareAcceleration:  1,
+		dataDirectory:         common.AbsolutePath(common.DefaultDataDir(), "tor/data"),
+		onionServiceDirectory: common.AbsolutePath(common.DefaultDataDir(), "tor/onion_service"),
+		webUIOnionDirectory:   common.AbsolutePath(common.DefaultDataDir(), "tor/onion_webui"),
+		binaryFile:            common.AbsolutePath("oht/network/tor/bin/linux/64/", "tor"),
+		configFile:            common.AbsolutePath(common.DefaultDataDir(), "tor/torrc"),
+		pidFile:               common.AbsolutePath(common.DefaultDataDir(), "tor/tor.pid"),
 	}
 	if runtime.GOOS == "darwin" {
-		tor.BinaryFile = common.AbsolutePath("oht/network/tor/bin/osx/", "tor")
+		tor.binaryFile = common.AbsolutePath("oht/network/tor/bin/osx/", "tor")
 	} else if runtime.GOOS == "windows" {
 		log.Fatal("Tor: No windows binary in the source yet, sorry.")
 	}
-	if !common.FileExist(tor.ConfigFile) {
-		err := tor.InitializeConfig()
+	if !common.FileExist(tor.configFile) {
+		err := tor.initializeConfig()
 		if err != nil {
 			log.Fatal("Tor: Failed to write configuration: %s", err)
 		}
 	}
-	torCmd := exec.Command(tor.BinaryFile, "-f", tor.ConfigFile)
+	torCmd := exec.Command(tor.binaryFile, "-f", tor.configFile)
 	stdout, _ := torCmd.StdoutPipe()
 	err := torCmd.Start()
 	if err != nil {
@@ -85,19 +79,19 @@ func InitializeTor(listenPort int, socksPort int, controlPort int, webUIPort int
 			break
 		}
 	}
-	tor.Process = torCmd.Process
-	tor.Cmd = torCmd
+	tor.process = torCmd.Process
+	tor.cmd = torCmd
 	tor.Pid = fmt.Sprintf("%d", torCmd.Process.Pid)
-	tor.OnionHost = tor.ReadOnionHost("internal")
-	tor.OnionWebUIHost = tor.ReadOnionHost("webui")
-	tor.AuthCookie = tor.ReadAuthCookie()
+	tor.OnionHost = tor.readOnionHost("internal")
+	tor.WebUIOnionHost = tor.readOnionHost("webui")
+	tor.authCookie = tor.readAuthCookie()
 	return tor
 }
 
-func (tor *TorProcess) ReadOnionHost(serviceType string) string {
-	directory := tor.OnionServiceDirectory + "/hostname"
+func (tor *TorProcess) readOnionHost(serviceType string) string {
+	directory := tor.onionServiceDirectory + "/hostname"
 	if serviceType == "webui" {
-		directory = tor.OnionWebUIDirectory + "/hostname"
+		directory = tor.webUIOnionDirectory + "/hostname"
 	}
 	onion, err := ioutil.ReadFile(directory)
 	if err != nil {
@@ -106,21 +100,21 @@ func (tor *TorProcess) ReadOnionHost(serviceType string) string {
 	return strings.Replace(string(onion), "\n", "", -1)
 }
 
-func (tor *TorProcess) InitializeConfig() error {
+func (tor *TorProcess) initializeConfig() error {
 	config := ""
 	config += fmt.Sprintf("SOCKSPort 127.0.0.1:%s\n", strconv.Itoa(tor.SocksPort))
 	config += fmt.Sprintf("ControlPort 127.0.0.1:%s\n", strconv.Itoa(tor.ControlPort))
-	config += fmt.Sprintf("DataDirectory %s\n", tor.DataDirectory)
-	config += fmt.Sprintf("HardwareAccel %d\n", tor.HardwareAcceleration)
+	config += fmt.Sprintf("DataDirectory %s\n", tor.dataDirectory)
+	config += fmt.Sprintf("HardwareAccel %d\n", tor.hardwareAcceleration)
 	config += fmt.Sprintf("RunAsDaemon 0\n")
-	config += fmt.Sprintf("HiddenServiceDir %s\n", tor.OnionServiceDirectory)
+	config += fmt.Sprintf("HiddenServiceDir %s\n", tor.onionServiceDirectory)
 	config += fmt.Sprintf("HiddenServicePort %s 127.0.0.1:%s\n", strconv.Itoa(tor.ListenPort), strconv.Itoa(tor.ListenPort))
-	config += fmt.Sprintf("HiddenServiceDir %s\n", tor.OnionWebUIDirectory)
+	config += fmt.Sprintf("HiddenServiceDir %s\n", tor.webUIOnionDirectory)
 	config += fmt.Sprintf("HiddenServicePort %s 127.0.0.1:%s\n", strconv.Itoa(tor.WebUIPort), strconv.Itoa(tor.WebUIPort))
-	config += fmt.Sprintf("AvoidDiskWrites %d\n", tor.AvoidDiskWrites)
+	config += fmt.Sprintf("AvoidDiskWrites %d\n", tor.avoidDiskWrites)
 	config += fmt.Sprintf("AutomapHostsOnResolve 1\n")
 	config += fmt.Sprintf("CookieAuthentication 1\n")
-	err := ioutil.WriteFile(tor.ConfigFile, []byte(config), 0644)
+	err := ioutil.WriteFile(tor.configFile, []byte(config), 0644)
 	if err != nil {
 		return err
 	} else {
@@ -128,7 +122,7 @@ func (tor *TorProcess) InitializeConfig() error {
 	}
 }
 
-func (tor *TorProcess) ControlCommand(command string) {
+func (tor *TorProcess) controlCommand(command string) {
 	conn, err := net.Dial("tcp", "127.0.0.1:"+strconv.Itoa(tor.ControlPort))
 	if err != nil {
 		log.Fatal(err)
@@ -138,30 +132,17 @@ func (tor *TorProcess) ControlCommand(command string) {
 }
 
 func (tor *TorProcess) Cycle() {
-	tor.ControlCommand("SIGNAL NEWNYM")
+	tor.controlCommand("SIGNAL NEWNYM")
 }
 
 func (tor *TorProcess) Shutdown() {
-	tor.ControlCommand("SIGNAL HALT")
+	tor.controlCommand("SIGNAL HALT")
 }
 
-func (tor *TorProcess) ReadAuthCookie() string {
-	cookie, err := ioutil.ReadFile(tor.DataDirectory + "/control_auth_cookie")
+func (tor *TorProcess) readAuthCookie() string {
+	cookie, err := ioutil.ReadFile(tor.dataDirectory + "/control_auth_cookie")
 	if err != nil {
 		log.Fatal("Tor: Failed to read authorization cookie: %s", err)
 	}
 	return strings.Replace(string(cookie), "\n", "", -1)
-}
-
-func FreePort() int {
-	address, err := net.ResolveTCPAddr("tcp", "127.0.0.1:0")
-	if err != nil {
-		panic(err)
-	}
-	listener, err := net.ListenTCP("tcp", address)
-	if err != nil {
-		panic(err)
-	}
-	defer listener.Close()
-	return listener.Addr().(*net.TCPAddr).Port
 }

@@ -24,7 +24,8 @@ type Config struct {
 	clientMajorVersion int
 	clientMinorVersion int
 	clientPatchVersion int
-	ProtocolVersion    int
+
+	ProtocolVersion int
 	// Load this struct from the config.json file
 	DevMode bool
 	TestNet bool
@@ -49,7 +50,7 @@ type Config struct {
 	// If nil, an ephemeral key is used.
 	NodeKey *ecdsa.PrivateKey
 
-	Etherbase      common.Address
+	Base           common.Address
 	AccountManager *accounts.Manager
 
 	// NewDB is used to create databases.
@@ -57,7 +58,7 @@ type Config struct {
 	// -- Setup the boltDB here
 }
 
-func InitializeConfig() {
+func initializeConfig() {
 	if _, err := ioutil.ReadFile(common.AbsolutePath(common.DefaultDataDir(), "config.json")); err != nil {
 		str := "{}"
 		if err = ioutil.WriteFile(common.AbsolutePath(common.DefaultDataDir(), "config.json"), []byte(str), 0644); err != nil {
@@ -66,11 +67,15 @@ func InitializeConfig() {
 	}
 }
 
-func (config *Config) ClientVersion() (clientVersion string) {
+func (config *Config) clientInfo() string {
+	return common.CompileClientInfo(config.clientName, config.clientVersion())
+}
+
+func (config *Config) clientVersion() (clientVersion string) {
 	return fmt.Sprintf("%d.%d.%d", config.clientMajorVersion, config.clientMinorVersion, config.clientPatchVersion)
 }
 
-func (config *Config) GetConfig() (configData []byte, err error) {
+func (config *Config) getConfig() (configData []byte, err error) {
 	configData, err = ioutil.ReadFile(common.AbsolutePath(common.DefaultDataDir(), "config.json"))
 	return configData, err
 }

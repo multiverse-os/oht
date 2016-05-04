@@ -9,8 +9,10 @@ import (
 	"strings"
 )
 
-func MakeName(name, version string) string {
-	return fmt.Sprintf("%s/v%s/%s/%s", name, version, runtime.GOOS, runtime.Version())
+func CreatePathUnlessExist(relativePath string, perm os.FileMode) {
+	if !FileExist(DefaultDataDir() + relativePath) {
+		os.MkdirAll(DefaultDataDir()+relativePath, os.FileMode(perm))
+	}
 }
 
 func ExpandHomePath(p string) (path string) {
