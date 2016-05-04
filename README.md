@@ -80,7 +80,7 @@ A basic console is the first goal for the UI and will be used as a way of outlin
         /request [id] [message]      - Request account to add your id to their contacts (Not Implemented)
         /add [id]                    - Add account to contacts (Not Implemented)
         /rm [id]                     - Remove account from contacts (Not Implemented)
-        /whisper [id]                - Direct message peer (Not Implemented)
+        /whisper [id] [message]      - Direct message peer (Not Implemented)
         /contactcast [message]       - Message all contacts (Not Implemented)
     
       CHANNELS:
