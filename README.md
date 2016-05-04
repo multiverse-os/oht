@@ -39,6 +39,17 @@ Easy public chat sharing is important, possibly through the use of expirable hum
 **Localization** - Localization is important and needs to be designed to exist within the framework from the
 beginning.
 
+### Optional Modules
+oht is at its core a distributed hash table built to route through Tor. oht is designed to be used by others to create more complex software. In order to satisfy and standardize the basic features of most applications oht is packaged with optional modules to extend the base features.
+
+**Accounts** - An account system based on ecdsa keys, supports handling multiple accounts and encrypted storage of keys.
+
+**Contacts** - A contact system with approval, presence, grandulated relationship transversal. Capable of storing ricochet contacts.
+
+**Channels** - A broadly defined channel system, built to be compatible with ricochet's protocol, to be used for multiuser chat rooms and any other abstraction that requires variable isolation.
+
+Each one will include an interface.go file that matches the general structure of the oht/interface.go file. APIs and UIs will interact with these interfaces.
+
 ### Usage
 A basic console is the first goal for the UI and will be used as a way of outlining the basic functional requirements of the design. Much of the functionality works but just has not yet been tied to the console command.
 
