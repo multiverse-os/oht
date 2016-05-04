@@ -16,7 +16,7 @@ Currently the basic DHT functionality is still not yet implemented, this core fu
 ### Core Features
 Below is a list of the functional requirements to meet the goal of the project. The features below are at varrying stages of completion. Features will be designed to modular and optional so decentralized applications can be scaffolded quickly using only the features needed.
 
-**Onion routed** - All connections are done using onion services, ensuring each connection is encrypted, anonymous and eliminates the need for port forwarding.
+**Onion routed** - All connections are done using Tor's onion services, ensuring each connection is encrypted, anonymous and eliminates the need for port forwarding. 
 
 **Decentralized Service Discovery** - Using a known onion address keypair, randomly peers can broadcast known peers to the known kepair. Peers looking to join the network can listen using this known keypair and obtain peers to connect to. This also compartmentalizes a DHT and provides an ID.
 
