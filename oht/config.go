@@ -1,13 +1,14 @@
-package config
+package oht
 
 import (
 	"crypto/ecdsa"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"regexp"
 
-	"../../accounts"
-	"../common"
+	"./../accounts"
+	"./common"
 )
 
 var (
@@ -19,8 +20,11 @@ var (
 )
 
 type Config struct {
-	clientVersion string
-	netVersionId  int
+	ClientName         string
+	clientVersionMajor int
+	clientVersionMinor int
+	clientVersionPatch int
+	ProtocolVersion    int
 	// Load this struct from the config.json file
 	DevMode bool
 	TestNet bool
@@ -63,7 +67,11 @@ func InitializeConfig() {
 	}
 }
 
-func DisplayConfig() (configData []byte, err error) {
+func (config *Config) ClientVersion() (clientVersion string) {
+	return fmt.Sprintf("%d.%d.%d", config.clientVersionMajor, config.clientVersionMinor, config.clientVersionPatch)
+}
+
+func (config *Config) GetConfig() (configData []byte, err error) {
 	configData, err = ioutil.ReadFile(common.AbsolutePath(common.DefaultDataDir(), "config.json"))
 	return configData, err
 }

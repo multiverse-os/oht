@@ -13,11 +13,10 @@ import (
 	"time"
 
 	"./accounts"
-	"./contacts"
 	"./ui/webui"
 
+	"./oht"
 	"./oht/common"
-	"./oht/config"
 	"./oht/crypto"
 	"./oht/database"
 	"./oht/network"
@@ -26,11 +25,7 @@ import (
 )
 
 var (
-	name          = "oht"
-	version_major = 0
-	version_minor = 1
-	version_patch = 0
-	version       = fmt.Sprintf("%d.%d.%d", version_major, version_minor, version_patch)
+	name = "oht"
 	//daemon        = flag.Bool("d", false, "Start the process daemonized")
 	console     = flag.Bool("c", true, "Start the process with a console")
 	wui         = flag.Bool("wui", true, "Start the process with a web ui")
@@ -45,14 +40,9 @@ var (
 func main() {
 	flag.Parse()
 	log.SetFlags(0)
-	// Initialize Data Directory
-	if !common.FileExist(common.DefaultDataDir()) {
-		os.MkdirAll(common.DefaultDataDir(), os.ModePerm)
-	}
-	config.InitializeConfig()
-	contacts.InitializeContacts()
+	ohtInterface := oht.NewOHTInterface()
 	// Start Tor
-	log.Println("Starting " + common.MakeName(name, version) + ":")
+	log.Println("Starting " + common.MakeName(name, ohtInterface.ClientVersion()) + ":")
 	log.Println("########################################")
 	log.Println("Initializing Tor Process...")
 	tor := network.InitializeTor(*listenPort, *socksPort, *controlPort, *webUIPort)
