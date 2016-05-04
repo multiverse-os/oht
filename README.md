@@ -16,6 +16,8 @@ Currently the basic DHT functionality is still not yet implemented, this core fu
 ### Core Features
 Below is a list of the functional requirements to meet the goal of the project. The features below are at varrying stages of completion. Features will be designed to modular and optional so decentralized applications can be scaffolded quickly using only the features needed.
 
+**Onion routed** - All connections are done using Tor's onion services, ensuring each connection is encrypted, anonymous and eliminates the need for port forwarding. 
+
 **Decentralized Service Discovery** - Using a known onion address keypair, randomly peers can broadcast known peers to the known kepair. Peers looking to join the network can listen using this known keypair and obtain peers to connect to. This also compartmentalizes a DHT and provides an ID.
 
 **Name Resolution** - Name resolution leveraging the oht or an existing name system (GnuNet, Bitcoin/Ethereum)
@@ -73,7 +75,7 @@ The best way to use the codebase in its current prealpha stage is to fork the re
 
 The goal is for oht to create a framework analagous to Rails. How rails provides an intuitive framework for creating web applications rapidly, oht is planned to be a framework for creating secure decentalized applications rapidly.
 
-The first release candidate will include tools to build a boilerplate decentralized application, including the libraries and a structure illustrate standard design patterns.
+The first release candidate will include tools to build a boilerplate decentralized application.
 
 ### Usage
 A basic console is the first goal for the UI and will be used as a way of outlining the basic functional requirements of the design. Much of the functionality works but just has not yet been tied to the console command.
