@@ -70,6 +70,13 @@ oth comes with several wrappers/executables found in
 `oth-cli` | OTH CLI Interface (ethereum command line interface client) |
 `oth-console` | OTH Console Interface |
 
+## Building Decentralized Applications
+The best way to use the codebase in its current prealpha stage is to fork the repository and experiment.
+
+The goal is for oht to create a framework analagous to Rails. How rails provides an intuitive framework for creating web applications rapidly, oht is planned to be a framework for creating secure decentalized applications rapidly.
+
+the first release candidate would include tools to build a boilerplate decentralized application.
+
 ### Usage
 A basic console is the first goal for the UI and will be used as a way of outlining the basic functional requirements of the design. Much of the functionality works but just has not yet been tied to the console command.
 
@@ -135,13 +142,6 @@ The most interesting idea so far is using a known hard coded onion address key p
 * **Consensus** - While not as critical as service discovery, it would be preferable to to have some optional and basic methods of consensus for portions of the DHT. Optionally we can make it easy to leverage existing larger file storage networks or cryptocurrencies.
 
 *Notes* for name resolution Bitcoin OP_RETURN based name resolution (https://github.com/telehash/blockname) appears to be a possibility. This could also be used for seeding peers. Research Chord4S as it promises to provide decentralized service discovery but it may not work in an anonymous environment.
-
-## Building Decentralized Applications
-The best way to use the codebase in its current prealpha stage is to fork the repository and experiment.
-
-The goal is for oht to create a framework analagous to Rails. How rails provides an intuitive framework for creating web applications rapidly, oht is planned to be a framework for creating secure decentalized applications rapidly.
-
-the first release candidate would include tools to build a boilerplate decentralized application.
 
 ## Contribute
 
