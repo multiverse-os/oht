@@ -18,10 +18,8 @@ package network
 
 import (
 	"errors"
-	"math"
-	"math/big"
+	"fmt"
 	"sync"
-	"time"
 
 	"./../common"
 )
@@ -69,115 +67,115 @@ type ProtocolManager struct {
 
 // NewProtocolManager returns a new ethereum sub protocol manager. The Ethereum sub protocol manages peers capable
 // with the ethereum network.
-func NewProtocolManager(fastSync bool, networkId int) (*ProtocolManager, error) {
-	// Figure out whether to allow fast sync or not
-	manager := &ProtocolManager{
-		networkId: networkId,
-		fastSync:  fastSync,
-		//eventMux:   mux,
-		//txpool:     txpool,
-		//chaindb:    chaindb,
-		peers: newPeerSet(),
-		//newPeerCh:  make(chan *peer, 1),
-		//txsyncCh:   make(chan *txsync),
-		quitSync: make(chan struct{}),
-	}
-	// Initiate a sub-protocol for every implemented version we can handle
-	manager.SubProtocols = make([]p2p.Protocol, 0, len(ProtocolVersions))
-	for i, version := range ProtocolVersions {
-		// Skip protocol version if incompatible with the mode of operation
-		if fastSync && version < eth63 {
-			continue
-		}
-		// Compatible; initialise the sub-protocol
-		version := version // Closure for the run
-		manager.SubProtocols = append(manager.SubProtocols, p2p.Protocol{
-			Name:    ProtocolName,
-			Version: version,
-			Length:  ProtocolLengths[i],
-			Run: func(p *p2p.Peer, rw p2p.MsgReadWriter) error {
-				peer := manager.newPeer(int(version), p, rw)
-				manager.newPeerCh <- peer
-				return manager.handle(peer)
-			},
-			NodeInfo: func() interface{} {
-				return manager.NodeInfo()
-			},
-			PeerInfo: func(id discover.NodeID) interface{} {
-				if p := manager.peers.Peer(fmt.Sprintf("%x", id[:8])); p != nil {
-					return p.Info()
-				}
-				return nil
-			},
-		})
-	}
-	if len(manager.SubProtocols) == 0 {
-		return nil, errIncompatibleConfig
-	}
-	// Construct the different synchronisation mechanisms
-	manager.downloader = downloader.New(chaindb, manager.eventMux, blockchain.HasHeader, blockchain.HasBlockAndState, blockchain.GetHeader,
-		blockchain.GetBlock, blockchain.CurrentHeader, blockchain.CurrentBlock, blockchain.CurrentFastBlock, blockchain.FastSyncCommitHead,
-		blockchain.GetTd, blockchain.InsertHeaderChain, blockchain.InsertChain, blockchain.InsertReceiptChain, blockchain.Rollback,
-		manager.removePeer)
-
-	validator := func(block *types.Block, parent *types.Block) error {
-		return core.ValidateHeader(pow, block.Header(), parent.Header(), true, false)
-	}
-	heighter := func() uint64 {
-		return blockchain.CurrentBlock().NumberU64()
-	}
-	manager.fetcher = fetcher.New(blockchain.GetBlock, validator, manager.BroadcastBlock, heighter, blockchain.InsertChain, manager.removePeer)
-
-	return manager, nil
-}
-
-func (pm *ProtocolManager) removePeer(id string) {
-	// Short circuit if the peer was already removed
-	peer := pm.peers.Peer(id)
-	if peer == nil {
-		return
-	}
-	glog.V(logger.Debug).Infoln("Removing peer", id)
-
-	// Unregister the peer from the downloader and Ethereum peer set
-	pm.downloader.UnregisterPeer(id)
-	if err := pm.peers.Unregister(id); err != nil {
-		glog.V(logger.Error).Infoln("Removal failed:", err)
-	}
-	// Hard disconnect at the networking layer
-	if peer != nil {
-		peer.Peer.Disconnect(p2p.DiscUselessPeer)
-	}
-}
-
-func (pm *ProtocolManager) Start() {
-	// broadcast transactions
-	pm.txSub = pm.eventMux.Subscribe(core.TxPreEvent{})
-	go pm.txBroadcastLoop()
-	// broadcast mined blocks
-	pm.minedBlockSub = pm.eventMux.Subscribe(core.NewMinedBlockEvent{})
-	go pm.minedBroadcastLoop()
-
-	// start sync handlers
-	go pm.syncer()
-	go pm.txsyncLoop()
-}
-
-func (pm *ProtocolManager) Stop() {
-	// Showing a log message. During download / process this could actually
-	// take between 5 to 10 seconds and therefor feedback is required.
-	glog.V(logger.Info).Infoln("Stopping ethereum protocol handler...")
-
-	pm.quit = true
-	pm.txSub.Unsubscribe()         // quits txBroadcastLoop
-	pm.minedBlockSub.Unsubscribe() // quits blockBroadcastLoop
-	close(pm.quitSync)             // quits syncer, fetcher, txsyncLoop
-
-	// Wait for any process action
-	pm.wg.Wait()
-
-	glog.V(logger.Info).Infoln("Ethereum protocol handler stopped")
-}
+//func NewProtocolManager(fastSync bool, networkId int) (*ProtocolManager, error) {
+//	// Figure out whether to allow fast sync or not
+//	manager := &ProtocolManager{
+//		networkId: networkId,
+//		fastSync:  fastSync,
+//		//eventMux:   mux,
+//		//txpool:     txpool,
+//		//chaindb:    chaindb,
+//		peers: newPeerSet(),
+//		//newPeerCh:  make(chan *peer, 1),
+//		//txsyncCh:   make(chan *txsync),
+//		quitSync: make(chan struct{}),
+//	}
+//	// Initiate a sub-protocol for every implemented version we can handle
+//	manager.SubProtocols = make([]p2p.Protocol, 0, len(ProtocolVersions))
+//	for i, version := range ProtocolVersions {
+//		// Skip protocol version if incompatible with the mode of operation
+//		if fastSync && version < eth63 {
+//			continue
+//		}
+//		// Compatible; initialise the sub-protocol
+//		version := version // Closure for the run
+//		manager.SubProtocols = append(manager.SubProtocols, p2p.Protocol{
+//			Name:    ProtocolName,
+//			Version: version,
+//			Length:  ProtocolLengths[i],
+//			Run: func(p *p2p.Peer, rw p2p.MsgReadWriter) error {
+//				peer := manager.newPeer(int(version), p, rw)
+//				manager.newPeerCh <- peer
+//				return manager.handle(peer)
+//			},
+//			NodeInfo: func() interface{} {
+//				return manager.NodeInfo()
+//			},
+//			PeerInfo: func(id discover.NodeID) interface{} {
+//				if p := manager.peers.Peer(fmt.Sprintf("%x", id[:8])); p != nil {
+//					return p.Info()
+//				}
+//				return nil
+//			},
+//		})
+//	}
+//	if len(manager.SubProtocols) == 0 {
+//		return nil, errIncompatibleConfig
+//	}
+//	// Construct the different synchronisation mechanisms
+//	manager.downloader = downloader.New(chaindb, manager.eventMux, blockchain.HasHeader, blockchain.HasBlockAndState, blockchain.GetHeader,
+//		blockchain.GetBlock, blockchain.CurrentHeader, blockchain.CurrentBlock, blockchain.CurrentFastBlock, blockchain.FastSyncCommitHead,
+//		blockchain.GetTd, blockchain.InsertHeaderChain, blockchain.InsertChain, blockchain.InsertReceiptChain, blockchain.Rollback,
+//		manager.removePeer)
+//
+//	validator := func(block *types.Block, parent *types.Block) error {
+//		return core.ValidateHeader(pow, block.Header(), parent.Header(), true, false)
+//	}
+//	heighter := func() uint64 {
+//		return blockchain.CurrentBlock().NumberU64()
+//	}
+//	manager.fetcher = fetcher.New(blockchain.GetBlock, validator, manager.BroadcastBlock, heighter, blockchain.InsertChain, manager.removePeer)
+//
+//	return manager, nil
+//}
+//
+//func (pm *ProtocolManager) removePeer(id string) {
+//	// Short circuit if the peer was already removed
+//	peer := pm.peers.Peer(id)
+//	if peer == nil {
+//		return
+//	}
+//	glog.V(logger.Debug).Infoln("Removing peer", id)
+//
+//	// Unregister the peer from the downloader and Ethereum peer set
+//	pm.downloader.UnregisterPeer(id)
+//	if err := pm.peers.Unregister(id); err != nil {
+//		glog.V(logger.Error).Infoln("Removal failed:", err)
+//	}
+//	// Hard disconnect at the networking layer
+//	if peer != nil {
+//		peer.Peer.Disconnect(p2p.DiscUselessPeer)
+//	}
+//}
+//
+//func (pm *ProtocolManager) Start() {
+//	// broadcast transactions
+//	pm.txSub = pm.eventMux.Subscribe(core.TxPreEvent{})
+//	go pm.txBroadcastLoop()
+//	// broadcast mined blocks
+//	pm.minedBlockSub = pm.eventMux.Subscribe(core.NewMinedBlockEvent{})
+//	go pm.minedBroadcastLoop()
+//
+//	// start sync handlers
+//	go pm.syncer()
+//	go pm.txsyncLoop()
+//}
+//
+//func (pm *ProtocolManager) Stop() {
+//	// Showing a log message. During download / process this could actually
+//	// take between 5 to 10 seconds and therefor feedback is required.
+//	glog.V(logger.Info).Infoln("Stopping ethereum protocol handler...")
+//
+//	pm.quit = true
+//	pm.txSub.Unsubscribe()         // quits txBroadcastLoop
+//	pm.minedBlockSub.Unsubscribe() // quits blockBroadcastLoop
+//	close(pm.quitSync)             // quits syncer, fetcher, txsyncLoop
+//
+//	// Wait for any process action
+//	pm.wg.Wait()
+//
+//	glog.V(logger.Info).Infoln("Ethereum protocol handler stopped")
+//}
 
 //func (pm *ProtocolManager) newPeer(pv int, p *p2p.Peer, rw p2p.MsgReadWriter) *peer {
 //	return newPeer(pv, p, newMeteredMsgWriter(rw))
@@ -660,39 +658,39 @@ func (pm *ProtocolManager) Stop() {
 
 // BroadcastBlock will either propagate a block to a subset of it's peers, or
 // will only announce it's availability (depending what's requested).
-func (pm *ProtocolManager) BroadcastBlock(block *types.Block, propagate bool) {
-	hash := block.Hash()
-	peers := pm.peers.PeersWithoutBlock(hash)
-
-	// If propagation is requested, send to a subset of the peer
-	if propagate {
-		// Calculate the TD of the block (it's not imported yet, so block.Td is not valid)
-		var td *big.Int
-		if parent := pm.blockchain.GetBlock(block.ParentHash()); parent != nil {
-			td = new(big.Int).Add(block.Difficulty(), pm.blockchain.GetTd(block.ParentHash()))
-		} else {
-			glog.V(logger.Error).Infof("propagating dangling block #%d [%x]", block.NumberU64(), hash[:4])
-			return
-		}
-		// Send the block to a subset of our peers
-		transfer := peers[:int(math.Sqrt(float64(len(peers))))]
-		for _, peer := range transfer {
-			peer.SendNewBlock(block, td)
-		}
-		glog.V(logger.Detail).Infof("propagated block %x to %d peers in %v", hash[:4], len(transfer), time.Since(block.ReceivedAt))
-	}
-	// Otherwise if the block is indeed in out own chain, announce it
-	if pm.blockchain.HasBlock(hash) {
-		for _, peer := range peers {
-			if peer.version < eth62 {
-				peer.SendNewBlockHashes61([]common.Hash{hash})
-			} else {
-				peer.SendNewBlockHashes([]common.Hash{hash}, []uint64{block.NumberU64()})
-			}
-		}
-		glog.V(logger.Detail).Infof("announced block %x to %d peers in %v", hash[:4], len(peers), time.Since(block.ReceivedAt))
-	}
-}
+//func (pm *ProtocolManager) BroadcastBlock(block *types.Block, propagate bool) {
+//	hash := block.Hash()
+//	peers := pm.peers.PeersWithoutBlock(hash)
+//
+//	// If propagation is requested, send to a subset of the peer
+//	if propagate {
+//		// Calculate the TD of the block (it's not imported yet, so block.Td is not valid)
+//		var td *big.Int
+//		if parent := pm.blockchain.GetBlock(block.ParentHash()); parent != nil {
+//			td = new(big.Int).Add(block.Difficulty(), pm.blockchain.GetTd(block.ParentHash()))
+//		} else {
+//			glog.V(logger.Error).Infof("propagating dangling block #%d [%x]", block.NumberU64(), hash[:4])
+//			return
+//		}
+//		// Send the block to a subset of our peers
+//		transfer := peers[:int(math.Sqrt(float64(len(peers))))]
+//		for _, peer := range transfer {
+//			peer.SendNewBlock(block, td)
+//		}
+//		glog.V(logger.Detail).Infof("propagated block %x to %d peers in %v", hash[:4], len(transfer), time.Since(block.ReceivedAt))
+//	}
+//	// Otherwise if the block is indeed in out own chain, announce it
+//	if pm.blockchain.HasBlock(hash) {
+//		for _, peer := range peers {
+//			if peer.version < eth62 {
+//				peer.SendNewBlockHashes61([]common.Hash{hash})
+//			} else {
+//				peer.SendNewBlockHashes([]common.Hash{hash}, []uint64{block.NumberU64()})
+//			}
+//		}
+//		glog.V(logger.Detail).Infof("announced block %x to %d peers in %v", hash[:4], len(peers), time.Since(block.ReceivedAt))
+//	}
+//}
 
 // BroadcastTx will propagate a transaction to all peers which are not known to
 // already have the given transaction.
@@ -705,41 +703,25 @@ func (pm *ProtocolManager) BroadcastMessage(hash common.Hash, message string) {
 	//}
 }
 
-// Mined broadcast loop
-func (self *ProtocolManager) minedBroadcastLoop() {
-	// automatically stops if unsubscribe
-	for obj := range self.minedBlockSub.Chan() {
-		switch ev := obj.Data.(type) {
-		case core.NewMinedBlockEvent:
-			self.BroadcastBlock(ev.Block, true)  // First propagate block to peers
-			self.BroadcastBlock(ev.Block, false) // Only then announce to the rest
-		}
-	}
-}
+//func (self *ProtocolManager) txBroadcastLoop() {
+//	// automatically stops if unsubscribe
+//	for obj := range self.txSub.Chan() {
+//		event := obj.Data.(core.TxPreEvent)
+//		self.BroadcastTx(event.Tx.Hash(), event.Tx)
+//	}
+//}
 
-func (self *ProtocolManager) txBroadcastLoop() {
-	// automatically stops if unsubscribe
-	for obj := range self.txSub.Chan() {
-		event := obj.Data.(core.TxPreEvent)
-		self.BroadcastTx(event.Tx.Hash(), event.Tx)
-	}
-}
-
-// EthNodeInfo represents a short summary of the Ethereum sub-protocol metadata known
-// about the host peer.
-type EthNodeInfo struct {
-	Network    int      `json:"network"`    // Ethereum network ID (0=Olympic, 1=Frontier, 2=Morden)
-	Difficulty *big.Int `json:"difficulty"` // Total difficulty of the host's blockchain
-	Genesis    string   `json:"genesis"`    // SHA3 hash of the host's genesis block
-	Head       string   `json:"head"`       // SHA3 hash of the host's best owned block
-}
-
-// NodeInfo retrieves some protocol metadata about the running host node.
-func (self *ProtocolManager) NodeInfo() *EthNodeInfo {
-	return &EthNodeInfo{
-		Network:    self.networkId,
-		Difficulty: self.blockchain.GetTd(self.blockchain.CurrentBlock().Hash()),
-		Genesis:    fmt.Sprintf("%x", self.blockchain.Genesis().Hash()),
-		Head:       fmt.Sprintf("%x", self.blockchain.CurrentBlock().Hash()),
-	}
-}
+//type OthNodeInfo struct {
+//	Network    int      `json:"network"`    // Network ID
+//	Genesis    string   `json:"genesis"`    // SHA3 hash of the host's genesis block
+//	Head       string   `json:"head"`       // SHA3 hash of the host's best owned block
+//}
+//
+//// NodeInfo retrieves some protocol metadata about the running host node.
+//func (self *ProtocolManager) NodeInfo() *OthNodeInfo {
+//	return &OthNodeInfo{
+//		Network:    self.networkId,
+//		Genesis:    fmt.Sprintf("%x", self.blockchain.Genesis().Hash()),
+//		Head:       fmt.Sprintf("%x", self.blockchain.CurrentBlock().Hash()),
+//	}
+//}

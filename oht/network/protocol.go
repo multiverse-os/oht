@@ -17,8 +17,6 @@
 package network
 
 import (
-	"fmt"
-	"io"
 	"math/big"
 
 	"./../common"
@@ -106,18 +104,9 @@ var errorToString = map[int]string{
 	ErrSuspendedPeer:           "Suspended peer",
 }
 
-type txPool interface {
-	// AddTransactions should add the given transactions to the pool.
-	AddTransactions([]*types.Transaction)
-
-	// GetTransactions should return pending transactions.
-	// The slice should be modifiable by the caller.
-	GetTransactions() types.Transactions
-}
-
 type chainManager interface {
 	GetBlockHashesFromHash(hash common.Hash, amount uint64) (hashes []common.Hash)
-	GetBlock(hash common.Hash) (block *types.Block)
+	//GetBlock(hash common.Hash) (block *types.Block)
 	Status() (td *big.Int, currentBlock common.Hash, genesisBlock common.Hash)
 }
 
@@ -165,14 +154,14 @@ type hashOrNumber struct {
 
 // newBlockData is the network packet for the block propagation message.
 type newBlockData struct {
-	Block *types.Block
-	TD    *big.Int
+	//Block *types.Block
+	TD *big.Int
 }
 
 // blockBody represents the data content of a single block.
 type blockBody struct {
-	Transactions []*types.Transaction // Transactions contained within a block
-	Uncles       []*types.Header      // Uncles contained within a block
+	//Transactions []*types.Transaction // Transactions contained within a block
+	//Uncles       []*types.Header      // Uncles contained within a block
 }
 
 // blockBodiesData is the network packet for block content distribution.
