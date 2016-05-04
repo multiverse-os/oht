@@ -8,8 +8,19 @@ type Interface struct {
 }
 
 // GENERAL INFORMATION
-func (interf *Interface) Version() (version string) {
-}
+func (s *Ethereum) Name() string                            { return s.net.Name }
+func (interf *Interface) Version() (version string)         {}
+func (s *Ethereum) ClientVersion() string                   { return s.clientVersion }
+func (s *Ethereum) PeerCount() int                          { return s.net.PeerCount() }
+func (interf *Interface) AccountManager() *accounts.Manager { return s.accountManager }
+func (s *Ethereum) IsListening() bool                       { return true } // Always listening
+func (s *Ethereum) MaxPeers() int                           { return s.net.MaxPeers }
+func (s *Ethereum) Peers() []*p2p.Peer                      { return s.net.Peers() }
+func (s *Ethereum) PeerDb() ethdb.Database                  { return s.dappDb }
+func (s *Ethereum) LocalDb() ethdb.Database                 { return s.dappDb }
+
+// START
+func (interf *Interface) Start() {}
 
 // CONFIG
 func (interf *Interface) DisplayConfig() (config string, err error) {
@@ -155,6 +166,4 @@ func (interf *Interface) ChannelCast(channelId string, message string) (successf
 }
 
 // QUIT
-func (interf *Interface) Quit() {
-
-}
+func (interf *Interface) Quit() {}
