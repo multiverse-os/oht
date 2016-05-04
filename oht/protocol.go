@@ -21,23 +21,21 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/rlp"
+	"./common"
 )
 
 // Constants to match up protocol versions and messages
 const (
-	eth61 = 61
-	eth62 = 62
-	eth63 = 63
+	oth61 = 61
+	oth62 = 62
+	oth63 = 63
 )
 
 // Official short name of the protocol used during capability negotiation.
-var ProtocolName = "eth"
+var ProtocolName = "oth"
 
 // Supported versions of the eth protocol (first is primary).
-var ProtocolVersions = []uint{eth63, eth62, eth61}
+var ProtocolVersions = []uint{oth63, oth62, oth61}
 
 // Number of implemented message corresponding to different protocol versions.
 var ProtocolLengths = []uint64{17, 8, 9}
@@ -163,36 +161,6 @@ type getBlockHeadersData struct {
 type hashOrNumber struct {
 	Hash   common.Hash // Block hash from which to retrieve headers (excludes Number)
 	Number uint64      // Block hash from which to retrieve headers (excludes Hash)
-}
-
-// EncodeRLP is a specialized encoder for hashOrNumber to encode only one of the
-// two contained union fields.
-func (hn *hashOrNumber) EncodeRLP(w io.Writer) error {
-	if hn.Hash == (common.Hash{}) {
-		return rlp.Encode(w, hn.Number)
-	}
-	if hn.Number != 0 {
-		return fmt.Errorf("both origin hash (%x) and number (%d) provided", hn.Hash, hn.Number)
-	}
-	return rlp.Encode(w, hn.Hash)
-}
-
-// DecodeRLP is a specialized decoder for hashOrNumber to decode the contents
-// into either a block hash or a block number.
-func (hn *hashOrNumber) DecodeRLP(s *rlp.Stream) error {
-	_, size, _ := s.Kind()
-	origin, err := s.Raw()
-	if err == nil {
-		switch {
-		case size == 32:
-			err = rlp.DecodeBytes(origin, &hn.Hash)
-		case size <= 8:
-			err = rlp.DecodeBytes(origin, &hn.Number)
-		default:
-			err = fmt.Errorf("invalid input size %d for origin", size)
-		}
-	}
-	return err
 }
 
 // newBlockData is the network packet for the block propagation message.

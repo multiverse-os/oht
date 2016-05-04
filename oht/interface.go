@@ -1,6 +1,8 @@
 package oht
 
-import ()
+import (
+	"./config"
+)
 
 type Interface struct {
 }
@@ -10,8 +12,8 @@ func (interf *Interface) Version() (version string) {
 }
 
 // CONFIG
-func (interf *Interface) DisplayConfig() (config string) {
-
+func (interf *Interface) DisplayConfig() (config string, err error) {
+	return config.DisplayConfig()
 }
 
 func (interf *Interface) SetConfigOption(key string, value string) (successful bool) {
