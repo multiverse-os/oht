@@ -50,6 +50,25 @@ oht is at its core a distributed hash table built to route through Tor. oht is d
 
 Each one will include an interface.go file that matches the general structure of the oht/interface.go file. APIs and UIs will interact with these interfaces.
 
+oth comes with several APIs found in 
+[the `api` directory](https://github.com/onionhash/oht/tree/master/api):
+
+ Planned APIs  |         |
+----------|---------|
+rest | JSON Rest API |
+websockets | JSON websocket API |
+ipc | Interprocess communication  |
+
+## Executables
+
+oth comes with several wrappers/executables found in 
+[the `ui` directory](https://github.com/onionhash/oht/tree/master/ui):
+
+ Command  |         |
+----------|---------|
+`oth-cli` | OTH CLI Interface (ethereum command line interface client) |
+`oth-console` | OTH Console Interface |
+
 ### Usage
 A basic console is the first goal for the UI and will be used as a way of outlining the basic functional requirements of the design. Much of the functionality works but just has not yet been tied to the console command.
 
@@ -102,16 +121,6 @@ A basic console is the first goal for the UI and will be used as a way of outlin
         /channelcast [id] [message]  - Message all channel subscribers (Not Implemented)
     
         /quit
-
-## Executables
-
-oth comes with several wrappers/executables found in 
-[the `ui` directory](https://github.com/onionhash/oht/tree/master/ui):
-
- Command  |         |
-----------|---------|
-`oth-cli` | OTH CLI Interface (ethereum command line interface client) |
-`oth-console` | OTH Console Interface |
 
 ### Roadmap
 Currently the basic DHT functionality is still not yet implemented, this core functionality is the first major milestone. Before this can be completed the p2p communication needs to be lower level then the current websockets connections, utilize protobuf, authenticate peers and use ephermeral keys for communication. The existing websockets connections will remain and it is useful for the existing webui.
