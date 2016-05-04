@@ -42,7 +42,7 @@ func main() {
 	log.SetFlags(0)
 	oht := oht.NewOHT()
 	// Start Tor
-	log.Println("Starting " + common.MakeName(name, oht.OhtInterface.ClientVersion()) + ":")
+	log.Println("Starting " + common.MakeName(name, oht.Interface.ClientVersion()) + ":")
 	log.Println("########################################")
 	log.Println("Initializing Tor Process...")
 	tor := network.InitializeTor(*listenPort, *socksPort, *controlPort, *webUIPort)

@@ -23,23 +23,23 @@ type Validator interface {
 }
 
 // GENERAL INFORMATION
-func (in *Interface) ClientName() string    { return in.config.clientName }
-func (in *Interface) ClientVersion() string { return in.config.ClientVersion() }
-func (in *Interface) ProtocolVersion()      {}
-func (in *Interface) Locale() string        { return "en" }
-func (in *Interface) PeerCount() int        { return in.PeerCount() }
-func (in *Interface) MaxPeers() int         { return in.MaxPeers() }
+func (othInterface *Interface) ClientName() string    { return othInterface.config.clientName }
+func (othInterface *Interface) ClientVersion() string { return othInterface.config.ClientVersion() }
+func (othInterface *Interface) ProtocolVersion()      {}
+func (othInterface *Interface) Locale() string        { return "en" }
+func (othInterface *Interface) PeerCount() int        { return othInterface.PeerCount() }
+func (othInterface *Interface) MaxPeers() int         { return othInterface.MaxPeers() }
 
 //func (in *Interface) Peers() []*p2p.Peer      { return in.Peers() }
-func (in *Interface) AccountManager() *accounts.Manager { return in.accountManager }
-func (in *Interface) IsListening() bool                 { return }
+func (othInterface *Interface) AccountManager() *accounts.Manager { return othInterface.accountManager }
+func (othInterface *Interface) IsListening() bool                 { return true }
 
 //func (in *Interface) PeerDb() db.Database            { return in.peersDb }
 //func (in *Interface) LocalDb() db.Database           { return in.localDb }
 
 // START/QUIT
-func (in *Interface) Start() {}
-func (in *Interface) Quit()  { os.Exit(0) }
+func (othInterface *Interface) Start() {}
+func (othInterface *Interface) Quit()  { os.Exit(0) }
 
 // CONFIG
 func (in *Interface) GetConfig() (config []byte, err error) {
