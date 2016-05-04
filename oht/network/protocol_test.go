@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package eth
+package network
 
 import (
 	"crypto/rand"
@@ -23,16 +23,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/rlp"
+	"./../../oth/common"
+	"./../../oth/crypto"
 )
 
 func init() {
-	// glog.SetToStderr(true)
-	// glog.SetV(6)
 }
 
 var testAccount = crypto.NewKey(rand.Reader)
