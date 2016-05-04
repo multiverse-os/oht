@@ -56,8 +56,8 @@ A basic console is the first goal for the UI and will be used as a way of outlin
         /predecessor                 - Previous peer in identifier ring (Not Implemented)
         /ftable                      - List ftable peers (Not Implemented)
         /create                      - Create new ring (Not Implemented)
-        /connect [onion address]     - Join to ring with peer (Not Implemented)
-        /lookup [id]                 - Find onion address of account with id (Not Implemented)
+        /connect [onion address|id]  - Join to ring with peer (Not Implemented)
+        /lookup [onion address|id]   - Find onion address of account with id (Not Implemented)
         /ping [onion address]        - Ping peer (Not Implemented)
         /ringcast [message]          - Message every peer in ring (Not Implemented)
     
