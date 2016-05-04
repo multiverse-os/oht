@@ -50,6 +50,7 @@ oht is at its core a distributed hash table built to route through Tor. oht is d
 
 Each one will include an interface.go file that matches the general structure of the oht/interface.go file. APIs and UIs will interact with these interfaces.
 
+## APIs
 oth comes with several APIs found in 
 [the `api` directory](https://github.com/onionhash/oht/tree/master/api):
 
