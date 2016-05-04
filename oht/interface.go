@@ -7,6 +7,19 @@ import (
 type Interface struct {
 }
 
+// msg validator
+type Validator interface {
+}
+
+type Backend interface {
+	AccountManager() *accounts.Manager
+	BlockChain() *BlockChain
+	TxPool() *TxPool
+	ChainDb() ethdb.Database
+	DappDb() ethdb.Database
+	EventMux() *event.TypeMux
+}
+
 // GENERAL INFORMATION
 func (s *Ethereum) Name() string                            { return s.net.Name }
 func (interf *Interface) Version() (version string)         {}
