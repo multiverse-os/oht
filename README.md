@@ -104,6 +104,11 @@ A basic console is the first goal for the UI and will be used as a way of outlin
         /get [key]                   - Get value of key (Not Implemented)
         /delete [key]                - Delete value of key (Not Implemented)
     
+      TOR:
+        /tor [start|stop]            - Start or stop tor process (Not Implemented)
+        /newtor                      - Obtain new Tor identity (Not Implemented)
+        /newonion                    - Obtain new onion address (Not Implemented)
+    
       ACCOUNT:
         /accounts                    - List all accounts (Not Implemented)
         /generate                    - Generate new account key pair (Not Implemented)
