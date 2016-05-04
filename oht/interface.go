@@ -7,6 +7,22 @@ import (
 type Interface struct {
 }
 
+type OHT struct {
+	// Channel for shutting down the oht
+	shutdownChan chan bool
+
+	// DB interfaces
+	// Peer Bolt DB
+	// General DHT Bolt DB
+
+	// Handlers
+	accountManager *accounts.Manager
+	//protocolManager *ProtocolManager -- will this be useful?
+	//eventMux *event.TypeMux
+
+	config *Config
+}
+
 // msg validator
 type Validator interface {
 }

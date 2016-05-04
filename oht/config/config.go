@@ -1,15 +1,16 @@
 package config
 
 import (
+	"crypto/ecdsa"
 	"io/ioutil"
 	"log"
+	"regexp"
 
+	"../../accounts"
 	"../common"
 )
 
 var (
-	jsonlogger = logger.NewJsonLogger()
-
 	datadirInUseErrnos = map[uint]bool{11: true, 32: true, 35: true}
 	portInUseErrRE     = regexp.MustCompile("address already in use")
 
@@ -18,6 +19,8 @@ var (
 )
 
 type Config struct {
+	clientVersion string
+	netVersionId  int
 	// Load this struct from the config.json file
 	DevMode bool
 	TestNet bool
@@ -39,9 +42,6 @@ type Config struct {
 	// Need specific ports - ... this is a string, can I just use strings?
 	//Port            string
 
-	// Space-separated list of discovery node URLs
-	BootNodes string
-
 	// This key is used to identify the node on the network.
 	// If nil, an ephemeral key is used.
 	NodeKey *ecdsa.PrivateKey
@@ -52,27 +52,6 @@ type Config struct {
 	// NewDB is used to create databases.
 	// If nil, the default is to create boltdb databases on disk.
 	// -- Setup the boltDB here
-}
-
-type OHT struct {
-	// Channel for shutting down the oht
-	shutdownChan chan bool
-
-	// DB interfaces
-	// Peer Bolt DB
-	// General DHT Bolt DB
-
-	// Handlers
-	accountManager *accounts.Manager
-	//protocolManager *ProtocolManager -- will this be useful?
-
-	eventMux *event.TypeMux
-	// logger logger.LogSystem
-
-	DataDir       string
-	etherbase     common.Address
-	clientVersion string
-	netVersionId  int
 }
 
 func InitializeConfig() {
