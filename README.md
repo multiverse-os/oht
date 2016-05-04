@@ -71,7 +71,7 @@ A basic console is the first goal for the UI and will be used as a way of outlin
         /generate                    - Generate new account key pair (Not Implemented)
         /delete                      - Delete an account key pair (Not Implemented)
         /sign [id] [message]         - Sign with account key pair (Not Implemented)
-        /verify [id]  [message]      - Verify a signed message with keypair (Not Implemented)
+        /verify [id] [message]       - Verify a signed message with keypair (Not Implemented)
         /encrypt [id] [message]      - Encrypt a message with keypair (Not Implemented)
         /decrypt [id] [message]      - Decrypt a message with keypair (Not Implemented)
     
