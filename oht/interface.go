@@ -24,16 +24,19 @@ type Backend interface {
 func (interf *Interface) Name() string                      { return s.net.Name }
 func (interf *Interface) Version() (version string)         {}
 func (interf *Interface) ClientVersion() string             { return s.clientVersion }
+func (interf *Interface) Locale() (locale string)           {}
 func (interf *Interface) PeerCount() int                    { return s.net.PeerCount() }
-func (interf *Interface) AccountManager() *accounts.Manager { return s.accountManager }
-func (interf *Interface) IsListening() bool                 { return true } // Always listening
 func (interf *Interface) MaxPeers() int                     { return s.net.MaxPeers }
 func (interf *Interface) Peers() []*p2p.Peer                { return s.net.Peers() }
+func (interf *Interface) AccountManager() *accounts.Manager { return s.accountManager }
+func (interf *Interface) IsListening() bool                 { return true } // Always listening
 func (interf *Interface) PeerDb() ethdb.Database            { return s.dappDb }
 func (interf *Interface) LocalDb() ethdb.Database           { return s.dappDb }
 
-// START
+// START/QUIT
 func (interf *Interface) Start() {}
+
+func (interf *Interface) Quit() {}
 
 // CONFIG
 func (interf *Interface) DisplayConfig() (config string, err error) {
@@ -177,6 +180,3 @@ func (interf *Interface) LeaveChannel(channelId string) (successful bool) {
 func (interf *Interface) ChannelCast(channelId string, message string) (successful bool) {
 
 }
-
-// QUIT
-func (interf *Interface) Quit() {}
