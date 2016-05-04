@@ -20,16 +20,15 @@ var (
 )
 
 type Config struct {
-	ClientName         string
-	clientVersionMajor int
-	clientVersionMinor int
-	clientVersionPatch int
+	clientName         string
+	clientMajorVersion int
+	clientMinorVersion int
+	clientPatchVersion int
 	ProtocolVersion    int
 	// Load this struct from the config.json file
 	DevMode bool
 	TestNet bool
 
-	Name        string
 	NetworkId   int
 	GenesisFile string
 
@@ -68,7 +67,7 @@ func InitializeConfig() {
 }
 
 func (config *Config) ClientVersion() (clientVersion string) {
-	return fmt.Sprintf("%d.%d.%d", config.clientVersionMajor, config.clientVersionMinor, config.clientVersionPatch)
+	return fmt.Sprintf("%d.%d.%d", config.clientMajorVersion, config.clientMinorVersion, config.clientPatchVersion)
 }
 
 func (config *Config) GetConfig() (configData []byte, err error) {
