@@ -120,7 +120,7 @@ A basic console is the first goal for the UI and will be used as a way of outlin
         /delete [key]                - Delete value of key (Not Implemented)
     
       WEBUI:
-        /webui                       - Start webUI (Not Implemented)
+        /webui                       - Start webUI
     
       ACCOUNT:
         /accounts                    - List all accounts (Not Implemented)
