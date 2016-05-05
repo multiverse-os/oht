@@ -19,10 +19,10 @@ var (
 )
 
 type Config struct {
-	clientName         string
-	clientMajorVersion int
-	clientMinorVersion int
-	clientPatchVersion int
+	ClientName         string
+	ClientMajorVersion int
+	ClientMinorVersion int
+	ClientPatchVersion int
 
 	ProtocolVersion int
 	// Load this struct from the config.json file
@@ -44,33 +44,38 @@ type Config struct {
 	Discovery       bool
 	// Need specific ports - ... this is a string, can I just use strings?
 	//Port            string
-
 	// This key is used to identify the node on the network.
 	// If nil, an ephemeral key is used.
 	NodeKey *ecdsa.PrivateKey
-
-	Base common.Address
-
+	Base    common.Address
 	// NewDB is used to create databases.
 	// If nil, the default is to create boltdb databases on disk.
 	// -- Setup the boltDB here
 }
 
-func initializeConfig() {
+func initializeConfig() *Config {
 	if _, err := ioutil.ReadFile(common.AbsolutePath(common.DefaultDataDir(), "config.json")); err != nil {
-		str := "{}"
+		str := `{
+			"oht_config":{
+				"ClientName": "oht",
+				"ClientVersionMajor": 0,
+				"ClientVersionMinor": 1,
+				"ClientVersionPath": 0
+			}
+		}`
 		if err = ioutil.WriteFile(common.AbsolutePath(common.DefaultDataDir(), "config.json"), []byte(str), 0644); err != nil {
 			log.Fatal(err)
 		}
 	}
+	return &Config{}
 }
 
 func (config *Config) clientInfo() string {
-	return common.CompileClientInfo(config.clientName, config.clientVersion())
+	return common.CompileClientInfo(config.ClientName, config.clientVersion())
 }
 
 func (config *Config) clientVersion() (clientVersion string) {
-	return fmt.Sprintf("%d.%d.%d", config.clientMajorVersion, config.clientMinorVersion, config.clientPatchVersion)
+	return fmt.Sprintf("%d.%d.%d", config.ClientMajorVersion, config.ClientMinorVersion, config.ClientPatchVersion)
 }
 
 func (config *Config) getConfig() (configData []byte, err error) {

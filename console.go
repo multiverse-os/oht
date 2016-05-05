@@ -24,9 +24,9 @@ var (
 func main() {
 	flag.Parse()
 	log.SetFlags(0)
-	oht := oht.NewOHT(*listenPort, *socksPort, *controlPort, *webUIPort)
+	oht := oht.NewOHT(*listenPort, *socksPort, *controlPort, *webUIPort, *wui, *peerAddress)
 	log.Println("Starting " + oht.Interface.ClientInfo())
-	log.Printf("\nListening for peers (Websockets) :  " + oht.Interface.TorOnionHost())
+	log.Println("Listening for peers: " + oht.Interface.TorOnionHost())
 	// Connect Directly To Known Peer And Join Ring
 	if *peerAddress != "" {
 		if match, _ := regexp.Match(":", []byte(*peerAddress)); !match {
@@ -40,17 +40,17 @@ func main() {
 		oht.Interface.WebUIStart()
 	}
 	// Console UI
-	log.Println("\nWelcome to " + oht.Interface.ClientName() + " console. Type \"/help\" to learn about the available commands.")
+	log.Println("Welcome to " + oht.Interface.ClientName() + " console. Type \"/help\" to learn about the available commands.")
 	prompt := "oht> "
 	cli := bufio.NewScanner(os.Stdin)
 	fmt.Printf(prompt)
 	username := *username
 	for cli.Scan() {
 		body := cli.Text()
-		if body == "/help" {
+		if body == "/help" || body == "/h" {
 			fmt.Println("COMMANDS:")
 			fmt.Println("  CONFIG:")
-			fmt.Println("    /config                      - List configuration values (Not Implemented)")
+			fmt.Println("    /config                      - List configuration values")
 			fmt.Println("    /set [config] [option]       - Change configuration options (Not Implemented)")
 			fmt.Println("    /unset [config]              - Unset configuration option (Not Implemented)")
 			fmt.Println("    /webui [start]               - Control webui (Not Implemented)")
@@ -94,7 +94,9 @@ func main() {
 			fmt.Println("    /leave [id]                  - Leave channel with id (Not Implemented)")
 			fmt.Println("    /channelcast [id] [message]  - Message all channel subscribers (Not Implemented)")
 			fmt.Println("\n    /quit\n")
-		} else if body == "/q" || body == "/quit" {
+		} else if body == "/config" || body == "/c" {
+			fmt.Println(oht.Interface.GetConfig())
+		} else if body == "/quit" || body == "/q" {
 			oht.Interface.Stop()
 		} else {
 			oht.Interface.RingCast(username, body)

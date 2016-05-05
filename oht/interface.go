@@ -32,7 +32,7 @@ func NewInterface(c *Config, t *network.TorProcess, w *webui.Server, p *p2p.Mana
 type Validator interface{}
 
 // GENERAL INFORMATION
-func (i *Interface) ClientName() string    { return i.config.clientName }
+func (i *Interface) ClientName() string    { return i.config.ClientName }
 func (i *Interface) ClientVersion() string { return i.config.clientVersion() }
 func (i *Interface) ClientInfo() string    { return i.config.clientInfo() }
 
@@ -74,7 +74,10 @@ func (i *Interface) Stop() {
 }
 
 // CONFIG
-func (i *Interface) GetConfig() (config []byte, err error)         { return i.config.getConfig() }
+func (i *Interface) GetConfig() string {
+	config, _ := i.config.getConfig()
+	return string(config)
+}
 func (i *Interface) SetConfigOption(key string, value string) bool { return false }
 func (i *Interface) UnsetConfigOption(key string) bool             { return false }
 
