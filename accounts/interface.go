@@ -17,7 +17,6 @@ func (i *Interface) AccountManager() *accounts.Manager { return othInterface.acc
 // DEV
 
 // ACCOUNT
-// This should go into its own folder so it actually is modular
 func (i *Interface) ListAccounts() (accounts []string) {
 	return
 }

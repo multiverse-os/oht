@@ -8,16 +8,14 @@ import (
 )
 
 type Interface struct {
-	config         *Config
-	accountManager *accounts.Manager
-	tor            *network.TorProcess
+	config *Config
+	tor    *network.TorProcess
 }
 
-func NewInterface(c *Config, t *network.TorProcess, am *accounts.Manager) (i *Interface) {
+func NewInterface(c *Config, t *network.TorProcess) (i *Interface) {
 	return &Interface{
-		config:         c,
-		tor:            t,
-		accountManager: am,
+		config: c,
+		tor:    t,
 	}
 }
 
@@ -116,81 +114,5 @@ func (ohtInterface *Interface) Get(key string) (value string) {
 }
 
 func (ohtInterface *Interface) Delete(key string) (value string) {
-	return
-}
-
-// ACCOUNT
-// This should go into its own folder so it actually is modular
-func (ohtInterface *Interface) ListAccounts() (accounts []string) {
-	return
-}
-
-func (ohtInterface *Interface) GenerateAccount() (account string) {
-	return
-}
-
-func (ohtInterface *Interface) DeleteAccount(accountId string) (successful bool) {
-	return
-}
-
-func (ohtInterface *Interface) Sign(accountId string) (signature string) {
-	return
-}
-
-func (ohtInterface *Interface) Verify(accountId string, signature string) (successful bool) {
-	return
-}
-
-func (ohtInterface *Interface) Encrypt(accountId string, data string) (encryptedData string) {
-	return
-}
-
-func (ohtInterface *Interface) Decrypt(accountId string, encryptedData string) (data string) {
-	return
-}
-
-// CONTACTS
-func (ohtInterface *Interface) ListContacts() (contacts []string) {
-	return
-}
-
-func (ohtInterface *Interface) RequestContact(contactId string, message string) (successful bool) {
-	return
-}
-
-func (ohtInterface *Interface) AddContact(contactId string) (successful bool) {
-	return
-}
-
-func (ohtInterface *Interface) RemoveContact(contactId string) (successful bool) {
-	return
-}
-
-func (ohtInterface *Interface) WhisperToContact(contactId string, message string) (successful bool) {
-	return
-}
-
-func (ohtInterface *Interface) ContactCast(message string) (successful bool) {
-	return
-}
-
-// CHANNELS
-func (ohtInterface *Interface) ListChannels() (channels []string) {
-	return
-}
-
-func (ohtInterface *Interface) Channel() (successful bool) {
-	return
-}
-
-func (ohtInterface *Interface) JoinChannel(channelId string) (successful bool) {
-	return
-}
-
-func (ohtInterface *Interface) LeaveChannel(channelId string) (successful bool) {
-	return
-}
-
-func (ohtInterface *Interface) ChannelCast(channelId string, message string) (successful bool) {
 	return
 }

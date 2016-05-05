@@ -7,6 +7,10 @@ import (
 	"../oht/common"
 )
 
+type Contacts struct {
+	Interface *Interface
+}
+
 type Contact struct {
 	Id             string `json:"id"`
 	LastConnection int64
@@ -21,11 +25,15 @@ type Request struct {
 	Status  int
 }
 
-func InitializeContacts() {
+func InitializeContacts() *Contacts {
 	if _, err := ioutil.ReadFile(common.AbsolutePath(common.DefaultDataDir(), "contacts.json")); err != nil {
 		str := "{}"
 		if err = ioutil.WriteFile(common.AbsolutePath(common.DefaultDataDir(), "contacts.json"), []byte(str), 0644); err != nil {
 			log.Fatal(err)
 		}
+	}
+
+	return &Contacts{
+		Interface: &Interface{},
 	}
 }

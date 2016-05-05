@@ -17,9 +17,7 @@ type OHT struct {
 	config    *Config
 	tor       *network.TorProcess
 	// Channel for shutting down the oht
-	shutdownChan chan bool
-	// This should be in its own sub-module
-	accountManager *accounts.Manager
+	//shutdownChan chan bool
 	//protocolManager *ProtocolManager -- will this be useful?
 	//eventMux *event.TypeMux
 }
@@ -41,10 +39,10 @@ func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort int) *OHT 
 		clientPatchVersion: 0,
 	}
 
-	// Should starting tor be a separate function? Functions to control Tor will be required...
+	// This should be moved into its own submodule
 	contacts.InitializeContacts()
+	// Should starting tor be a separate function? Functions to control Tor will be required...
 	tor := network.InitializeTor(torListenPort, torSocksPort, torControlPort, torWebUIPort)
-	accountsManager := &accounts.Manager{} // Placeholder
 
 	// Start P2P Networking
 	go network.Manager.Start(tor.ListenPort)
@@ -59,9 +57,8 @@ func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort int) *OHT 
 	}()
 
 	return &OHT{
-		Interface:      NewInterface(config, tor, accountsManager),
-		config:         config,
-		tor:            tor,
-		accountManager: accountsManager,
+		Interface: NewInterface(config, tor),
+		config:    config,
+		tor:       tor,
 	}
 }
