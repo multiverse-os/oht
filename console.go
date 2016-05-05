@@ -53,7 +53,6 @@ func main() {
 			fmt.Println("    /config                      - List configuration values")
 			fmt.Println("    /set [config] [option]       - Change configuration options (Not Implemented)")
 			fmt.Println("    /unset [config]              - Unset configuration option (Not Implemented)")
-			fmt.Println("    /webui [start]               - Control webui (Not Implemented)")
 			fmt.Println("\n  TOR:")
 			fmt.Println("    /tor [start|stop]            - Start or stop tor process (Not Implemented)")
 			fmt.Println("    /newtor                      - Obtain new Tor identity (Not Implemented)")
@@ -72,6 +71,8 @@ func main() {
 			fmt.Println("    /put [key] [value]           - Put key and value into database (Not Implemented)")
 			fmt.Println("    /get [key]                   - Get value of key (Not Implemented)")
 			fmt.Println("    /delete [key]                - Delete value of key (Not Implemented)")
+			fmt.Println("\n  WEBUI:")
+			fmt.Println("    /webui                       - Start webUI")
 			fmt.Println("\n  ACCOUNT:")
 			fmt.Println("    /accounts                    - List all accounts (Not Implemented)")
 			fmt.Println("    /generate                    - Generate new account key pair (Not Implemented)")
@@ -96,6 +97,8 @@ func main() {
 			fmt.Println("\n    /quit\n")
 		} else if body == "/config" || body == "/c" {
 			fmt.Println(oht.Interface.GetConfig())
+		} else if body == "/webui" || body == "/w" {
+			oht.Interface.WebUIStart()
 		} else if body == "/quit" || body == "/q" {
 			oht.Interface.Stop()
 		} else {
