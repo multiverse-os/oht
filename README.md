@@ -10,8 +10,12 @@ The goal of oht is to function as a decentralized application framework for rapi
 ## Progress
 oht is under active development, currently only the necessary tor binaries for Linux and OSX are supplied. The code is being written to support Linux, OSX and Windows. Peer to peer communication is currently handled through websockets and routed through Tor in a manner similar to ricochet. A basic web interface exists served over a onion service. Basic account system exist using ecdsa keypairs. oht builds out configuration files in a correct structure and in appropriate locations.
 
+The groundwork for a stable, modular and fully realized application is being completed first. Setting up a framework to properly interact with Tor, create and manage configurations, work with ecdsa keys and other basic features are in active development.
+
 ### Roadmap
-Currently the basic DHT functionality is still not yet implemented, this core functionality is the first major milestone. Before this can be completed the p2p communication needs to be lower level then the current websockets connections, utilize protobuf, authenticate peers and use ephermeral keys for communication. The existing websockets connections will remain and it is useful for the existing webui.
+While onion routing works, currently the basic DHT functionality is still not yet implemented, this core functionality is the first major milestone. 
+
+Before this can be completed the p2p communication needs to be lower level then the current websockets connections, utilize protobuf, authenticate peers and use ephermeral keys for communication. The existing websockets connections will remain and it is useful for the existing webui.
 
 **Possible Decentralized DHT API**
 Using the known onion address key pair concept, we may able to be be
