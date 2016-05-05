@@ -88,6 +88,11 @@ A basic console is the first goal for the UI and will be used as a way of outlin
         /unset [config]              - Unset configuration option (Not Implemented)
         /webui [start|stop]          - Control webui (Not Implemented)
     
+      TOR:
+        /tor [start|stop]            - Start or stop tor process (Not Implemented)
+        /newtor                      - Obtain new Tor identity (Not Implemented)
+        /newonion                    - Obtain new onion address (Not Implemented)
+    
       NETWORK:
         /peers                       - List all connected peers (Not Implemented)
         /successor                   - Next peer in identifier ring (Not Implemented)
@@ -103,11 +108,6 @@ A basic console is the first goal for the UI and will be used as a way of outlin
         /put [key] [value]           - Put key and value into database (Not Implemented)
         /get [key]                   - Get value of key (Not Implemented)
         /delete [key]                - Delete value of key (Not Implemented)
-    
-      TOR:
-        /tor [start|stop]            - Start or stop tor process (Not Implemented)
-        /newtor                      - Obtain new Tor identity (Not Implemented)
-        /newonion                    - Obtain new onion address (Not Implemented)
     
       ACCOUNT:
         /accounts                    - List all accounts (Not Implemented)
