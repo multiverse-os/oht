@@ -46,7 +46,7 @@ func main() {
 			*peerAddress += ":12312"
 		}
 		log.Printf("Connecting to peer (Websockets)  :  " + *peerAddress)
-		go network.ConnectToPeer(*peerAddress, oht.Interface.TorSocksPort())
+		go network.ConnectToPeer(*peerAddress)
 	}
 	// Start WebUI
 	if *wui == true {

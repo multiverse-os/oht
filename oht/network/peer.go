@@ -45,8 +45,8 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func ConnectToPeer(peerHost string, socksPort int) {
-	sock := &Socks4a{Network: "tcp", Address: ("127.0.0.1:" + strconv.Itoa(socksPort))}
+func ConnectToPeer(peerHost string) {
+	sock := &Socks4a{Network: "tcp", Address: ("127.0.0.1:" + tor.SocksPort)}
 	u := url.URL{Scheme: "ws", Host: peerHost, Path: "/ws"}
 	d := websocket.Dialer{
 		NetDial:          func(network, addr string) (net.Conn, error) { return sock.Dial(peerHost) },

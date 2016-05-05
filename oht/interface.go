@@ -41,7 +41,7 @@ func (othInterface *Interface) Locale() string   { return "en" }
 func (othInterface *Interface) PeerCount() int   { return othInterface.PeerCount() }
 func (othInterface *Interface) MaxPeers() int    { return othInterface.MaxPeers() }
 
-// CRYTPO
+// CRYTPO KEY STORE
 func (i *Interface) GenerateUnecryptedKeystore() *crypto.KeyStore {
 	return crypto.NewKeyStorePlain(common.DefaultDataDir())
 }

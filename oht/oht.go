@@ -39,9 +39,7 @@ func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort int) *OHT 
 		clientPatchVersion: 0,
 	}
 
-	// This should be moved into its own submodule
-	contacts.InitializeContacts()
-	// Should starting tor be a separate function? Functions to control Tor will be required...
+	// Should starting tor be a separate function from initialization? Functions to control Tor will be required...
 	tor := network.InitializeTor(torListenPort, torSocksPort, torControlPort, torWebUIPort)
 
 	// Start P2P Networking
