@@ -1,6 +1,7 @@
 package oht
 
 import (
+	"log"
 	"os"
 
 	"./common"
@@ -96,6 +97,7 @@ func (in *Interface) RingLookupPeerById(peerId string) (peer string) { return }
 func (in *Interface) RingPing(onionAddress string) (pong string)     { return }
 func (i *Interface) RingCast(username, body string) (successful bool) {
 	message := types.NewMessage(username, body)
+	log.Println("[", message.Timestamp, "] ", message.Username, " : ", message.Body)
 	i.p2p.Broadcast <- message
 	// Eventually get this to return true/false if successful and use this for the return
 	return true
