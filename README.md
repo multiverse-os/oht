@@ -15,7 +15,7 @@ The groundwork for a stable, modular and fully realized application is being com
 ### Roadmap
 While onion routing works, currently the basic DHT functionality is still not yet implemented, this core functionality is the first major milestone. 
 
-Before this can be completed the p2p communication needs to be lower level then the current websockets connections, utilize protobuf, authenticate peers and use ephermeral keys for communication. The existing websockets connections will remain and it is useful for the existing webui.
+Before this can be completed the p2p communication needs to be lower level then the current websockets connections, utilize protobuf, authenticate peers and use ephermeral keys for communication. The existing websockets connections will remain and it is useful for the existing webui. Or verify checksums of javascript served through a decentralized webUI served by all peers.
 
 **Possible Decentralized DHT API**
 Using the known onion address key pair concept, we may able to be be
