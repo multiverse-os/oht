@@ -14,7 +14,7 @@ import (
 
 var (
 	wui         = flag.Bool("wui", true, "Start the process with a web ui")
-	username    = flag.String("username", "user", "Specify a username")
+	username    = flag.String("username", "username", "Specify a username")
 	peerAddress = flag.String("peer", "", "Specify a peer address for direct connection")
 	listenPort  = flag.String("listen", "9042", "Specify a listen port")
 	socksPort   = flag.String("socks", "9142", "Specify a socks proxy port")

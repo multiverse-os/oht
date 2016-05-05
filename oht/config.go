@@ -2,47 +2,40 @@ package oht
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
+	"strconv"
 
 	"./common"
 )
 
 var (
+	// This needs to be implenetd, a standard model for a node and a method of both parsing and writing nodes
 	staticNodes  = "static-nodes.json"  // Path within <datadir> to search for the static node list
 	trustedNodes = "trusted-nodes.json" // Path within <datadir> to search for the trusted node list
 )
 
 type Config struct {
 	ClientName         string
-	ClientMajorVersion int
-	ClientMinorVersion int
-	ClientPatchVersion int
+	ClientMajorVersion string
+	ClientMinorVersion string
+	ClientPatchVersion string
+
+	MaxPeers        int
+	MaxPendingPeers int
 
 	TorListenPort  string
 	TorSocksPort   string
 	TorControlPort string
 	TorWebUIPort   string
 
-	ProtocolVersion int `json:",omitempty"`
-
-	DevMode bool `json:",omitempty"`
-	TestNet bool `json:",omitempty"`
-
-	NetworkId   int    `json:",omitempty"`
+	DataDir     string
 	GenesisFile string `json:",omitempty"`
 
-	DatabaseCache int `json:",omitempty"`
+	LogFile      string
+	LogVerbosity int
 
-	DataDir   string `json:",omitempty"`
-	LogFile   string `json:",omitempty"`
-	Verbosity int    `json:",omitempty"`
-	ExtraData []byte `json:",omitempty"`
-
-	MaxPeers        int  `json:",omitempty"`
-	MaxPendingPeers int  `json:",omitempty"`
-	Discovery       bool `json:",omitempty"`
+	Custom map[string]string
 	// NewDB is used to create databases.
 	// If nil, the default is to create boltdb databases on disk.
 	// -- Setup the boltDB here
@@ -51,21 +44,27 @@ type Config struct {
 func InitializeConfig(torListenPort, torSocksPort, torControlPort, torWebUIPort string) (config *Config) {
 	config = &Config{
 		ClientName:         "oht",
-		ClientMajorVersion: 0,
-		ClientMinorVersion: 1,
-		ClientPatchVersion: 0,
+		ClientMajorVersion: "0",
+		ClientMinorVersion: "1",
+		ClientPatchVersion: "0",
+		MaxPeers:           8,
+		MaxPendingPeers:    8,
 		TorListenPort:      "9042",
 		TorSocksPort:       "9142",
 		TorControlPort:     "9555",
 		TorWebUIPort:       "8080",
+		DataDir:            common.DefaultDataDir(),
+		LogFile:            (common.DefaultDataDir() + "/log.json"),
+		LogVerbosity:       1,
+		Custom:             make(map[string]string),
 	}
-	jsonFile, err := ioutil.ReadFile(common.AbsolutePath(common.DefaultDataDir(), "config.json"))
-	if err != nil {
+	if _, err := ioutil.ReadFile(common.AbsolutePath(common.DefaultDataDir(), "config.json")); err != nil {
 		jsonFile, err := json.Marshal(config)
 		if err = ioutil.WriteFile(common.AbsolutePath(common.DefaultDataDir(), "config.json"), jsonFile, 0644); err != nil {
 			log.Fatal(err)
 		}
 	}
+	jsonFile, err := ioutil.ReadFile(common.AbsolutePath(common.DefaultDataDir(), "config.json"))
 	err = json.Unmarshal(jsonFile, config)
 	if err != nil {
 		log.Fatal(err)
@@ -90,7 +89,54 @@ func (config *Config) clientInfo() string {
 }
 
 func (config *Config) clientVersion() string {
-	return fmt.Sprintf("%d.%d.%d", config.ClientMajorVersion, config.ClientMinorVersion, config.ClientPatchVersion)
+	return config.ClientMajorVersion + "." + config.ClientMinorVersion + "." + config.ClientPatchVersion
+}
+
+func (config *Config) setConfigValue(key, value string) bool {
+	if key == "ClientName" {
+		config.ClientName = value
+	} else if key == "ClientMajorVersion" {
+		config.ClientMajorVersion = value
+	} else if key == "ClientMinorVersion" {
+		config.ClientMinorVersion = value
+	} else if key == "ClientPatchVersion" {
+		config.ClientPatchVersion = value
+	} else if key == "MaxPeers" {
+		i, err := strconv.Atoi(value)
+		if err != nil {
+			return false
+		}
+		config.MaxPeers = i
+	} else if key == "MaxPendingPeers" {
+		i, err := strconv.Atoi(value)
+		if err != nil {
+			return false
+		}
+		config.MaxPendingPeers = i
+	} else if key == "TorListenPort" {
+		config.TorListenPort = value
+	} else if key == "TorSocksPort" {
+		config.TorSocksPort = value
+	} else if key == "TorControlPort" {
+		config.TorControlPort = value
+	} else if key == "TorWebUIPort" {
+		config.TorWebUIPort = value
+	} else if key == "TorListenPort" {
+		config.TorListenPort = value
+	} else if key == "DataDir" {
+		config.DataDir = value
+	} else if key == "LogFile" {
+		config.LogFile = value
+	} else if key == "LogVerbosity" {
+		i, err := strconv.Atoi(value)
+		if err != nil {
+			return false
+		}
+		config.LogVerbosity = i
+	} else {
+		config.ClientPatchVersion = value
+	}
+	return true
 }
 
 // parseNodes parses a list of discovery node URLs loaded from a .json file.
