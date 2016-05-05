@@ -13,6 +13,13 @@ oht is under active development, currently only the necessary tor binaries for L
 ### Roadmap
 Currently the basic DHT functionality is still not yet implemented, this core functionality is the first major milestone. Before this can be completed the p2p communication needs to be lower level then the current websockets connections, utilize protobuf, authenticate peers and use ephermeral keys for communication. The existing websockets connections will remain and it is useful for the existing webui.
 
+**Possible Decentralized DHT API**
+Using the known onion address key pair concept, we may able to be be
+able to allow peers to serve a standard REST API through a known
+keypair. A sample and equalization to remove malicious actors could
+allow for a decentralized REST API that is easily accessible without
+needing to run a oht-type client.
+
 ### Core Features
 Below is a list of the functional requirements to meet the goal of the project. The features below are at varrying stages of completion. Features will be designed to modular and optional so decentralized applications can be scaffolded quickly using only the features needed.
 
