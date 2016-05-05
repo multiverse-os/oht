@@ -5,8 +5,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"./../accounts"
-	"./../contacts"
 	"./common"
 	"./network"
 )

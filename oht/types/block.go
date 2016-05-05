@@ -28,9 +28,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto/sha3"
-	"github.com/ethereum/go-ethereum/rlp"
+	"../common"
+	"../crypto/sha3"
 )
 
 // A BlockNonce is a 64-bit hash which proves (combined with the
@@ -66,28 +65,6 @@ type Header struct {
 	Nonce       BlockNonce
 }
 
-func (h *Header) Hash() common.Hash {
-	return rlpHash(h)
-}
-
-func (h *Header) HashNoNonce() common.Hash {
-	return rlpHash([]interface{}{
-		h.ParentHash,
-		h.UncleHash,
-		h.Coinbase,
-		h.Root,
-		h.TxHash,
-		h.ReceiptHash,
-		h.Bloom,
-		h.Difficulty,
-		h.Number,
-		h.GasLimit,
-		h.GasUsed,
-		h.Time,
-		h.Extra,
-	})
-}
-
 func (h *Header) UnmarshalJSON(data []byte) error {
 	var ext struct {
 		ParentHash string
@@ -110,18 +87,9 @@ func (h *Header) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func rlpHash(x interface{}) (h common.Hash) {
-	hw := sha3.NewKeccak256()
-	rlp.Encode(hw, x)
-	hw.Sum(h[:0])
-	return h
-}
-
 // Body is a simple (mutable, non-safe) data container for storing and moving
 // a block's data contents (transactions and uncles) together.
 type Body struct {
-	Transactions []*Transaction
-	Uncles       []*Header
 }
 
 type Block struct {
@@ -185,7 +153,6 @@ var (
 func NewBlock(header *Header, txs []*Transaction, uncles []*Header, receipts []*Receipt) *Block {
 	b := &Block{header: CopyHeader(header), td: new(big.Int)}
 
-	// TODO: panic if len(txs) != len(receipts)
 	if len(txs) == 0 {
 		b.header.TxHash = EmptyRootHash
 	} else {
@@ -293,10 +260,6 @@ func (b *StorageBlock) DecodeRLP(s *rlp.Stream) error {
 	return nil
 }
 
-// TODO: copies
-func (b *Block) Uncles() []*Header          { return b.uncles }
-func (b *Block) Transactions() Transactions { return b.transactions }
-
 func (b *Block) Transaction(hash common.Hash) *Transaction {
 	for _, transaction := range b.transactions {
 		if transaction.Hash() == hash {
@@ -357,20 +320,12 @@ func (b *Block) WithMiningResult(nonce uint64, mixDigest common.Hash) *Block {
 	cpy := *b.header
 	binary.BigEndian.PutUint64(cpy.Nonce[:], nonce)
 	cpy.MixDigest = mixDigest
-	return &Block{
-		header:       &cpy,
-		transactions: b.transactions,
-		uncles:       b.uncles,
-	}
+	return &Block{}
 }
 
 // WithBody returns a new block with the given transaction and uncle contents.
 func (b *Block) WithBody(transactions []*Transaction, uncles []*Header) *Block {
-	block := &Block{
-		header:       CopyHeader(b.header),
-		transactions: make([]*Transaction, len(transactions)),
-		uncles:       make([]*Header, len(uncles)),
-	}
+	block := &Block{}
 	copy(block.transactions, transactions)
 	for i := range uncles {
 		block.uncles[i] = CopyHeader(uncles[i])
@@ -391,12 +346,6 @@ func (b *Block) Hash() common.Hash {
 
 func (b *Block) String() string {
 	str := fmt.Sprintf(`Block(#%v): Size: %v {
-MinerHash: %x
-%v
-Transactions:
-%v
-Uncles:
-%v
 }
 `, b.Number(), b.Size(), b.header.HashNoNonce(), b.header, b.transactions, b.uncles)
 	return str

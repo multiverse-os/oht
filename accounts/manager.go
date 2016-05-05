@@ -15,13 +15,13 @@ import (
 	"sync"
 	"time"
 
-	"./../oht/common"
-	"./../oht/crypto"
+	"../oht/common"
+	"../oht/crypto"
 )
 
 var (
-	ErrLocked = errors.New("account is locked")
-	ErrNoKeys = errors.New("no keys in store")
+	ErrLocked = errors.New("Accounts: Account is locked")
+	ErrNoKeys = errors.New("Accounts: No keys in store")
 )
 
 type Account struct {
@@ -143,7 +143,7 @@ func (am *Manager) AddressByIndex(index int) (addr string, err error) {
 		return
 	}
 	if index < 0 || index >= len(addrs) {
-		err = fmt.Errorf("index out of range: %d (should be 0-%d)", index, len(addrs)-1)
+		err = fmt.Errorf("Accounts: Index out of range: %d (should be 0-%d)", index, len(addrs)-1)
 	} else {
 		addr = addrs[index].Hex()
 	}
