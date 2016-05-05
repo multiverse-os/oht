@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strings"
 
 	"./oht"
 )
@@ -53,8 +54,9 @@ func main() {
 			fmt.Println("COMMANDS:")
 			fmt.Println("  CONFIG:")
 			fmt.Println("    /config                      - List configuration values")
-			fmt.Println("    /set [config] [option]       - Change configuration options (Not Implemented)")
+			fmt.Println("    /set [config] [option]       - Change configuration options")
 			fmt.Println("    /unset [config]              - Unset configuration option (Not Implemented)")
+			fmt.Println("    /save                        - Save configuration values")
 			fmt.Println("\n  TOR:")
 			fmt.Println("    /tor [start|stop]            - Start or stop tor process (Not Implemented)")
 			fmt.Println("    /newtor                      - Obtain new Tor identity (Not Implemented)")
@@ -100,9 +102,25 @@ func main() {
 		} else if body == "/config" || body == "/c" {
 			config, _ := json.Marshal(oht.Interface.GetConfig())
 			fmt.Println("Configuration: " + string(config))
+		} else if (len(body) > 4 && body[0:4] == "/set") || (len(body) == 2 && body[0:2] == "/s") {
+			parts := strings.Split(body, " ")
+			if len(parts) >= 3 {
+				value := strings.Split(body, string(parts[1]+" "))
+				result := oht.Interface.SetConfigOption(parts[1], value[1])
+				config, _ := json.Marshal(oht.Interface.GetConfig())
+				if result {
+					fmt.Println("Configuration: " + string(config))
+				} else {
+					fmt.Println("Configuration: Failed to set configuration option.")
+				}
+			} else {
+				fmt.Println("Configuration: Failed to set configuration option.")
+			}
+		} else if body == "/save" {
+			fmt.Println("Configuration save: %v", oht.Interface.SaveConfig())
 		} else if body == "/webui" || body == "/w" {
 			oht.Interface.WebUIStart()
-		} else if body == "/quit" || body == "/q" {
+		} else if body == "/quit" || body == "/q" || body == "exit" {
 			oht.Interface.Stop()
 		} else {
 			oht.Interface.RingCast(username, body)

@@ -95,8 +95,9 @@ A basic console is the first goal for the UI and will be used as a way of outlin
     COMMANDS:
       CONFIG:
         /config                      - List configuration values
-        /set [config] [option]       - Change configuration options (Not Implemented)
+        /set [config] [option]       - Change configuration options
         /unset [config]              - Unset configuration option (Not Implemented)
+        /save                        - Save configuration values
     
       TOR:
         /tor [start|stop]            - Start or stop tor process (Not Implemented)

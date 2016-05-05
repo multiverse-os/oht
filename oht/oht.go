@@ -26,7 +26,8 @@ type OHT struct {
 
 func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort string) *OHT {
 	// Initialize Data Directory
-	common.CreatePathUnlessExist("", os.ModePerm)
+	common.CreatePathUnlessExist("", 0700)
+	common.CreatePathUnlessExist("/keys", 0700)
 	// Set defaults for torPorts to use if not specified
 	config := InitializeConfig(torListenPort, torSocksPort, torControlPort, torWebUIPort)
 	// This should be read from the default initialization

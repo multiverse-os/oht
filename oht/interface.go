@@ -51,10 +51,10 @@ func (i *Interface) MaxPeers() int    { return i.MaxPeers() }
 
 // CRYTPO KEY STORE
 func (i *Interface) NewUnecryptedKeyStore() crypto.KeyStore {
-	return crypto.NewKeyStorePlain(common.DefaultDataDir())
+	return crypto.NewKeyStorePlain(common.DefaultDataDir() + "/keys")
 }
 func (i *Interface) NewEncryptedKeyStore() crypto.KeyStore {
-	return crypto.NewKeyStorePassphrase(common.DefaultDataDir(), crypto.KDFStandard)
+	return crypto.NewKeyStorePassphrase(common.DefaultDataDir()+"/keys", crypto.KDFStandard)
 }
 
 //func (i *Interface) Peers() []*p2p.Peer      { return i.Peers() }
@@ -77,8 +77,13 @@ func (i *Interface) Stop() {
 func (i *Interface) GetConfig() *Config {
 	return i.config
 }
-func (i *Interface) SetConfigOption(key string, value string) bool { return false }
-func (i *Interface) UnsetConfigOption(key string) bool             { return false }
+func (i *Interface) SetConfigOption(key, value string) bool {
+	return i.config.setConfigOption(key, value)
+}
+func (i *Interface) UnsetConfigOption(key string) bool { return false }
+func (i *Interface) SaveConfig() bool {
+	return i.config.saveConfiguration()
+}
 
 // WEB UI
 func (i *Interface) WebUIStart() bool { return i.webUIServer.Start() }

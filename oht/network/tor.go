@@ -94,7 +94,7 @@ func (tor *TorProcess) readOnionHost(serviceType string) string {
 	}
 	onion, err := ioutil.ReadFile(directory)
 	if err != nil {
-		log.Fatal("Tor: Failed reading onion hostname file: %s", err)
+		log.Fatal("Tor: Failed reading onion hostname file: %v", err)
 	}
 	return strings.Replace(string(onion), "\n", "", -1)
 }

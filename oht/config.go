@@ -29,6 +29,10 @@ type Config struct {
 	TorControlPort string
 	TorWebUIPort   string
 
+	Locale string
+
+	DevMode bool
+
 	DataDir     string
 	GenesisFile string `json:",omitempty"`
 
@@ -53,6 +57,8 @@ func InitializeConfig(torListenPort, torSocksPort, torControlPort, torWebUIPort 
 		TorSocksPort:       "9142",
 		TorControlPort:     "9555",
 		TorWebUIPort:       "8080",
+		Locale:             "en",
+		DevMode:            false,
 		DataDir:            common.DefaultDataDir(),
 		LogFile:            (common.DefaultDataDir() + "/log.json"),
 		LogVerbosity:       1,
@@ -84,6 +90,14 @@ func InitializeConfig(torListenPort, torSocksPort, torControlPort, torWebUIPort 
 	return config
 }
 
+func (config *Config) saveConfiguration() bool {
+	jsonFile, err := json.Marshal(config)
+	if err = ioutil.WriteFile(common.AbsolutePath(common.DefaultDataDir(), "config.json"), jsonFile, 0644); err != nil {
+		return false
+	}
+	return true
+}
+
 func (config *Config) clientInfo() string {
 	return common.CompileClientInfo(config.ClientName, config.clientVersion())
 }
@@ -92,7 +106,8 @@ func (config *Config) clientVersion() string {
 	return config.ClientMajorVersion + "." + config.ClientMinorVersion + "." + config.ClientPatchVersion
 }
 
-func (config *Config) setConfigValue(key, value string) bool {
+func (config *Config) setConfigOption(key, value string) bool {
+	// Validate length of value
 	if key == "ClientName" {
 		config.ClientName = value
 	} else if key == "ClientMajorVersion" {
@@ -105,14 +120,16 @@ func (config *Config) setConfigValue(key, value string) bool {
 		i, err := strconv.Atoi(value)
 		if err != nil {
 			return false
+		} else {
+			config.MaxPeers = i
 		}
-		config.MaxPeers = i
 	} else if key == "MaxPendingPeers" {
 		i, err := strconv.Atoi(value)
 		if err != nil {
 			return false
+		} else {
+			config.MaxPendingPeers = i
 		}
-		config.MaxPendingPeers = i
 	} else if key == "TorListenPort" {
 		config.TorListenPort = value
 	} else if key == "TorSocksPort" {
@@ -123,6 +140,15 @@ func (config *Config) setConfigValue(key, value string) bool {
 		config.TorWebUIPort = value
 	} else if key == "TorListenPort" {
 		config.TorListenPort = value
+	} else if key == "Locale" {
+		config.Locale = value
+	} else if key == "DevMode" {
+		b, err := strconv.ParseBool("true")
+		if err != nil {
+			return false
+		} else {
+			config.DevMode = b
+		}
 	} else if key == "DataDir" {
 		config.DataDir = value
 	} else if key == "LogFile" {
@@ -131,10 +157,11 @@ func (config *Config) setConfigValue(key, value string) bool {
 		i, err := strconv.Atoi(value)
 		if err != nil {
 			return false
+		} else {
+			config.LogVerbosity = i
 		}
-		config.LogVerbosity = i
 	} else {
-		config.ClientPatchVersion = value
+		config.Custom[key] = value
 	}
 	return true
 }
