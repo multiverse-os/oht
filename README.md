@@ -17,8 +17,8 @@ While onion routing works, currently the basic DHT functionality is still not ye
 
 **Decentralized service discovery and networking bootstrapping** seems to be possible using onion routing and onion services provides and there seems to be some unique features using these features of the Tor network that have not been fully yet been explored. A shared and known/hardcoded onion key pair can be used as a known channel for some specific purpose. For example, a genesisfile can be provided that includes a onion address and the private key. Instead of relying on bootstrapping centralized nodes to seed peer connections a user who has not previously connected can use the genesis address. Every peer actively connected to the network routinely offers a random peer from [self, (all known peers)] to the genesis address. After collecting several potential peers and using a checking system a peer can stop listening on the genesis address and successfully join the DHT. 
 
-**Possible Decentralized DHT API and Decentralized web UI**
-Using the known onion address key pair concept, we may able to be be
+**Possible decentralized DHT API and decentralized web UI**
+using the known onion address key pair concept, we may able to be be
 able to allow peers to serve a standard REST API through a known
 keypair. A sample and equalization to remove malicious actors could
 allow for a decentralized REST API that is easily accessible without
