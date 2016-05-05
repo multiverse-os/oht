@@ -1,9 +1,9 @@
 # oht v0.1.0
 oht is an onion distributed hash table used to create decentralized application framework. **This software is experimental, use with caution.** *The code is in flux at this prealpha stage. The protocol specifications are still subject to major changes.*
 
-Utilizing a similar design pattern as ricochet or onionshare, oht creates an onion routed distributed hash table by having each peer establish an onion service to communicate with peers. This allows for peers to interact with a public DHT in a secure and anonymous manner. However, instead of relying on the onion address keys to authenticate oht opts to use a separate esdca keypair and uses emphermal onion addresses. This provides better security and makes it easier to migrate an account to other terminals. Despite this change, interlopability required to communicate with users available on ricochet is important part of the oht design.  
+Utilizing a similar design pattern as ricochet or onionshare, oht creates an onion routed distributed hash table by having each peer establish an onion service to communicate with peers. This allows for peers to interact with a public DHT in a secure and anonymous manner. However, instead of relying on the onion address keys to authenticate oht opts to use a separate esdca keypair and uses emphermal onion addresses. This provides better security and makes it easier to migrate an account to other terminals. Despite this change, interlopability required to communicate with users available on ricochet is important part of the oht design.
 
-Onion routing does not only improve security, oht gains other interesting features by leveraging the onion network to route peers. By using onion addresses over ip addresses, peers can directly without port forwarding or worrying about NAT transversal. It also allows for a new method of decentralized service discovery. 
+Onion routing does not only improve security, oht gains other interesting features by leveraging the onion network to route peers. By using onion addresses over ip addresses, peers can directly without port forwarding or worrying about NAT transversal. It also allows for a new method of decentralized service discovery.
 
 The goal of oht is to function as a decentralized application framework for rapid design of onion routed decentralized applications. oht is a general purpose framework that will hopefully be useful for a wide variety of usecases. oht can be used as decentralized web application replacement, decentralized chat, file sharing or connecting "IoT" arm computers for secure interconnections or decentralized VOIP.
 
@@ -58,7 +58,7 @@ Easy identity sharing is important, possibly through the use of expirable human 
 Each one will include an interface.go file that matches the general structure of the oht/interface.go file. APIs and UIs will interact with these interfaces.
 
 ## APIs
-oth comes with several APIs found in 
+oth comes with several APIs found in
 [the `api` directory](https://github.com/onionhash/oht/tree/master/api):
 
  Planned APIs  |         |
@@ -69,7 +69,7 @@ ipc | Interprocess communication  |
 
 ## Executables
 
-oth comes with several wrappers/executables found in 
+oth comes with several wrappers/executables found in
 [the `ui` directory](https://github.com/onionhash/oht/tree/master/ui):
 
  Command  |         |
@@ -93,7 +93,7 @@ A basic console is the first goal for the UI and will be used as a way of outlin
         /config                      - List configuration values (Not Implemented)
         /set [config] [option]       - Change configuration options (Not Implemented)
         /unset [config]              - Unset configuration option (Not Implemented)
-        /webui [start|stop]          - Control webui (Not Implemented)
+        /webui [start]               - Control webui (Not Implemented)
     
       TOR:
         /tor [start|stop]            - Start or stop tor process (Not Implemented)

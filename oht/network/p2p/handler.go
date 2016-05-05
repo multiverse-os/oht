@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"sync"
 
-	"./../common"
+	"../../common"
 )
 
 const (
@@ -31,7 +31,7 @@ const (
 
 // errIncompatibleConfig is returned if the requested protocols and configs are
 // not compatible (low protocol version restrictions and high requirements).
-var errIncompatibleConfig = errors.New("incompatible configuration")
+var errIncompatibleConfig = errors.New("Config: Incompatible configuration")
 
 func errResp(code errCode, format string, v ...interface{}) error {
 	return fmt.Errorf("%v - %v", code, fmt.Sprintf(format, v...))

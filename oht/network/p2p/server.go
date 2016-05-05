@@ -1,7 +1,6 @@
 package p2p
 
 import (
-	"strconv"
 	"sync"
 	"time"
 
@@ -15,21 +14,21 @@ const (
 )
 
 type Server struct {
-	Websocket *gin.Engine
+	WebSocket *gin.Engine
 	lock      sync.Mutex
-	Port      int
+	Port      string
+	Manager   *Manager
 }
 
-func (server *Server) Start(port int) {
+func (server *Server) Start() {
 	server.lock.Lock()
 	defer server.lock.Unlock()
-	server.Port = port
 	gin.SetMode(gin.ReleaseMode)
-	server.Websocket = gin.Default()
-	server.Websocket.GET("/ws", func(c *gin.Context) {
-		Manager.Serve(c.Writer, c.Request)
+	server.WebSocket = gin.Default()
+	server.WebSocket.GET("/ws", func(c *gin.Context) {
+		server.Manager.Serve(c.Writer, c.Request)
 	})
-	go server.Websocket.Run("127.0.0.1:" + server.Port)
+	go server.WebSocket.Run("127.0.0.1:" + server.Port)
 }
 
 func (server *Server) PeerCount() int {

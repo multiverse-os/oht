@@ -5,13 +5,13 @@ import (
 )
 
 type Accounts struct {
-	oht       *OHT
+	oht       *oht.OHT
 	manager   *Manager
 	Interface *Interface
 }
 
-func (oht *OHT) InitializeAccounts(ks *crypto.KeyStore) *Accounts {
-	am := Manager(encryptedKeyStore)
+func InitializeAccounts(oht *oht.OHT) *Accounts {
+	am := NewManager(oht.Interface.GenerateEncryptedKeyStore())
 	return &Accounts{
 		oht:       oht,
 		manager:   am,

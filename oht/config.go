@@ -7,7 +7,6 @@ import (
 	"log"
 	"regexp"
 
-	"./../accounts"
 	"./common"
 )
 
@@ -50,8 +49,7 @@ type Config struct {
 	// If nil, an ephemeral key is used.
 	NodeKey *ecdsa.PrivateKey
 
-	Base           common.Address
-	AccountManager *accounts.Manager
+	Base common.Address
 
 	// NewDB is used to create databases.
 	// If nil, the default is to create boltdb databases on disk.

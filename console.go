@@ -7,9 +7,7 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"strconv"
 
-	"./accounts"
 	"./oht"
 )
 
@@ -20,7 +18,7 @@ var (
 	listenPort  = flag.String("listen", "12312", "Specify a listen port")
 	webUIPort   = flag.String("wuiport", "8080", "Specify a webui port")
 	socksPort   = flag.String("socks", "12052", "Specify a socks proxy port")
-	controlPort = flag.STring("control", "9555", "Specify a control port")
+	controlPort = flag.String("control", "9555", "Specify a control port")
 )
 
 func main() {
@@ -55,7 +53,7 @@ func main() {
 			fmt.Println("    /config                      - List configuration values (Not Implemented)")
 			fmt.Println("    /set [config] [option]       - Change configuration options (Not Implemented)")
 			fmt.Println("    /unset [config]              - Unset configuration option (Not Implemented)")
-			fmt.Println("    /webui [start|stop]          - Control webui (Not Implemented)")
+			fmt.Println("    /webui [start]               - Control webui (Not Implemented)")
 			fmt.Println("\n  TOR:")
 			fmt.Println("    /tor [start|stop]            - Start or stop tor process (Not Implemented)")
 			fmt.Println("    /newtor                      - Obtain new Tor identity (Not Implemented)")
@@ -97,7 +95,7 @@ func main() {
 			fmt.Println("    /channelcast [id] [message]  - Message all channel subscribers (Not Implemented)")
 			fmt.Println("\n    /quit\n")
 		} else if body == "/q" || body == "/quit" {
-			oht.Interface.Exit()
+			oht.Interface.Stop()
 		} else {
 			oht.Interface.RingCast(username, body)
 		}

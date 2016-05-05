@@ -1,12 +1,12 @@
 package p2p
 
 import (
-	"log"
 	"net"
 	"net/url"
 	"time"
 
-	"../types"
+	"../../network"
+	"../../types"
 
 	"github.com/gorilla/websocket"
 )
@@ -18,8 +18,9 @@ type Peer struct {
 	Reputation int32
 	Ignored    bool
 	OnionHost  string
-	Websocket  *websocket.Conn
-	Send       chan Message
+	WebSocket  *websocket.Conn
+	Manager    *Manager
+	Send       chan types.Message
 	Data       interface{}
 }
 
@@ -36,8 +37,8 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func ConnectToPeer(peerHost, socksPort string) bool {
-	sock := &Socks4a{Network: "tcp", Address: ("127.0.0.1:" + socksPort)}
+func (manager *Manager) ConnectToPeer(peerHost, socksPort string) bool {
+	sock := &network.Socks4a{Network: "tcp", Address: ("127.0.0.1:" + socksPort)}
 	u := url.URL{Scheme: "ws", Host: peerHost, Path: "/ws"}
 	d := websocket.Dialer{
 		NetDial:          func(network, addr string) (net.Conn, error) { return sock.Dial(peerHost) },
@@ -48,14 +49,15 @@ func ConnectToPeer(peerHost, socksPort string) bool {
 		return false
 	} else {
 		p := &Peer{
-			Send:       make(chan Message, 256),
-			Websocket:  ws,
+			Send:       make(chan types.Message, 256),
+			WebSocket:  ws,
+			Manager:    manager,
 			OnionHost:  peerHost,
 			Version:    1,
 			Reputation: 0,
 			Ignored:    false,
 		}
-		Manager.Register <- p
+		manager.Register <- p
 		go p.writeMessages()
 		p.readMessages()
 		return true
@@ -64,37 +66,37 @@ func ConnectToPeer(peerHost, socksPort string) bool {
 
 func (p *Peer) readMessages() {
 	defer func() {
-		Manager.Unregister <- p
+		p.Manager.Unregister <- p
 	}()
-	p.Websocket.SetReadLimit(maxMessageSize)
-	p.Websocket.SetReadDeadline(time.Now().Add(pongWait))
-	p.Websocket.SetPongHandler(func(string) error {
-		p.Websocket.SetReadDeadline(time.Now().Add(pongWait))
+	p.WebSocket.SetReadLimit(maxMessageSize)
+	p.WebSocket.SetReadDeadline(time.Now().Add(pongWait))
+	p.WebSocket.SetPongHandler(func(string) error {
+		p.WebSocket.SetReadDeadline(time.Now().Add(pongWait))
 		return nil
 	})
 	for {
-		var message Message
-		err := p.Websocket.ReadJSON(&message)
+		var message types.Message
+		err := p.WebSocket.ReadJSON(&message)
 		if err != nil {
 			break
 		}
-		Manager.Receive <- message
+		p.Manager.Receive <- message
 	}
 }
 
-func (p *Peer) writeMessage(messageType int, payload Message) error {
-	p.Websocket.SetWriteDeadline(time.Now().Add(writeWait))
-	return p.Websocket.WriteJSON(payload)
+func (p *Peer) writeMessage(messageType int, payload types.Message) error {
+	p.WebSocket.SetWriteDeadline(time.Now().Add(writeWait))
+	return p.WebSocket.WriteJSON(payload)
 }
 
 func (p *Peer) writeControl(messageType int) error {
-	return p.Websocket.WriteControl(messageType, []byte{}, time.Now().Add(writeWait))
+	return p.WebSocket.WriteControl(messageType, []byte{}, time.Now().Add(writeWait))
 }
 
 func (p *Peer) writeMessages() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
-		Manager.Unregister <- p
+		p.Manager.Unregister <- p
 		ticker.Stop()
 	}()
 	for {
