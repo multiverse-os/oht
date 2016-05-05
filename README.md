@@ -94,7 +94,7 @@ A basic console is the first goal for the UI and will be used as a way of outlin
     oht> /help
     COMMANDS:
       CONFIG:
-        /config                      - List configuration values (Not Implemented)
+        /config                      - List configuration values
         /set [config] [option]       - Change configuration options (Not Implemented)
         /unset [config]              - Unset configuration option (Not Implemented)
         /webui [start]               - Control webui (Not Implemented)
