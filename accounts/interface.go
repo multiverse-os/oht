@@ -15,6 +15,16 @@ func NewInterface(am *accounts.Manager) (i *Interface) {
 func (i *Interface) AccountManager() *accounts.Manager { return othInterface.accountManager }
 
 // DEV
+func (i *Interface) GenerateUnecryptedKeystore() {
+	unencryptedKeyStore := crypto.NewKeyStorePlain(common.DefaultDataDir())
+	unencryptedAccountManager := accounts.NewManager(unencryptedKeyStore)
+	unencryptedAccount, _ := unencryptedAccountManager.NewAccount("password")
+	log.Println("unencrypted account: " + unencryptedAccount.Address.Hex())
+}
+
+func (i *Interface) GenerateEncryptedKeystore(password string) {
+
+}
 
 // ACCOUNT
 func (i *Interface) ListAccounts() (accounts []string) {
