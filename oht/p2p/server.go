@@ -1,4 +1,4 @@
-package network
+package p2p
 
 import (
 	"strconv"
@@ -29,7 +29,7 @@ func (server *Server) Start(port int) {
 	server.Websocket.GET("/ws", func(c *gin.Context) {
 		Manager.Serve(c.Writer, c.Request)
 	})
-	go server.Websocket.Run("127.0.0.1:" + strconv.Itoa(server.Port))
+	go server.Websocket.Run("127.0.0.1:" + server.Port)
 }
 
 func (server *Server) PeerCount() int {

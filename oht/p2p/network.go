@@ -1,4 +1,4 @@
-package network
+package p2p
 
 import (
 	"crypto/ecdsa"
@@ -6,18 +6,20 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"../types"
 )
 
-type EventFunc func(Manager *NetworkManager, Peer *Peer)
+type EventFunc func(Manager *Manager, Peer *Peer)
 
-type NetworkManager struct {
+type Manager struct {
 	PrivateKey      *ecdsa.PrivateKey
 	Server          *Server
 	MaxPeers        int
 	MaxPendingPeers int
 	Peers           map[*Peer]bool
-	Broadcast       chan Message
-	Receive         chan Message
+	Broadcast       chan *types.Message
+	Receive         chan *types.Message
 	Register        chan *Peer
 	Unregister      chan *Peer
 	OnConnect       EventFunc
@@ -25,23 +27,25 @@ type NetworkManager struct {
 	lastLookup      time.Time
 }
 
-var Manager = NetworkManager{
-	// Need to add a new message with custom type to send out
-	// Info about current node, like onion address
-	Server:          &Server{},
-	MaxPeers:        8,
-	MaxPendingPeers: 8,
-	Broadcast:       make(chan Message, maxMessageSize),
-	Receive:         make(chan Message, maxMessageSize),
-	Register:        make(chan *Peer, maxMessageSize),
-	Unregister:      make(chan *Peer, maxMessageSize),
-	Peers:           make(map[*Peer]bool, maxMessageSize),
-	OnConnect:       nil,
-	OnClose:         nil,
-	lastLookup:      time.Now(),
+func InitializeNetworkManager() *Manager {
+	return &Manager{
+		// Need to add a new message with custom type to send out
+		// Info about current node, like onion address
+		Server:          &Server{},
+		MaxPeers:        8,
+		MaxPendingPeers: 8,
+		Broadcast:       make(chan *types.Message, maxMessageSize),
+		Receive:         make(chan *types.Message, maxMessageSize),
+		Register:        make(chan *Peer, maxMessageSize),
+		Unregister:      make(chan *Peer, maxMessageSize),
+		Peers:           make(map[*Peer]bool, maxMessageSize),
+		OnConnect:       nil,
+		OnClose:         nil,
+		lastLookup:      time.Now(),
+	}
 }
 
-func (Manager *NetworkManager) Start(port int) {
+func (Manager *Manager) Start(port int) {
 	Manager.Server.Start(port)
 	for {
 		select {
@@ -76,10 +80,12 @@ func (Manager *NetworkManager) Start(port int) {
 			fmt.Printf("oht> ")
 		}
 	}
-
 }
 
-func (Manager *NetworkManager) DumpPeers() {
+func (Manager *Manager) Stop() {
+}
+
+func (Manager *Manager) DumpPeers() {
 	for p := range Manager.Peers {
 		log.Println("Connection")
 		log.Println("Connection: ", p.OnionHost)
@@ -87,7 +93,7 @@ func (Manager *NetworkManager) DumpPeers() {
 }
 
 // Serve handles websocket requests from the peer
-func (Manager *NetworkManager) Serve(w http.ResponseWriter, r *http.Request) {
+func (Manager *Manager) Serve(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		http.Error(w, "Method not allowed", 405)
 		return
@@ -97,7 +103,7 @@ func (Manager *NetworkManager) Serve(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	p := &Peer{Send: make(chan Message, 256), Websocket: ws}
+	p := &Peer{Send: make(chan *types.Message, 256), Websocket: ws}
 	Manager.Register <- p
 	go p.writeMessages()
 	p.readMessages()

@@ -5,23 +5,25 @@ import (
 
 	"./../accounts"
 	"./network"
+	"./types"
 )
 
 type Interface struct {
-	config *Config
-	tor    *network.TorProcess
+	config      *Config
+	tor         *network.TorProcess
+	webUIServer *webui.Server
 }
 
-func NewInterface(c *Config, t *network.TorProcess) (i *Interface) {
+func NewInterface(c *Config, t *network.TorProcess, w *webui.Server) (i *Interface) {
 	return &Interface{
-		config: c,
-		tor:    t,
+		config:      c,
+		tor:         t,
+		webUIServer: w,
 	}
 }
 
 // msg validator
-type Validator interface {
-}
+type Validator interface{}
 
 // GENERAL INFORMATION
 func (othInterface *Interface) ClientName() string    { return othInterface.config.clientName }
@@ -50,60 +52,67 @@ func (i *Interface) GenerateEncryptedKeystore(password string) *crypto.KeyStore 
 	return crypto.NewKeyStorePassphrase(common.DefaultDataDir(), crypto.KDFStandard)
 }
 
-//func (in *Interface) Peers() []*p2p.Peer      { return in.Peers() }
-func (othInterface *Interface) IsListening() bool { return true }
+//func (i *Interface) Peers() []*p2p.Peer      { return i.Peers() }
+func (i *Interface) IsListening() bool { return true }
 
-//func (in *Interface) PeerDb() db.Database            { return in.peersDb }
-//func (in *Interface) LocalDb() db.Database           { return in.localDb }
+//func (i *Interface) PeerDb() db.Database            { return i.peersDb }
+//func (i *Interface) LocalDb() db.Database           { return i.localDb }
 
 // START/QUIT
-func (othInterface *Interface) Start() {}
-func (othInterface *Interface) Quit()  { os.Exit(0) }
+func (i *Interface) Start() {}
+func (i *Interface) Quit() {
+	// Stop everything
+	i.webUIServer.Stop()
+	// Stop p2p networking
+	// Stop Tor
+	os.Exit(0)
+}
 
 // CONFIG
-func (in *Interface) GetConfig() (config []byte, err error) { return in.config.getConfig() }
+func (i *Interface) GetConfig() (config []byte, err error) { return i.config.getConfig() }
 
-func (in *Interface) SetConfigOption(key string, value string) (successful bool) {
+func (i *Interface) SetConfigOption(key string, value string) bool {
 	return
 }
 
-func (in *Interface) UnsetConfigOption(key string) (successful bool) {
+func (i *Interface) UnsetConfigOption(key string) bool {
 	return
 }
 
-func (in *Interface) WebUI(status bool) (successful bool) {
-	if status == 1 {
-		webui.InitializeServer(oht.Interface.TorWebUIOnionHost(), oht.Interface.TorWebUIPort())
-		log.Printf("\nWeb UI :  " + oht.Interface.TorWebUIOnionHost() + ":" + strconv.Itoa(oht.Interface.TorWebUIPort()))
-	} else if status == 2 {
+// WEB UI
+func (i *Interface) WebUIStart() bool {
+	return i.webUIServer.Start()
+}
 
-	}
-	return
+func (i *Interface) WebUIStop() bool {
+	return i.webUIServer.Stop()
 }
 
 // NETWORK
-func (in *Interface) ListPeers() (peers []string) {
+func (i *Interface) ListPeers() (peers []string) {
 	return
 }
 
-func (in *Interface) PeerSuccessor() (peer string) {
+func (i *Interface) PeerSuccessor() (peer string) {
 	return
 }
 
-func (in *Interface) PeerPredecessor() (peer string) {
+func (i *Interface) PeerPredecessor() (peer string) {
 	return
 }
 
-func (in *Interface) PeerFTable() (peers []string) {
+func (i *Interface) PeerFTable() (peers []string) {
 	return
 }
 
-func (in *Interface) CreateRing() (ringData string) {
+func (i *Interface) CreateRing() (ringData string) {
 	return
 }
 
-func (in *Interface) ConnectToRing(onionAddress string) (successful bool) {
-	return
+func (i *Interface) ConnectToPeer(peerAddress string) (successful bool) {
+	// Eventually get this to return true/false if successful and use this for the return
+	go network.ConnectToPeer(peerAddress)
+	return true
 }
 
 func (in *Interface) RingLookupPeerById(peerId string) (peer string) {
@@ -114,8 +123,11 @@ func (in *Interface) RingPing(onionAddress string) (pong string) {
 	return
 }
 
-func (in *Interface) RingCast(message string) (successful bool) {
-	return
+func (i *Interface) RingCast(username, message string) (successful bool) {
+	message := types.Message.NewMessage(username, message)
+	// Eventually get this to return true/false if successful and use this for the return
+	message.Broadcast()
+	return true
 }
 
 // DHT

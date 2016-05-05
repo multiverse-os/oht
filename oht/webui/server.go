@@ -5,20 +5,38 @@ import (
 
 	"./../../oht/network"
 
+	"github.com/braintree/manners"
 	"github.com/gin-gonic/gin"
 )
 
-func InitializeServer(wsHost string, port int) {
+type Server struct {
+	Router  *gin.Engine
+	Handler *mannders.GracefulServer
+}
+
+func InitializeServer() (server *Server) {
 	gin.SetMode(gin.ReleaseMode)
-	server := gin.Default()
-	server.LoadHTMLFiles("ui/webui/index.html")
-	server.GET("/", func(c *gin.Context) {
+	router := gin.Default()
+	router.LoadHTMLFiles("ui/webui/index.html")
+	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index.html", gin.H{
-			"wsHost": wsHost,
+			"wsHost": tor.WebUIOnionHost,
 		})
 	})
-	server.GET("/ws", func(c *gin.Context) {
+	router.GET("/ws", func(c *gin.Context) {
 		network.Manager.Serve(c.Writer, c.Request)
 	})
-	go server.Run("127.0.0.1:" + strconv.Itoa(port))
+	return &Server{
+		Router: router,
+	}
+	server.Handler = manners
+}
+
+func (server *Server) Start() bool {
+	err := server.Handler.ListenAndServe((":" + tor.WebUIPort), server.Router)
+	return (err == nil)
+}
+
+func (server *Server) Stop() bool {
+	return server.Handler.Close()
 }

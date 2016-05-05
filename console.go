@@ -5,67 +5,50 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 	"regexp"
 	"strconv"
-	"time"
 
 	"./accounts"
-	"./ui/webui"
-
 	"./oht"
-	"./oht/common"
-	"./oht/crypto"
-	"./oht/database"
-	"./oht/network"
-
-	"github.com/pborman/uuid"
 )
 
 var (
 	wui         = flag.Bool("wui", true, "Start the process with a web ui")
 	username    = flag.String("username", "user", "Specify a username")
 	peerAddress = flag.String("peer", "", "Specify a peer address for direct connection")
-	listenPort  = flag.Int("listen", 12312, "Specify a listen port")
-	webUIPort   = flag.Int("wuiport", 8080, "Specify a webui port")
-	socksPort   = flag.Int("socks", 12052, "Specify a socks proxy port")
-	controlPort = flag.Int("control", 9555, "Specify a control port")
+	listenPort  = flag.String("listen", "12312", "Specify a listen port")
+	webUIPort   = flag.String("wuiport", "8080", "Specify a webui port")
+	socksPort   = flag.String("socks", "12052", "Specify a socks proxy port")
+	controlPort = flag.STring("control", "9555", "Specify a control port")
 )
 
 func main() {
 	flag.Parse()
 	log.SetFlags(0)
 	oht := oht.NewOHT(*listenPort, *socksPort, *controlPort, *webUIPort)
-	// Start Tor
 	log.Println("Starting " + oht.Interface.ClientInfo())
-	log.Println("########################################")
 	log.Printf("\nListening for peers (Websockets) :  " + oht.Interface.TorOnionHost())
-	// Connect Directly To Peer (Will be required for bootstraping)
+	// Connect Directly To Known Peer And Join Ring
 	if *peerAddress != "" {
 		if match, _ := regexp.Match(":", []byte(*peerAddress)); !match {
 			*peerAddress += ":12312"
 		}
 		log.Printf("Connecting to peer (Websockets)  :  " + *peerAddress)
-		go network.ConnectToPeer(*peerAddress)
+		oht.Interface.ConnectToPeer(*peerAddress)
 	}
 	// Start WebUI
 	if *wui == true {
+		oht.Interface.WebUIStart()
 	}
-	// Start console
+	// Console UI
 	log.Println("\nWelcome to " + oht.Interface.ClientName() + " console. Type \"/help\" to learn about the available commands.")
 	prompt := "oht> "
-	// Going to need a function to dump all the peers
 	cli := bufio.NewScanner(os.Stdin)
 	fmt.Printf(prompt)
+	username := *username
 	for cli.Scan() {
-		message := network.Message{
-			Id:        uuid.New(),
-			Timestamp: time.Now().UnixNano() / int64(time.Millisecond),
-			Username:  *username,
-			Body:      cli.Text()}
-		// Check for commands
-		// This should be replaced with a better system but this works during early development
-		if message.Body == "/help" {
+		body := cli.Text()
+		if body == "/help" {
 			fmt.Println("COMMANDS:")
 			fmt.Println("  CONFIG:")
 			fmt.Println("    /config                      - List configuration values (Not Implemented)")
@@ -112,13 +95,11 @@ func main() {
 			fmt.Println("    /leave [id]                  - Leave channel with id (Not Implemented)")
 			fmt.Println("    /channelcast [id] [message]  - Message all channel subscribers (Not Implemented)")
 			fmt.Println("\n    /quit\n")
-		} else if message.Body == "/q" || message.Body == "/quit" {
-			os.Exit(0)
+		} else if body == "/q" || body == "/quit" {
+			oht.Interface.Exit()
 		} else {
-			log.Println("[", message.Timestamp, "] ", message.Username, " : ", message.Body)
-			network.Manager.Broadcast <- message
+			oht.Interface.RingCast(username, body)
 		}
 		fmt.Printf(prompt)
 	}
-
 }

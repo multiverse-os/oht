@@ -1,11 +1,12 @@
-package network
+package p2p
 
 import (
 	"log"
 	"net"
 	"net/url"
-	"strconv"
 	"time"
+
+	"../types"
 
 	"github.com/gorilla/websocket"
 )
@@ -17,19 +18,9 @@ type Peer struct {
 	Reputation int32
 	Ignored    bool
 	OnionHost  string
-
-	Websocket *websocket.Conn
-	Send      chan Message
-	Data      interface{}
-}
-
-type Message struct {
-	Type       string
-	Id         string
-	Timestamp  int64  `json:",omitempty"`
-	OriginHost string `json:",omitempty"`
-	Username   string `json:",omitempty"`
-	Body       string `json:",omitempty"`
+	Websocket  *websocket.Conn
+	Send       chan Message
+	Data       interface{}
 }
 
 const (
@@ -45,8 +36,8 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func ConnectToPeer(peerHost string) {
-	sock := &Socks4a{Network: "tcp", Address: ("127.0.0.1:" + tor.SocksPort)}
+func ConnectToPeer(peerHost, socksPort string) bool {
+	sock := &Socks4a{Network: "tcp", Address: ("127.0.0.1:" + socksPort)}
 	u := url.URL{Scheme: "ws", Host: peerHost, Path: "/ws"}
 	d := websocket.Dialer{
 		NetDial:          func(network, addr string) (net.Conn, error) { return sock.Dial(peerHost) },
@@ -54,7 +45,7 @@ func ConnectToPeer(peerHost string) {
 	}
 	ws, _, err := d.Dial(u.String(), nil)
 	if err != nil {
-		log.Println("Failed to connect to peer: ", err)
+		return false
 	} else {
 		p := &Peer{
 			Send:       make(chan Message, 256),
@@ -67,6 +58,7 @@ func ConnectToPeer(peerHost string) {
 		Manager.Register <- p
 		go p.writeMessages()
 		p.readMessages()
+		return true
 	}
 }
 

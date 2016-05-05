@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package network
+package p2p
 
 import (
 	"crypto/rand"
@@ -23,8 +23,8 @@ import (
 	"testing"
 	"time"
 
-	"./../../oth/common"
-	"./../../oth/crypto"
+	"../common"
+	"../crypto"
 )
 
 func init() {

@@ -10,10 +10,9 @@ import (
 	"os/exec"
 	"regexp"
 	"runtime"
-	"strconv"
 	"strings"
 
-	"./../../oht/common"
+	"../common"
 )
 
 type TorProcess struct {
@@ -22,10 +21,10 @@ type TorProcess struct {
 	Pid                   string
 	OnionHost             string
 	WebUIOnionHost        string
-	ListenPort            int
-	WebUIPort             int
-	SocksPort             int
-	ControlPort           int
+	ListenPort            string
+	WebUIPort             string
+	SocksPort             string
+	ControlPort           string
 	avoidDiskWrites       int
 	hardwareAcceleration  int
 	onionServiceDirectory string
@@ -37,7 +36,7 @@ type TorProcess struct {
 	authCookie            string
 }
 
-func InitializeTor(listenPort int, socksPort int, controlPort int, webUIPort int) (tor *TorProcess) {
+func InitializeTor(listenPort, socksPort, controlPort, webUIPort string) (tor *TorProcess) {
 	common.CreatePathUnlessExist("/tor", 0700)
 	common.CreatePathUnlessExist("/tor/onion_service", 0700)
 	common.CreatePathUnlessExist("/tor/onion_webui", 0700)
@@ -102,15 +101,15 @@ func (tor *TorProcess) readOnionHost(serviceType string) string {
 
 func (tor *TorProcess) initializeConfig() error {
 	config := ""
-	config += fmt.Sprintf("SOCKSPort 127.0.0.1:%s\n", strconv.Itoa(tor.SocksPort))
-	config += fmt.Sprintf("ControlPort 127.0.0.1:%s\n", strconv.Itoa(tor.ControlPort))
+	config += fmt.Sprintf("SOCKSPort 127.0.0.1:%s\n", tor.SocksPort)
+	config += fmt.Sprintf("ControlPort 127.0.0.1:%s\n", tor.ControlPort)
 	config += fmt.Sprintf("DataDirectory %s\n", tor.dataDirectory)
 	config += fmt.Sprintf("HardwareAccel %d\n", tor.hardwareAcceleration)
 	config += fmt.Sprintf("RunAsDaemon 0\n")
 	config += fmt.Sprintf("HiddenServiceDir %s\n", tor.onionServiceDirectory)
-	config += fmt.Sprintf("HiddenServicePort %s 127.0.0.1:%s\n", strconv.Itoa(tor.ListenPort), strconv.Itoa(tor.ListenPort))
+	config += fmt.Sprintf("HiddenServicePort %s 127.0.0.1:%s\n", tor.ListenPort, tor.ListenPort)
 	config += fmt.Sprintf("HiddenServiceDir %s\n", tor.webUIOnionDirectory)
-	config += fmt.Sprintf("HiddenServicePort %s 127.0.0.1:%s\n", strconv.Itoa(tor.WebUIPort), strconv.Itoa(tor.WebUIPort))
+	config += fmt.Sprintf("HiddenServicePort %s 127.0.0.1:%s\n", tor.WebUIPort, tor.WebUIPort)
 	config += fmt.Sprintf("AvoidDiskWrites %d\n", tor.avoidDiskWrites)
 	config += fmt.Sprintf("AutomapHostsOnResolve 1\n")
 	config += fmt.Sprintf("CookieAuthentication 1\n")
@@ -123,7 +122,7 @@ func (tor *TorProcess) initializeConfig() error {
 }
 
 func (tor *TorProcess) controlCommand(command string) {
-	conn, err := net.Dial("tcp", "127.0.0.1:"+strconv.Itoa(tor.ControlPort))
+	conn, err := net.Dial("tcp", "127.0.0.1:"+tor.ControlPort)
 	if err != nil {
 		log.Fatal(err)
 	}
