@@ -97,7 +97,6 @@ A basic console is the first goal for the UI and will be used as a way of outlin
         /config                      - List configuration values
         /set [config] [option]       - Change configuration options (Not Implemented)
         /unset [config]              - Unset configuration option (Not Implemented)
-        /webui [start]               - Control webui (Not Implemented)
     
       TOR:
         /tor [start|stop]            - Start or stop tor process (Not Implemented)
@@ -119,6 +118,9 @@ A basic console is the first goal for the UI and will be used as a way of outlin
         /put [key] [value]           - Put key and value into database (Not Implemented)
         /get [key]                   - Get value of key (Not Implemented)
         /delete [key]                - Delete value of key (Not Implemented)
+    
+      WEBUI:
+        /webui                       - Start webUI
     
       ACCOUNT:
         /accounts                    - List all accounts (Not Implemented)
