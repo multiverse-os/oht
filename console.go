@@ -39,8 +39,6 @@ func main() {
 	// Start Tor
 	log.Println("Starting " + oht.Interface.ClientInfo())
 	log.Println("########################################")
-	// Database
-	database.InitializeDatabase()
 	// Unencrypted Account System Prototype For Low Security And Cases Where User Input Is Undesirable
 	// This will be useful for assigning a key to the server struct under network for handshakes
 	unencryptedKeyStore := crypto.NewKeyStorePlain(common.DefaultDataDir())
