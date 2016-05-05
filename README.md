@@ -15,21 +15,23 @@ The groundwork for a stable, modular and fully realized application is being com
 ### Roadmap
 While onion routing works, currently the basic DHT functionality is still not yet implemented, this core functionality is the first major milestone. 
 
-Before this can be completed the p2p communication needs to be lower level then the current websockets connections, utilize protobuf, authenticate peers and use ephermeral keys for communication. The existing websockets connections will remain and it is useful for the existing webui.
+**Decentralized service discovery and networking bootstrapping** seems to be possible using onion routing and onion services provides and there seems to be some unique features using these features of the Tor network that have not been fully yet been explored. A shared and known/hardcoded onion key pair can be used as a known channel for some specific purpose. For example, a genesisfile can be provided that includes a onion address and the private key. Instead of relying on bootstrapping centralized nodes to seed peer connections a user who has not previously connected can use the genesis address. Every peer actively connected to the network routinely offers a random peer from [self, (all known peers)] to the genesis address. After collecting several potential peers and using a checking system a peer can stop listening on the genesis address and successfully join the DHT. 
 
-**Possible Decentralized DHT API**
-Using the known onion address key pair concept, we may able to be be
+**Possible decentralized DHT API and decentralized web UI**
+using the known onion address key pair concept, we may able to be be
 able to allow peers to serve a standard REST API through a known
 keypair. A sample and equalization to remove malicious actors could
 allow for a decentralized REST API that is easily accessible without
-needing to run a oht-type client.
+needing to run a oht-type client. This API could serve DHT values or possibly verify checksums of javascript served through a decentralized webUI served by all peers through a shared onion address.
+
+Before work on the DHT is started the p2p communication needs to be moved to a lower level. Currently p2p networking uses websockets connections which is not ideal. Nanomsq "scalable protocols" combined with protobuf, using authentication of known peer and ephermeral keys for communication. The existing websockets allow for direct connections to the oht with javascript which has been useful during development. 
 
 ### Core Features
 Below is a list of the functional requirements to meet the goal of the project. The features below are at varrying stages of completion. Features will be designed to modular and optional so decentralized applications can be scaffolded quickly using only the features needed.
 
 **Onion routed** - All connections are done using Tor's onion services, ensuring each connection is encrypted, anonymous and eliminates the need for port forwarding. 
 
-**Decentralized Service Discovery** - Using a known onion address keypair, randomly peers can broadcast known peers to the known kepair. Peers looking to join the network can listen using this known keypair and obtain peers to connect to. This also compartmentalizes a DHT and provides an ID.
+**Decentralized Bootstrap** - Using a known onion address keypair, randomly peers can broadcast known peers to the known kepair. Peers looking to join the network can listen using this known keypair and obtain peers to connect to. This also compartmentalizes a DHT and provides an ID.
 
 **Name Resolution** - Name resolution leveraging the oht or an existing name system (GnuNet, Bitcoin/Ethereum)
 
@@ -42,6 +44,8 @@ Below is a list of the functional requirements to meet the goal of the project. 
 1-to-1 peer streaming of data/music/video, possibly using WebRTC. *WebRTC* can be intergrated using existing websockets p2p connections, the onion address bypasses the need for NAT transversal, allowing serverless p2p webRTC connections to be established without a stun/turn server. WebRTC must be modified to only offer onion service ice candidates, early research has begun on this topic.
 
 **User Interfaces** - Provide several ways to implement a user interface for the distributed application. Web interface available through an individual onion address. Terminal command line interface and console for interacting with the DHT. A text only browser may be an effective way to rapid prototype fairly complex terminal based UIs. Basic GUI client using QT/wxWidgets or possibly a standalone browser executable for desktop clients.
+
+*Possible Decentralized APIs and WebUI* through the use of shared public keys and verification of checksum of all served files. (Why are standard js libraries not already been actively checked against a published checksum on every site?)
 
 **Localization** - Localization is important and needs to be designed to exist within the framework from the
 beginning.
