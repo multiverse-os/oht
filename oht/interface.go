@@ -72,6 +72,12 @@ func (in *Interface) UnsetConfigOption(key string) (successful bool) {
 }
 
 func (in *Interface) WebUI(status bool) (successful bool) {
+	if status == 1 {
+		webui.InitializeServer(oht.Interface.TorWebUIOnionHost(), oht.Interface.TorWebUIPort())
+		log.Printf("\nWeb UI :  " + oht.Interface.TorWebUIOnionHost() + ":" + strconv.Itoa(oht.Interface.TorWebUIPort()))
+	} else if status == 2 {
+
+	}
 	return
 }
 

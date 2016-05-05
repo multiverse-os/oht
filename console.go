@@ -50,8 +50,6 @@ func main() {
 	}
 	// Start WebUI
 	if *wui == true {
-		webui.InitializeServer(oht.Interface.TorWebUIOnionHost(), oht.Interface.TorWebUIPort())
-		log.Printf("\nWeb UI :  " + oht.Interface.TorWebUIOnionHost() + ":" + strconv.Itoa(oht.Interface.TorWebUIPort()))
 	}
 	// Start console
 	log.Println("\nWelcome to " + oht.Interface.ClientName() + " console. Type \"/help\" to learn about the available commands.")
