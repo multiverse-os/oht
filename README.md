@@ -17,7 +17,7 @@ While onion routing works, currently the basic DHT functionality is still not ye
 
 Before this can be completed the p2p communication needs to be lower level then the current websockets connections, utilize protobuf, authenticate peers and use ephermeral keys for communication. The existing websockets connections will remain and it is useful for the existing webui. Or verify checksums of javascript served through a decentralized webUI served by all peers.
 
-**Possible Decentralized DHT API**
+**Possible Decentralized DHT API and Decentralized web UI**
 Using the known onion address key pair concept, we may able to be be
 able to allow peers to serve a standard REST API through a known
 keypair. A sample and equalization to remove malicious actors could
