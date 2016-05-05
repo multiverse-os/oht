@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -15,24 +16,25 @@ var (
 	wui         = flag.Bool("wui", true, "Start the process with a web ui")
 	username    = flag.String("username", "user", "Specify a username")
 	peerAddress = flag.String("peer", "", "Specify a peer address for direct connection")
-	listenPort  = flag.String("listen", "12312", "Specify a listen port")
-	webUIPort   = flag.String("wuiport", "8080", "Specify a webui port")
-	socksPort   = flag.String("socks", "12052", "Specify a socks proxy port")
+	listenPort  = flag.String("listen", "9042", "Specify a listen port")
+	socksPort   = flag.String("socks", "9142", "Specify a socks proxy port")
 	controlPort = flag.String("control", "9555", "Specify a control port")
+	webUIPort   = flag.String("wuiport", "8080", "Specify a webui port")
 )
 
 func main() {
 	flag.Parse()
 	log.SetFlags(0)
-	oht := oht.NewOHT(*listenPort, *socksPort, *controlPort, *webUIPort, *wui, *peerAddress)
+	oht := oht.NewOHT(*listenPort, *socksPort, *controlPort, *webUIPort)
 	log.Println("Starting " + oht.Interface.ClientInfo())
 	log.Println("Listening for peers: " + oht.Interface.TorOnionHost())
+	log.Println("WebUI Listening: " + oht.Interface.TorWebUIOnionHost())
 	// Connect Directly To Known Peer And Join Ring
 	if *peerAddress != "" {
 		if match, _ := regexp.Match(":", []byte(*peerAddress)); !match {
-			*peerAddress += ":12312"
+			*peerAddress += ":9042"
 		}
-		log.Printf("Connecting to peer (Websockets)  :  " + *peerAddress)
+		log.Printf("Connecting to peer (Websockets): " + *peerAddress)
 		oht.Interface.ConnectToPeer(*peerAddress)
 	}
 	// Start WebUI
@@ -96,7 +98,8 @@ func main() {
 			fmt.Println("    /channelcast [id] [message]  - Message all channel subscribers (Not Implemented)")
 			fmt.Println("\n    /quit\n")
 		} else if body == "/config" || body == "/c" {
-			fmt.Println(oht.Interface.GetConfig())
+			config, _ := json.Marshal(oht.Interface.GetConfig())
+			fmt.Println("Configuration: " + string(config))
 		} else if body == "/webui" || body == "/w" {
 			oht.Interface.WebUIStart()
 		} else if body == "/quit" || body == "/q" {

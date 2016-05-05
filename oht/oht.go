@@ -24,21 +24,19 @@ type OHT struct {
 	//eventMux *event.TypeMux
 }
 
-func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort string, wui bool, bootstrapPeer string) *OHT {
+func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort string) *OHT {
 	// Initialize Data Directory
 	common.CreatePathUnlessExist("", os.ModePerm)
-	// Check if config exists,
-	//  if true  - initialize it
-	//  if false - load it
 	// Set defaults for torPorts to use if not specified
-	config := initializeConfig()
+	config := InitializeConfig(torListenPort, torSocksPort, torControlPort, torWebUIPort)
 	// This should be read from the default initialization
 	// Should starting tor be a separate function from initialization? Functions to control Tor will be required...
-	tor := network.InitializeTor(torListenPort, torSocksPort, torControlPort, torWebUIPort)
-	// Start P2P Networking
+	tor := network.InitializeTor(config.TorListenPort, config.TorSocksPort, config.TorControlPort, config.TorWebUIPort)
+	// Initialize WebUI Server
+	webUIServer := webui.InitializeServer(tor.WebUIOnionHost, config.TorWebUIPort)
+	// Initialize & Start P2P Networking
 	p2p := p2p.InitializeP2PManager(torListenPort)
-	// WebUI Server
-	webUIServer := webui.InitializeServer(tor.WebUIOnionHost, torWebUIPort)
+	go p2p.Start()
 	// Define a clean shutdown process
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)

@@ -74,9 +74,8 @@ func (i *Interface) Stop() {
 }
 
 // CONFIG
-func (i *Interface) GetConfig() string {
-	config, _ := i.config.getConfig()
-	return string(config)
+func (i *Interface) GetConfig() *Config {
+	return i.config
 }
 func (i *Interface) SetConfigOption(key string, value string) bool { return false }
 func (i *Interface) UnsetConfigOption(key string) bool             { return false }

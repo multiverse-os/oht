@@ -1,19 +1,15 @@
 package oht
 
 import (
-	"crypto/ecdsa"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"regexp"
 
 	"./common"
 )
 
 var (
-	datadirInUseErrnos = map[uint]bool{11: true, 32: true, 35: true}
-	portInUseErrRE     = regexp.MustCompile("address already in use")
-
 	staticNodes  = "static-nodes.json"  // Path within <datadir> to search for the static node list
 	trustedNodes = "trusted-nodes.json" // Path within <datadir> to search for the trusted node list
 )
@@ -24,63 +20,77 @@ type Config struct {
 	ClientMinorVersion int
 	ClientPatchVersion int
 
-	ProtocolVersion int
-	// Load this struct from the config.json file
-	DevMode bool
-	TestNet bool
+	TorListenPort  string
+	TorSocksPort   string
+	TorControlPort string
+	TorWebUIPort   string
 
-	NetworkId   int
-	GenesisFile string
+	ProtocolVersion int `json:",omitempty"`
 
-	DatabaseCache int
+	DevMode bool `json:",omitempty"`
+	TestNet bool `json:",omitempty"`
 
-	DataDir   string
-	LogFile   string
-	Verbosity int
-	ExtraData []byte
+	NetworkId   int    `json:",omitempty"`
+	GenesisFile string `json:",omitempty"`
 
-	MaxPeers        int
-	MaxPendingPeers int
-	Discovery       bool
-	// Need specific ports - ... this is a string, can I just use strings?
-	//Port            string
-	// This key is used to identify the node on the network.
-	// If nil, an ephemeral key is used.
-	NodeKey *ecdsa.PrivateKey
-	Base    common.Address
+	DatabaseCache int `json:",omitempty"`
+
+	DataDir   string `json:",omitempty"`
+	LogFile   string `json:",omitempty"`
+	Verbosity int    `json:",omitempty"`
+	ExtraData []byte `json:",omitempty"`
+
+	MaxPeers        int  `json:",omitempty"`
+	MaxPendingPeers int  `json:",omitempty"`
+	Discovery       bool `json:",omitempty"`
 	// NewDB is used to create databases.
 	// If nil, the default is to create boltdb databases on disk.
 	// -- Setup the boltDB here
 }
 
-func initializeConfig() *Config {
-	if _, err := ioutil.ReadFile(common.AbsolutePath(common.DefaultDataDir(), "config.json")); err != nil {
-		str := `{
-			"oht_config":{
-				"ClientName": "oht",
-				"ClientVersionMajor": 0,
-				"ClientVersionMinor": 1,
-				"ClientVersionPath": 0
-			}
-		}`
-		if err = ioutil.WriteFile(common.AbsolutePath(common.DefaultDataDir(), "config.json"), []byte(str), 0644); err != nil {
+func InitializeConfig(torListenPort, torSocksPort, torControlPort, torWebUIPort string) (config *Config) {
+	config = &Config{
+		ClientName:         "oht",
+		ClientMajorVersion: 0,
+		ClientMinorVersion: 1,
+		ClientPatchVersion: 0,
+		TorListenPort:      "9042",
+		TorSocksPort:       "9142",
+		TorControlPort:     "9555",
+		TorWebUIPort:       "8080",
+	}
+	jsonFile, err := ioutil.ReadFile(common.AbsolutePath(common.DefaultDataDir(), "config.json"))
+	if err != nil {
+		jsonFile, err := json.Marshal(config)
+		if err = ioutil.WriteFile(common.AbsolutePath(common.DefaultDataDir(), "config.json"), jsonFile, 0644); err != nil {
 			log.Fatal(err)
 		}
 	}
-	return &Config{}
+	err = json.Unmarshal(jsonFile, config)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if torListenPort != "" {
+		config.TorListenPort = torListenPort
+	}
+	if torSocksPort != "" {
+		config.TorSocksPort = torSocksPort
+	}
+	if torControlPort != "" {
+		config.TorControlPort = torControlPort
+	}
+	if torWebUIPort != "" {
+		config.TorWebUIPort = torWebUIPort
+	}
+	return config
 }
 
 func (config *Config) clientInfo() string {
 	return common.CompileClientInfo(config.ClientName, config.clientVersion())
 }
 
-func (config *Config) clientVersion() (clientVersion string) {
+func (config *Config) clientVersion() string {
 	return fmt.Sprintf("%d.%d.%d", config.ClientMajorVersion, config.ClientMinorVersion, config.ClientPatchVersion)
-}
-
-func (config *Config) getConfig() (configData []byte, err error) {
-	configData, err = ioutil.ReadFile(common.AbsolutePath(common.DefaultDataDir(), "config.json"))
-	return configData, err
 }
 
 // parseNodes parses a list of discovery node URLs loaded from a .json file.
