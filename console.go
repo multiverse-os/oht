@@ -39,15 +39,6 @@ func main() {
 	// Start Tor
 	log.Println("Starting " + oht.Interface.ClientInfo())
 	log.Println("########################################")
-	// Unencrypted Account System Prototype For Low Security And Cases Where User Input Is Undesirable
-	// This will be useful for assigning a key to the server struct under network for handshakes
-	// Encrypted Account System Prototype For Encryption And Signatures
-	// This needs a secure password input, should build more fluid way to interact with accoutns
-	encryptedKeyStore := crypto.NewKeyStorePassphrase(common.DefaultDataDir(), crypto.KDFStandard)
-	encryptedAccountManager := accounts.NewManager(encryptedKeyStore)
-	encryptedAccount, _ := encryptedAccountManager.NewAccount("password")
-	log.Println("encrypted account:   " + encryptedAccount.Address.Hex())
-
 	log.Printf("\nListening for peers (Websockets) :  " + oht.Interface.TorOnionHost())
 	// Connect Directly To Peer (Will be required for bootstraping)
 	if *peerAddress != "" {

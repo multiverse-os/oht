@@ -1,15 +1,18 @@
 package accounts
 
-import ()
+import (
+	"./../oht/crypto"
+)
 
 type Accounts struct {
-	Manager   *Manager
+	manager   *Manager
 	Interface *Interface
 }
 
-func InitializeAccounts() *Accounts {
+func InitializeAccounts(ks *crypto.KeyStore) *Accounts {
+	am := accounts.NewManager(encryptedKeyStore)
 	return &Accounts{
-		Manager:   &Manager{},
-		Interface: &Interface{},
+		manager:   am,
+		Interface: &Interface{Manager: am},
 	}
 }

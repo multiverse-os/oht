@@ -3,28 +3,16 @@ package accounts
 import ()
 
 type Interface struct {
-	accountManager *accounts.Manager
+	Manager *Manager
 }
 
-func NewInterface(am *accounts.Manager) (i *Interface) {
+func NewInterface(am *Manager) (i *Interface) {
 	return &Interface{
-		accountManager: am,
+		Manager: am,
 	}
 }
 
-func (i *Interface) AccountManager() *accounts.Manager { return othInterface.accountManager }
-
-// DEV
-func (i *Interface) GenerateUnecryptedKeystore() {
-	unencryptedKeyStore := crypto.NewKeyStorePlain(common.DefaultDataDir())
-	unencryptedAccountManager := accounts.NewManager(unencryptedKeyStore)
-	unencryptedAccount, _ := unencryptedAccountManager.NewAccount("password")
-	log.Println("unencrypted account: " + unencryptedAccount.Address.Hex())
-}
-
-func (i *Interface) GenerateEncryptedKeystore(password string) {
-
-}
+func (i *Interface) AccountManager() *Manager { return i.Manager }
 
 // ACCOUNT
 func (i *Interface) ListAccounts() (accounts []string) {

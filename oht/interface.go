@@ -41,9 +41,17 @@ func (othInterface *Interface) Locale() string   { return "en" }
 func (othInterface *Interface) PeerCount() int   { return othInterface.PeerCount() }
 func (othInterface *Interface) MaxPeers() int    { return othInterface.MaxPeers() }
 
+// CRYTPO
+func (i *Interface) GenerateUnecryptedKeystore() *crypto.KeyStore {
+	return crypto.NewKeyStorePlain(common.DefaultDataDir())
+}
+
+func (i *Interface) GenerateEncryptedKeystore(password string) *crypto.KeyStore {
+	return crypto.NewKeyStorePassphrase(common.DefaultDataDir(), crypto.KDFStandard)
+}
+
 //func (in *Interface) Peers() []*p2p.Peer      { return in.Peers() }
-func (othInterface *Interface) AccountManager() *accounts.Manager { return othInterface.accountManager }
-func (othInterface *Interface) IsListening() bool                 { return true }
+func (othInterface *Interface) IsListening() bool { return true }
 
 //func (in *Interface) PeerDb() db.Database            { return in.peersDb }
 //func (in *Interface) LocalDb() db.Database           { return in.localDb }
