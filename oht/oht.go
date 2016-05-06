@@ -17,7 +17,7 @@ type OHT struct {
 	config    *Config
 	tor       *network.TorProcess
 	p2p       *p2p.Manager
-	webUI     *network.WebServer
+	webUI     *webui.WebUI
 	// Channel for shutting down the oht
 	//shutdownChan chan bool
 	//protocolManager *ProtocolManager -- will this be useful?
@@ -34,7 +34,7 @@ func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort string) *O
 	// Should starting tor be a separate function from initialization? Functions to control Tor will be required...
 	tor := network.InitializeTor(config.TorListenPort, config.TorSocksPort, config.TorControlPort, config.TorWebUIPort)
 	// Initialize WebUI Server
-	webUI := webui.InitializeServer(tor.WebUIOnionHost, tor.WebUIPort)
+	webUI := webui.InitializeWebUI(tor.WebUIOnionHost, tor.WebUIPort)
 	// Initialize & Start P2P Networking
 	p2p := p2p.InitializeP2PManager(torListenPort)
 	go p2p.Start()

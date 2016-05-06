@@ -1,47 +1,61 @@
 package webui
 
 import (
+	"html/template"
+
 	"../../network"
 
 	"github.com/gin-gonic/gin"
 )
 
-var (
-	host string
-)
+type WebUI struct {
+	Server       *network.WebServer
+	OnionHost    string
+	BaseTemplate string
+	Templates    map[string]*template.Template
+}
 
-func InitializeServer(onionHost, webUIPort string) (server *network.WebServer) {
+func InitializeWebUI(onionHost, webUIPort string) *WebUI {
 	gin.SetMode(gin.ReleaseMode)
 	engine := gin.New()
-	host = onionHost
+	webUI := &WebUI{
+		Server:       network.InitializeWebServer(engine, ("127.0.0.1:" + webUIPort)),
+		OnionHost:    onionHost,
+		BaseTemplate: "ui/webui/templates/layouts/application.html",
+		Templates:    make(map[string]*template.Template),
+	}
 
 	engine.LoadHTMLGlob("ui/webui/templates/*")
+	webUI.Templates["index"] = template.Must(template.ParseFiles(webUI.BaseTemplate, "ui/webui/templates/index.html"))
+	webUI.Templates["about"] = template.Must(template.ParseFiles(webUI.BaseTemplate, "ui/webui/templates/about.html"))
+	webUI.Templates["contact"] = template.Must(template.ParseFiles(webUI.BaseTemplate, "ui/webui/templates/contact.html"))
+
 	engine.Static("/public/css/", "ui/webui/public/css")
 	engine.Static("/public/js/", "ui/webui/public/js/")
 	engine.Static("/public/fonts/", "ui/webui/public/fonts/")
 	engine.Static("/public/img/", "ui/webui/public/img/")
 
-	engine.GET("/", getIndex)
-	engine.GET("/about", getAbout)
-	engine.GET("/contact", getContact)
+	engine.GET("/", webUI.getIndex)
+	engine.GET("/about", webUI.getAbout)
+	engine.GET("/contact", webUI.getContact)
 
-	return network.InitializeWebServer(engine, ("127.0.0.1:" + webUIPort))
+	return webUI
 }
 
-func getIndex(c *gin.Context) {
+func (webUI *WebUI) getIndex(c *gin.Context) {
 	c.HTML(200, "index.html", gin.H{
-		"wsHost": host,
+		"wsHost": webUI.OnionHost,
 	})
 }
 
-func getAbout(c *gin.Context) {
+func (webUI *WebUI) getAbout(c *gin.Context) {
 	c.HTML(200, "about.html", gin.H{
-		"wsHost": host,
+		"wsHost": webUI.OnionHost,
 	})
 }
 
-func getContact(c *gin.Context) {
+func (webUI *WebUI) getContact(c *gin.Context) {
 	c.HTML(200, "contact.html", gin.H{
-		"wsHost": host,
+		"wsHost": webUI.OnionHost,
 	})
 }

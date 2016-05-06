@@ -8,17 +8,18 @@ import (
 	"./crypto"
 	"./network"
 	"./network/p2p"
+	"./network/webui"
 	"./types"
 )
 
 type Interface struct {
 	config *Config
 	tor    *network.TorProcess
-	webUI  *network.WebServer
+	webUI  *webui.WebUI
 	p2p    *p2p.Manager
 }
 
-func NewInterface(c *Config, t *network.TorProcess, w *network.WebServer, p *p2p.Manager) (i *Interface) {
+func NewInterface(c *Config, t *network.TorProcess, w *webui.WebUI, p *p2p.Manager) (i *Interface) {
 	return &Interface{
 		config: c,
 		tor:    t,
@@ -48,11 +49,17 @@ func (i *Interface) TorWebUIOnionHost() string { return i.tor.WebUIOnionHost }
 func (i *Interface) MaxPendingPeers() int { return i.config.MaxPendingPeers }
 func (i *Interface) MaxPeers() int        { return i.config.MaxPeers }
 
-// WEBUI INFOMRATION
-func (i *Interface) WebUIOnline() bool { return i.webUI.Online }
-
-//func (i *Interface) ProtocolVersion()     {}
-//func (i *Interface) PeerCount() int       { return i.config.PeerCount() }
+// START/QUIT
+func (i *Interface) Start() {} // Currently everything starts at initialization
+func (i *Interface) Stop() {
+	if i.webUI.Server.Online {
+		i.webUI.Server.Stop()
+	}
+	// Stop everything
+	// Stop p2p networking
+	// Stop Tor
+	os.Exit(0)
+}
 
 // CRYTPO KEY STORE
 func (i *Interface) NewUnecryptedKeyStore() crypto.KeyStore {
@@ -60,24 +67,6 @@ func (i *Interface) NewUnecryptedKeyStore() crypto.KeyStore {
 }
 func (i *Interface) NewEncryptedKeyStore() crypto.KeyStore {
 	return crypto.NewKeyStorePassphrase(common.DefaultDataDir()+"/keys", crypto.KDFStandard)
-}
-
-//func (i *Interface) Peers() []*p2p.Peer      { return i.Peers() }
-func (i *Interface) IsListening() bool { return true }
-
-//func (i *Interface) PeerDb() db.Database            { return i.peersDb }
-//func (i *Interface) LocalDb() db.Database           { return i.localDb }
-
-// START/QUIT
-func (i *Interface) Start() {} // Currently everything starts at initialization
-func (i *Interface) Stop() {
-	// Stop everything
-	if i.webUI.Online {
-		i.webUI.Stop()
-	}
-	// Stop p2p networking
-	// Stop Tor
-	os.Exit(0)
 }
 
 // CONFIG
@@ -95,12 +84,13 @@ func (i *Interface) SaveConfig() bool {
 }
 
 // WEB UI
+func (i *Interface) WebUIOnline() bool { return i.webUI.Server.Online }
 func (i *Interface) WebUIStart() bool {
-	i.webUI.Start()
-	return true
+	err := i.webUI.Server.Start()
+	return (err == nil)
 }
 func (i *Interface) WebUIStop() bool {
-	return i.webUI.Stop()
+	return i.webUI.Server.Stop()
 }
 
 // NETWORK
