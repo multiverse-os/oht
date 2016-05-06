@@ -25,7 +25,6 @@ func InitializeWebUI(onionHost, webUIPort string) *WebUI {
 		Templates:    make(map[string]*template.Template),
 	}
 
-	engine.LoadHTMLGlob("ui/webui/templates/*")
 	webUI.Templates["index"] = template.Must(template.ParseFiles(webUI.BaseTemplate, "ui/webui/templates/index.html"))
 	webUI.Templates["about"] = template.Must(template.ParseFiles(webUI.BaseTemplate, "ui/webui/templates/about.html"))
 	webUI.Templates["contact"] = template.Must(template.ParseFiles(webUI.BaseTemplate, "ui/webui/templates/contact.html"))
