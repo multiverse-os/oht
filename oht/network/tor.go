@@ -16,6 +16,7 @@ import (
 )
 
 type TorProcess struct {
+	Online                bool
 	process               *os.Process
 	cmd                   *exec.Cmd
 	Pid                   string
@@ -41,6 +42,7 @@ func InitializeTor(listenPort, socksPort, controlPort, webUIPort string) (tor *T
 	common.CreatePathUnlessExist("/tor/onion_service", 0700)
 	common.CreatePathUnlessExist("/tor/onion_webui", 0700)
 	tor = &TorProcess{
+		Online:                false,
 		ListenPort:            listenPort,
 		WebUIPort:             webUIPort,
 		SocksPort:             socksPort,
@@ -65,26 +67,41 @@ func InitializeTor(listenPort, socksPort, controlPort, webUIPort string) (tor *T
 			log.Fatal("Tor: Failed to write configuration: %s", err)
 		}
 	}
-	torCmd := exec.Command(tor.binaryFile, "-f", tor.configFile)
-	tor.OnionHost = tor.readOnionHost("internal")
-	tor.WebUIOnionHost = tor.readOnionHost("webui")
-	tor.authCookie = tor.readAuthCookie()
-	tor.cmd = torCmd
 	return tor
 }
 
-func (tor *TorProcess) readOnionHost(serviceType string) string {
-	directory := tor.onionServiceDirectory + "/hostname"
-	if serviceType == "webui" {
-		directory = tor.webUIOnionDirectory + "/hostname"
-	}
-	onion, err := ioutil.ReadFile(directory)
+func (tor *TorProcess) Start() bool {
+	tor.cmd = exec.Command(tor.binaryFile, "-f", tor.configFile)
+	stdout, _ := tor.cmd.StdoutPipe()
+	err := tor.cmd.Start()
 	if err != nil {
-		log.Fatal("Tor: Failed reading onion hostname file: %v", err)
+		log.Fatal("Tor: Failed to start: %s", err)
 	}
-	return strings.Replace(string(onion), "\n", "", -1)
+	scanner := bufio.NewScanner(stdout)
+	for scanner.Scan() {
+		line := scanner.Text()
+		log.Println(line)
+		if match, _ := regexp.Match("(100%|Is Tor already running?)", []byte(line)); match {
+			tor.Online = true
+			break
+		}
+	}
+	tor.process = tor.cmd.Process
+	tor.Pid = fmt.Sprintf("%d", tor.cmd.Process.Pid)
+	tor.OnionHost = tor.readOnionHost("internal")
+	tor.WebUIOnionHost = tor.readOnionHost("webui")
+	tor.authCookie = tor.readAuthCookie()
+	return tor.Online
 }
 
+func (tor *TorProcess) Stop() bool {
+	//tor.Shutdown() - Was not effective, need to investigate if the control system is working
+	tor.cmd.Process.Kill()
+	tor.Online = false
+	return tor.Online
+}
+
+// CONFIGURATION
 func (tor *TorProcess) initializeConfig() error {
 	config := ""
 	config += fmt.Sprintf("SOCKSPort 127.0.0.1:%s\n", tor.SocksPort)
@@ -107,21 +124,25 @@ func (tor *TorProcess) initializeConfig() error {
 	}
 }
 
-func (tor *TorProcess) Start() {
-	stdout, _ := tor.cmd.StdoutPipe()
-	err := tor.cmd.Start()
+func (tor *TorProcess) readOnionHost(serviceType string) string {
+	directory := tor.onionServiceDirectory + "/hostname"
+	if serviceType == "webui" {
+		directory = tor.webUIOnionDirectory + "/hostname"
+	}
+	onion, err := ioutil.ReadFile(directory)
 	if err != nil {
-		log.Fatal("Tor: Failed to start: %s", err)
+		log.Fatal("Tor: Failed reading onion hostname file: %v", err)
 	}
-	scanner := bufio.NewScanner(stdout)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if match, _ := regexp.Match("(100%|Is Tor already running?)", []byte(line)); match {
-			break
-		}
+	return strings.Replace(string(onion), "\n", "", -1)
+}
+
+// TOR CONTROL
+func (tor *TorProcess) readAuthCookie() string {
+	cookie, err := ioutil.ReadFile(tor.dataDirectory + "/control_auth_cookie")
+	if err != nil {
+		log.Fatal("Tor: Failed to read authorization cookie: %s", err)
 	}
-	tor.process = tor.cmd.Process
-	tor.Pid = fmt.Sprintf("%d", tor.cmd.Process.Pid)
+	return strings.Replace(string(cookie), "\n", "", -1)
 }
 
 func (tor *TorProcess) controlCommand(command string) {
@@ -139,12 +160,4 @@ func (tor *TorProcess) Cycle() {
 
 func (tor *TorProcess) Shutdown() {
 	tor.controlCommand("SIGNAL HALT")
-}
-
-func (tor *TorProcess) readAuthCookie() string {
-	cookie, err := ioutil.ReadFile(tor.dataDirectory + "/control_auth_cookie")
-	if err != nil {
-		log.Fatal("Tor: Failed to read authorization cookie: %s", err)
-	}
-	return strings.Replace(string(cookie), "\n", "", -1)
 }

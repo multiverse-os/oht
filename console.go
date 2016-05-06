@@ -58,7 +58,7 @@ func main() {
 			fmt.Println("    /unset [config]              - Unset configuration option")
 			fmt.Println("    /save                        - Save configuration values")
 			fmt.Println("\n  TOR:")
-			fmt.Println("    /tor [start|stop]            - Start or stop tor process (Not Implemented)")
+			fmt.Println("    /tor [start|stop]            - Start or stop tor process")
 			fmt.Println("    /newtor                      - Obtain new Tor identity (Not Implemented)")
 			fmt.Println("    /newonion                    - Obtain new onion address (Not Implemented)")
 			fmt.Println("\n  NETWORK:")
@@ -99,15 +99,17 @@ func main() {
 			fmt.Println("    /leave [id]                  - Leave channel with id (Not Implemented)")
 			fmt.Println("    /channelcast [id] [message]  - Message all channel subscribers (Not Implemented)")
 			fmt.Println("\n    /quit\n")
+			//
+			// CONFIG
 		} else if body == "/config" || body == "/c" {
-			config, _ := json.Marshal(oht.Interface.GetConfig())
+			config, _ := json.Marshal(oht.Interface.Config())
 			fmt.Println("Configuration: " + string(config))
 		} else if len(body) > 4 && body[0:4] == "/set" {
 			parts := strings.Split(body, " ")
 			if len(parts) >= 3 {
 				value := strings.Split(body, string(parts[1]+" "))
-				result := oht.Interface.SetConfigOption(parts[1], value[1])
-				config, _ := json.Marshal(oht.Interface.GetConfig())
+				result := oht.Interface.ConfigSetOption(parts[1], value[1])
+				config, _ := json.Marshal(oht.Interface.Config())
 				if result {
 					fmt.Println("Configuration: " + string(config))
 				} else {
@@ -119,8 +121,8 @@ func main() {
 		} else if len(body) > 6 && body[0:6] == "/unset" {
 			parts := strings.Split(body, " ")
 			if len(parts) == 2 {
-				oht.Interface.UnsetConfigOption(parts[1])
-				config, err := json.Marshal(oht.Interface.GetConfig())
+				oht.Interface.ConfigUnsetOption(parts[1])
+				config, err := json.Marshal(oht.Interface.Config())
 				if err != nil {
 					fmt.Println("Configuration: Failed to unset configuration option.")
 				} else {
@@ -130,9 +132,9 @@ func main() {
 				fmt.Println("Configuration: Failed to unset configuration option.")
 			}
 		} else if body == "/save" {
-			if oht.Interface.SaveConfig() {
+			if oht.Interface.ConfigSave() {
 				fmt.Println("Configuration: Saved.")
-				config, err := json.Marshal(oht.Interface.GetConfig())
+				config, err := json.Marshal(oht.Interface.Config())
 				if err != nil {
 					fmt.Println("Configuration: Failed to save.")
 				} else {
@@ -141,6 +143,29 @@ func main() {
 			} else {
 				fmt.Println("Configuration: Failed to save.")
 			}
+			//
+			// TOR
+		} else if len(body) > 4 && body[0:4] == "/tor" {
+			parts := strings.Split(body, " ")
+			if len(parts) == 2 {
+				if parts[1] == "start" {
+					if oht.Interface.TorOnline() == false {
+						oht.Interface.TorStart()
+						fmt.Println("Tor: Connected.")
+					} else {
+						fmt.Println("Tor: Already connected.")
+					}
+				} else {
+					if oht.Interface.TorOnline() {
+						oht.Interface.TorStop()
+						fmt.Println("Tor: Stopped.")
+					} else {
+						fmt.Println("Tor: Already stopped.")
+					}
+				}
+			}
+			//
+			// NETWORK
 		} else if len(body) > 8 && body[0:8] == "/connect" {
 			parts := strings.Split(body, " ")
 			if len(parts) == 2 {
@@ -150,6 +175,8 @@ func main() {
 				}
 				oht.Interface.ConnectToPeer(parts[1])
 			}
+			//
+			// WEBUI
 		} else if len(body) > 6 && body[0:6] == "/webui" {
 			parts := strings.Split(body, " ")
 			if len(parts) == 2 {

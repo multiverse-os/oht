@@ -46,7 +46,7 @@ The primary client during this stage of development is the console client.
         /save                        - Save configuration values
     
       TOR:
-        /tor [start|stop]            - Start or stop tor process (Not Implemented)
+        /tor [start|stop]            - Start or stop tor process
         /newtor                      - Obtain new Tor identity (Not Implemented)
         /newonion                    - Obtain new onion address (Not Implemented)
     

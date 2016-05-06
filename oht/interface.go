@@ -28,16 +28,12 @@ func NewInterface(c *Config, t *network.TorProcess, w *webui.WebUI, p *p2p.Manag
 	}
 }
 
-// msg validator
-type Validator interface{}
-
 // GENERAL INFORMATION
 func (i *Interface) ClientName() string    { return i.config.ClientName }
 func (i *Interface) ClientVersion() string { return i.config.clientVersion() }
 func (i *Interface) ClientInfo() string    { return i.config.clientInfo() }
 func (i *Interface) Locale() string        { return i.config.Locale }
 
-// TOR INFORMATION
 func (i *Interface) TorListenPort() string     { return i.tor.ListenPort }
 func (i *Interface) TorSocksPort() string      { return i.tor.SocksPort }
 func (i *Interface) TorControlPort() string    { return i.tor.ControlPort }
@@ -45,7 +41,6 @@ func (i *Interface) TorWebUIPort() string      { return i.tor.WebUIPort }
 func (i *Interface) TorOnionHost() string      { return i.tor.OnionHost }
 func (i *Interface) TorWebUIOnionHost() string { return i.tor.WebUIOnionHost }
 
-// NETWORKING INFORMATION
 func (i *Interface) MaxPendingPeers() int { return i.config.MaxPendingPeers }
 func (i *Interface) MaxPeers() int        { return i.config.MaxPeers }
 
@@ -60,7 +55,7 @@ func (i *Interface) Stop() {
 	os.Exit(0)
 }
 
-// CRYTPO KEY STORE
+// KEY STORE
 func (i *Interface) NewUnecryptedKeyStore() crypto.KeyStore {
 	return crypto.NewKeyStorePlain(common.DefaultDataDir() + "/keys")
 }
@@ -69,27 +64,35 @@ func (i *Interface) NewEncryptedKeyStore() crypto.KeyStore {
 }
 
 // CONFIG
-func (i *Interface) GetConfig() *Config {
+func (i *Interface) Config() *Config {
 	return i.config
 }
-func (i *Interface) SetConfigOption(key, value string) bool {
+func (i *Interface) ConfigSetOption(key, value string) bool {
 	return i.config.setConfigOption(key, value)
 }
-func (i *Interface) UnsetConfigOption(key string) bool {
+func (i *Interface) ConfigUnsetOption(key string) bool {
 	return i.config.unsetConfigOption(key)
 }
-func (i *Interface) SaveConfig() bool {
+func (i *Interface) ConfigSave() bool {
 	return i.config.saveConfiguration()
 }
 
-// WEB UI
-func (i *Interface) WebUIOnline() bool { return i.webUI.Server.Online }
-func (i *Interface) WebUIStart() bool {
-	err := i.webUI.Server.Start()
-	return (err == nil)
+// TOR
+func (i *Interface) TorOnline() bool {
+	return i.tor.Online
 }
-func (i *Interface) WebUIStop() bool {
-	return i.webUI.Server.Stop()
+func (i *Interface) TorStart() bool {
+	return i.tor.Start()
+}
+func (i *Interface) TorStop() bool {
+	return i.tor.Stop()
+}
+func (i *Interface) TorCycleIdentity() bool {
+	i.tor.Cycle()
+	return true
+}
+func (i *Interface) TorCycleOnionAddresses() bool {
+	return true
 }
 
 // NETWORK
@@ -99,7 +102,6 @@ func (i *Interface) PeerPredecessor() (peer string) { return }
 func (i *Interface) PeerFTable() (peers []string)   { return }
 func (i *Interface) NewRing() (ringData string)     { return }
 func (i *Interface) ConnectToPeer(peerAddress string) (successful bool) {
-	// Eventually get this to return true/false if successful and use this for the return
 	go i.p2p.ConnectToPeer(peerAddress, i.tor.ListenPort)
 	return true
 }
@@ -109,7 +111,6 @@ func (i *Interface) RingCast(username, body string) (successful bool) {
 	message := types.NewMessage(username, body)
 	log.Println("[", message.Timestamp, "] ", message.Username, " : ", message.Body)
 	i.p2p.Broadcast <- message
-	// Eventually get this to return true/false if successful and use this for the return
 	return true
 }
 
@@ -117,11 +118,21 @@ func (i *Interface) RingCast(username, body string) (successful bool) {
 func (ohtInterface *Interface) Put(key string, value string) (successful bool) {
 	return
 }
-
 func (ohtInterface *Interface) Get(key string) (value string) {
 	return
 }
-
 func (ohtInterface *Interface) Delete(key string) (value string) {
 	return
+}
+
+// WEB UI
+func (i *Interface) WebUIOnline() bool {
+	return i.webUI.Server.Online
+}
+func (i *Interface) WebUIStart() bool {
+	err := i.webUI.Server.Start()
+	return (err == nil)
+}
+func (i *Interface) WebUIStop() bool {
+	return i.webUI.Server.Stop()
 }
