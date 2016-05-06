@@ -76,7 +76,7 @@ func main() {
 			fmt.Println("    /get [key]                   - Get value of key (Not Implemented)")
 			fmt.Println("    /delete [key]                - Delete value of key (Not Implemented)")
 			fmt.Println("\n  WEBUI:")
-			fmt.Println("    /webui [start|stop]          - Start webUI")
+			fmt.Println("    /webui [start|stop]          - Start or stop webUI server")
 			fmt.Println("\n  ACCOUNT:")
 			fmt.Println("    /accounts                    - List all accounts (Not Implemented)")
 			fmt.Println("    /generate                    - Generate new account key pair (Not Implemented)")

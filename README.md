@@ -67,7 +67,7 @@ The primary client during this stage of development is the console client.
         /delete [key]                - Delete value of key (Not Implemented)
     
       WEBUI:
-        /webui                       - Start webUI
+        /webui [start|stop]          - Start or stop webUI server
     
       ACCOUNT:
         /accounts                    - List all accounts (Not Implemented)
