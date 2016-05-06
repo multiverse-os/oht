@@ -25,7 +25,7 @@ websockets | JSON websocket API |
 ipc | Interprocess communication  |
 
 ### Usage
-The primary client during this stage of development is the console.
+The primary client during this stage of development is the console client.
 
 #### Console Client
 
