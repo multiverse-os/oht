@@ -34,6 +34,7 @@ type Validator interface{}
 func (i *Interface) ClientName() string    { return i.config.ClientName }
 func (i *Interface) ClientVersion() string { return i.config.clientVersion() }
 func (i *Interface) ClientInfo() string    { return i.config.clientInfo() }
+func (i *Interface) Locale() string        { return "en" }
 
 // TOR INFORMATION
 func (i *Interface) TorListenPort() string     { return i.tor.ListenPort }
@@ -43,10 +44,15 @@ func (i *Interface) TorWebUIPort() string      { return i.tor.WebUIPort }
 func (i *Interface) TorOnionHost() string      { return i.tor.OnionHost }
 func (i *Interface) TorWebUIOnionHost() string { return i.tor.WebUIOnionHost }
 
-func (i *Interface) ProtocolVersion() {}
-func (i *Interface) Locale() string   { return "en" }
-func (i *Interface) PeerCount() int   { return i.PeerCount() }
-func (i *Interface) MaxPeers() int    { return i.MaxPeers() }
+// NETWORKING INFORMATION
+func (i *Interface) MaxPendingPeers() int { return i.config.MaxPendingPeers }
+func (i *Interface) MaxPeers() int        { return i.config.MaxPeers }
+
+// WEBUI INFOMRATION
+func (i *Interface) WebUIOnline() bool { return i.webUI.Online }
+
+//func (i *Interface) ProtocolVersion()     {}
+//func (i *Interface) PeerCount() int       { return i.config.PeerCount() }
 
 // CRYTPO KEY STORE
 func (i *Interface) NewUnecryptedKeyStore() crypto.KeyStore {

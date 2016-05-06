@@ -7,8 +7,7 @@ import (
 )
 
 func InitializeServer(onionHost, webUIPort string) (server *network.WebServer) {
-	//gin.SetMode(gin.ReleaseMode)
-	gin.SetMode(gin.DebugMode)
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	r.LoadHTMLFiles("ui/webui/index.html")
 	//r.Static("/public/css/", "./public/css")
@@ -26,5 +25,5 @@ func InitializeServer(onionHost, webUIPort string) (server *network.WebServer) {
 			"wsHost": onionHost,
 		})
 	})
-	return network.InitializeWebServer(r, (onionHost + ":" + webUIPort))
+	return network.InitializeWebServer(r, ("127.0.0.1:" + webUIPort))
 }

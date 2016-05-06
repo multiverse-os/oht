@@ -154,9 +154,19 @@ func main() {
 			parts := strings.Split(body, " ")
 			if len(parts) == 2 {
 				if parts[1] == "start" {
-					oht.Interface.WebUIStart()
+					if oht.Interface.WebUIOnline() == false {
+						oht.Interface.WebUIStart()
+						fmt.Println("Web server: Started. Listening on " + oht.Interface.TorWebUIOnionHost() + ":" + oht.Interface.TorWebUIPort())
+					} else {
+						fmt.Println("Web server: Already started.")
+					}
 				} else {
-					oht.Interface.WebUIStop()
+					if oht.Interface.WebUIOnline() {
+						oht.Interface.WebUIStop()
+						fmt.Println("Web server: Stopped.")
+					} else {
+						fmt.Println("Web server: Already stopped.")
+					}
 				}
 			}
 		} else if body == "/quit" || body == "/q" || body == "exit" {

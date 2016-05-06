@@ -32,23 +32,27 @@ func InitializeWebServer(r *gin.Engine, host string) (server *WebServer) {
 }
 
 func (wServer *WebServer) Start() error {
-	hServer := &http.Server{Addr: wServer.Host, Handler: wServer.engine}
-	listener, err := net.Listen("tcp", wServer.Host)
-	if err != nil {
-		return err
-	}
-	wServer.listener, err = newStoppableListener(tcpKeepAliveListener{listener.(*net.TCPListener)})
-	if err != nil {
-		return err
-	}
-	go hServer.Serve(wServer.listener)
-	wServer.Online = true
-	if err != nil {
-		if err != stoppedError {
-			panic(err)
+	if !wServer.Online {
+		hServer := &http.Server{Addr: wServer.Host, Handler: wServer.engine}
+		listener, err := net.Listen("tcp", wServer.Host)
+		if err != nil {
+			return err
 		}
+		wServer.listener, err = newStoppableListener(tcpKeepAliveListener{listener.(*net.TCPListener)})
+		if err != nil {
+			return err
+		}
+		go hServer.Serve(wServer.listener)
+		wServer.Online = true
+		if err != nil {
+			if err != stoppedError {
+				panic(err)
+			}
+		}
+		return nil
+	} else {
+		return errors.New("Gin: Web server is already online")
 	}
-	return nil
 }
 
 func (server *WebServer) Stop() bool {
@@ -74,7 +78,7 @@ func (ln tcpKeepAliveListener) Accept() (c net.Conn, err error) {
 func newStoppableListener(l net.Listener) (*stoppableListener, error) {
 	tcpL, ok := l.(tcpKeepAliveListener)
 	if !ok {
-		return nil, errors.New("Cannot wrap listener")
+		return nil, errors.New("Gin: Cannot wrap listener")
 	}
 	retval := &stoppableListener{}
 	retval.tcpKeepAliveListener = tcpL
