@@ -24,7 +24,7 @@ rest | JSON Rest API |
 websockets | JSON websocket API |
 ipc | Interprocess communication  |
 
-## oht explanation and comparison to typical DHT
+## oht Explanation and Comparison to Typical DHT
 
 Tor is misunderstood, for the purpose of this documentation, we will focus on how often people will confuse Tor Browser Bundle (TBB) with Tor. Tor is a client for a decentralized p2p onion routing network, which translates to adding additional proxy layers between you and your destination when accessing the internet. Tor works with any port, and is not restricted to port 80. Additional proxy layers provide a connection with additional security and bypass the regional restrictions being imposed on the world wide web. One example use case for onion routing is a journalist using TBB to bypass national firewalls to report accurate news. The aim is highlight that Tor provides more than just a solution for secure Internet browsing, Tor provides a solution for secure hosting through onion services. 
 
