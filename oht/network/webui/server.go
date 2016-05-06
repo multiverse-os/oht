@@ -1,36 +1,30 @@
 package webui
 
 import (
+	"../../network"
+
 	"github.com/gin-gonic/gin"
 )
 
-type Server struct {
-	Router *gin.Engine
-	Port   string
-}
+func InitializeServer(onionHost, webUIPort string) (server *network.WebServer) {
+	//gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.DebugMode)
+	r := gin.New()
+	r.LoadHTMLFiles("ui/webui/index.html")
+	//r.Static("/public/css/", "./public/css")
+	//r.Static("/public/js/", "./public/js/")
+	//r.Static("/public/fonts/", "./public/fonts/")
+	//r.Static("/public/img/", "./public/img/")
 
-func InitializeServer(onionHost, webUIPort string) (server *Server) {
-	gin.SetMode(gin.ReleaseMode)
-	router := gin.Default()
-	router.LoadHTMLFiles("ui/webui/index.html")
-	router.GET("/", func(c *gin.Context) {
+	//r.GET("/", IndexRouter)
+	//r.GET("/about", AboutRoute)
+	//r.GET("/contact", ContactRoute)
+	//r.GET("/signin", SigninRoute)
+	//r.GET("/signup", SignupRoute)
+	r.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index.html", gin.H{
 			"wsHost": onionHost,
 		})
 	})
-	return &Server{
-		Router: router,
-		Port:   webUIPort,
-	}
-}
-
-func (server *Server) Start() bool {
-	go server.Router.Run(":" + server.Port)
-	return true
-}
-
-func (server *Server) Stop() bool {
-	// Apparently gin does not have the ability to stop the server
-	// another solution will have to be found
-	return false
+	return network.InitializeWebServer(r, (onionHost + ":" + webUIPort))
 }

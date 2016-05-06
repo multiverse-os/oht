@@ -13,11 +13,11 @@ import (
 
 type OHT struct {
 	// Should client name,version and other information be cached here?
-	Interface   *Interface
-	config      *Config
-	tor         *network.TorProcess
-	p2p         *p2p.Manager
-	webUIServer *webui.Server
+	Interface *Interface
+	config    *Config
+	tor       *network.TorProcess
+	p2p       *p2p.Manager
+	webUI     *network.WebServer
 	// Channel for shutting down the oht
 	//shutdownChan chan bool
 	//protocolManager *ProtocolManager -- will this be useful?
@@ -34,7 +34,7 @@ func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort string) *O
 	// Should starting tor be a separate function from initialization? Functions to control Tor will be required...
 	tor := network.InitializeTor(config.TorListenPort, config.TorSocksPort, config.TorControlPort, config.TorWebUIPort)
 	// Initialize WebUI Server
-	webUIServer := webui.InitializeServer(tor.WebUIOnionHost, config.TorWebUIPort)
+	webUI := webui.InitializeServer(tor.WebUIOnionHost, tor.WebUIPort)
 	// Initialize & Start P2P Networking
 	p2p := p2p.InitializeP2PManager(torListenPort)
 	go p2p.Start()
@@ -47,10 +47,10 @@ func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort string) *O
 		os.Exit(1)
 	}()
 	return &OHT{
-		Interface:   NewInterface(config, tor, webUIServer, p2p),
-		config:      config,
-		tor:         tor,
-		p2p:         p2p,
-		webUIServer: webUIServer,
+		Interface: NewInterface(config, tor, webUI, p2p),
+		config:    config,
+		tor:       tor,
+		p2p:       p2p,
+		webUI:     webUI,
 	}
 }

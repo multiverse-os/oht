@@ -8,23 +8,22 @@ import (
 	"./crypto"
 	"./network"
 	"./network/p2p"
-	"./network/webui"
 	"./types"
 )
 
 type Interface struct {
-	config      *Config
-	tor         *network.TorProcess
-	webUIServer *webui.Server
-	p2p         *p2p.Manager
+	config *Config
+	tor    *network.TorProcess
+	webUI  *network.WebServer
+	p2p    *p2p.Manager
 }
 
-func NewInterface(c *Config, t *network.TorProcess, w *webui.Server, p *p2p.Manager) (i *Interface) {
+func NewInterface(c *Config, t *network.TorProcess, w *network.WebServer, p *p2p.Manager) (i *Interface) {
 	return &Interface{
-		config:      c,
-		tor:         t,
-		webUIServer: w,
-		p2p:         p,
+		config: c,
+		tor:    t,
+		webUI:  w,
+		p2p:    p,
 	}
 }
 
@@ -67,7 +66,9 @@ func (i *Interface) IsListening() bool { return true }
 func (i *Interface) Start() {} // Currently everything starts at initialization
 func (i *Interface) Stop() {
 	// Stop everything
-	i.webUIServer.Stop()
+	if i.webUI.Online {
+		i.webUI.Stop()
+	}
 	// Stop p2p networking
 	// Stop Tor
 	os.Exit(0)
@@ -88,8 +89,13 @@ func (i *Interface) SaveConfig() bool {
 }
 
 // WEB UI
-func (i *Interface) WebUIStart() bool { return i.webUIServer.Start() }
-func (i *Interface) WebUIStop() bool  { return i.webUIServer.Stop() } // Gin is not stoppable
+func (i *Interface) WebUIStart() bool {
+	i.webUI.Start()
+	return true
+}
+func (i *Interface) WebUIStop() bool {
+	return i.webUI.Stop()
+}
 
 // NETWORK
 func (i *Interface) ListPeers() (peers []string)    { return }

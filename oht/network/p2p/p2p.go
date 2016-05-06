@@ -10,6 +10,13 @@ import (
 	"../../types"
 )
 
+const (
+	writeWait      = 15 * time.Second
+	pongWait       = 60 * time.Second
+	pingPeriod     = (pongWait * 9) / 10
+	maxMessageSize = 1024
+)
+
 type EventFunc func(Manager *Manager, Peer *Peer)
 
 type Manager struct {

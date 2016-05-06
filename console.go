@@ -29,7 +29,6 @@ func main() {
 	oht := oht.NewOHT(*listenPort, *socksPort, *controlPort, *webUIPort)
 	log.Println("Starting " + oht.Interface.ClientInfo())
 	log.Println("Listening for peers: " + oht.Interface.TorOnionHost())
-	log.Println("WebUI Listening: " + oht.Interface.TorWebUIOnionHost())
 	// Connect Directly To Known Peer And Join Ring
 	if *peerAddress != "" {
 		if match, _ := regexp.Match(":", []byte(*peerAddress)); !match {
@@ -41,6 +40,7 @@ func main() {
 	// Start WebUI
 	if *wui == true {
 		oht.Interface.WebUIStart()
+		log.Println("WebUI Listening: " + oht.Interface.TorWebUIOnionHost() + ":" + oht.Interface.TorWebUIPort())
 	}
 	// Console UI
 	log.Println("Welcome to " + oht.Interface.ClientName() + " console. Type \"/help\" to learn about the available commands.")
@@ -76,7 +76,7 @@ func main() {
 			fmt.Println("    /get [key]                   - Get value of key (Not Implemented)")
 			fmt.Println("    /delete [key]                - Delete value of key (Not Implemented)")
 			fmt.Println("\n  WEBUI:")
-			fmt.Println("    /webui                       - Start webUI")
+			fmt.Println("    /webui [start|stop]          - Start webUI")
 			fmt.Println("\n  ACCOUNT:")
 			fmt.Println("    /accounts                    - List all accounts (Not Implemented)")
 			fmt.Println("    /generate                    - Generate new account key pair (Not Implemented)")
@@ -150,8 +150,15 @@ func main() {
 				}
 				oht.Interface.ConnectToPeer(parts[1])
 			}
-		} else if body == "/webui" {
-			oht.Interface.WebUIStart()
+		} else if len(body) > 6 && body[0:6] == "/webui" {
+			parts := strings.Split(body, " ")
+			if len(parts) == 2 {
+				if parts[1] == "start" {
+					oht.Interface.WebUIStart()
+				} else {
+					oht.Interface.WebUIStop()
+				}
+			}
 		} else if body == "/quit" || body == "/q" || body == "exit" {
 			oht.Interface.Stop()
 		} else {
