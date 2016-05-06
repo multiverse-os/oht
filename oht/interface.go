@@ -35,7 +35,7 @@ type Validator interface{}
 func (i *Interface) ClientName() string    { return i.config.ClientName }
 func (i *Interface) ClientVersion() string { return i.config.clientVersion() }
 func (i *Interface) ClientInfo() string    { return i.config.clientInfo() }
-func (i *Interface) Locale() string        { return "en" }
+func (i *Interface) Locale() string        { return i.config.Locale }
 
 // TOR INFORMATION
 func (i *Interface) TorListenPort() string     { return i.tor.ListenPort }
@@ -49,8 +49,7 @@ func (i *Interface) TorWebUIOnionHost() string { return i.tor.WebUIOnionHost }
 func (i *Interface) MaxPendingPeers() int { return i.config.MaxPendingPeers }
 func (i *Interface) MaxPeers() int        { return i.config.MaxPeers }
 
-// START/QUIT
-func (i *Interface) Start() {} // Currently everything starts at initialization
+// QUIT
 func (i *Interface) Stop() {
 	if i.webUI.Server.Online {
 		i.webUI.Server.Stop()

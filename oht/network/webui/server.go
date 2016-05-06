@@ -10,6 +10,7 @@ import (
 
 type WebUI struct {
 	Server       *network.WebServer
+	Engine       *gin.Engine
 	OnionHost    string
 	BaseTemplate string
 	Templates    map[string]*template.Template
@@ -20,6 +21,7 @@ func InitializeWebUI(onionHost, webUIPort string) *WebUI {
 	engine := gin.New()
 	webUI := &WebUI{
 		Server:       network.InitializeWebServer(engine, ("127.0.0.1:" + webUIPort)),
+		Engine:       engine,
 		OnionHost:    onionHost,
 		BaseTemplate: "ui/webui/templates/layouts/application.html",
 		Templates:    make(map[string]*template.Template),
@@ -42,19 +44,22 @@ func InitializeWebUI(onionHost, webUIPort string) *WebUI {
 }
 
 func (webUI *WebUI) getIndex(c *gin.Context) {
-	c.HTML(200, "index.html", gin.H{
+	webUI.Engine.SetHTMLTemplate(webUI.Templates["index"])
+	c.HTML(200, "application.html", gin.H{
 		"wsHost": webUI.OnionHost,
 	})
 }
 
 func (webUI *WebUI) getAbout(c *gin.Context) {
-	c.HTML(200, "about.html", gin.H{
+	webUI.Engine.SetHTMLTemplate(webUI.Templates["about"])
+	c.HTML(200, "application.html", gin.H{
 		"wsHost": webUI.OnionHost,
 	})
 }
 
 func (webUI *WebUI) getContact(c *gin.Context) {
-	c.HTML(200, "contact.html", gin.H{
+	webUI.Engine.SetHTMLTemplate(webUI.Templates["contact"])
+	c.HTML(200, "application.html", gin.H{
 		"wsHost": webUI.OnionHost,
 	})
 }

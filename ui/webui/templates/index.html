@@ -1,7 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<title>Chat Example</title>
+{{ define "title" }}oht{{ end }}
+
+{{ define "content" }}
+
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script type="text/javascript">
     $(function() {
@@ -93,12 +93,10 @@ body {
 }
 
 </style>
-</head>
-<body>
 <div id="log"></div>
 <form id="form">
     <input type="submit" value="Send" />
     <input type="text" id="msg" size="64"/>
 </form>
-</body>
-</html>
+
+{{ end }}
