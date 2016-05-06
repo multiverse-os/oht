@@ -1,5 +1,30 @@
 # oht v0.1.0
-An onion distributed hash table, is a DHT that is routed through the onion network using Tor's onion services. oht is an implementation of a onion distributed hash table that is designed to be used as a framework for secure onion routed decentralized applications.  oht sets out to be a general purpose framework, design for broad set of use cases. oht can be used as the foundation decentralized web application replacement, decentralized chat, file sharing, VOIP or securely networking arm computers (IoT). **This software is experimental, use with caution. The code is in flux at this prealpha stage.** *The protocol specifications are still subject to major changes.*
+An onion distributed hash table, is a DHT that is routed through the onion network using Tor's onion services. oht is an implementation of a onion distributed hash table that is designed to be used as a framework for secure onion routed decentralized applications.  oht sets out to be a general purpose framework, design for broad set of use cases. oht can be used as the foundation decentralized web application replacement, decentralized chat, file sharing, VOIP or securely networking arm computers (IoT). 
+
+**This software is experimental, use with caution. The code is in flux at this pre-alpha stage.** *The protocol specifications are still subject to major changes.*
+
+## Executables
+
+oth comes with three wrappers/executables found in
+[the `ui` directory](https://github.com/onionhash/oht/tree/master/ui):
+
+ Command  |         |
+----------|---------|
+`oth-cli` | OTH CLI Interface (ethereum command line interface client) |
+`oth-console` | OTH Console Interface |
+`othd` | OTH Daemon Client |
+
+## APIs
+oth comes with three APIs found in
+[the `api` directory](https://github.com/onionhash/oht/tree/master/api):
+
+ Proposed APIs  |         |
+----------|---------|
+rest | JSON Rest API |
+websockets | JSON websocket API |
+ipc | Interprocess communication  |
+
+## Why use an oht over a traditional dht
 
 Tor is misunderstood, for the purpose of this documentation, we will focus on how often people will confuse Tor Browser Bundle (TBB) with Tor. Tor is a client for a decentralized p2p onion routing network, which translates to adding additional proxy layers between you and your destination when accessing the internet. Tor works with any port, and is not restricted to port 80. Additional proxy layers provide a connection with additional security and bypass the regional restrictions being imposed on the world wide web. One example use case for onion routing is a journalist using TBB to bypass national firewalls to report accurate news. The aim is highlight that Tor provides more than just a solution for secure Internet browsing, Tor provides a solution for secure hosting through onion services. 
 
@@ -73,26 +98,8 @@ Easy identity sharing is important, possibly through the use of expirable human 
 
 Each one will include an interface.go file that matches the general structure of the oht/interface.go file. APIs and UIs will interact with these interfaces.
 
-## APIs
-oth comes with several APIs found in
-[the `api` directory](https://github.com/onionhash/oht/tree/master/api):
 
- Planned APIs  |         |
-----------|---------|
-rest | JSON Rest API |
-websockets | JSON websocket API |
-ipc | Interprocess communication  |
 
-## Executables
-
-oth comes with several wrappers/executables found in
-[the `ui` directory](https://github.com/onionhash/oht/tree/master/ui):
-
- Command  |         |
-----------|---------|
-`oth-cli` | OTH CLI Interface (ethereum command line interface client) |
-`oth-console` | OTH Console Interface |
-`othd` | OTH Daemon Client |
 
 ## Building Decentralized Applications
 The best way to use the codebase in its current prealpha stage is to fork the repository and experiment.
