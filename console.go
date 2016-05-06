@@ -67,7 +67,7 @@ func main() {
 			fmt.Println("    /predecessor                 - Previous peer in identifier ring (Not Implemented)")
 			fmt.Println("    /ftable                      - List ftable peers (Not Implemented)")
 			fmt.Println("    /create                      - Create new ring (Not Implemented)")
-			fmt.Println("    /connect [onion address|id]  - Join to ring with peer (Not Implemented)")
+			fmt.Println("    /connect [onion address]     - Join to ring with peer")
 			fmt.Println("    /lookup [id]                 - Find onion address of account with id (Not Implemented)")
 			fmt.Println("    /ping [onion address|id]     - Ping peer (Not Implemented)")
 			fmt.Println("    /ringcast [message]          - Message every peer in ring (Not Implemented)")

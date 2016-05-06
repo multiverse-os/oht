@@ -82,9 +82,9 @@ oth comes with several wrappers/executables found in
 
  Command  |         |
 ----------|---------|
+`othd` | OTH Daemon Client |
 `oth-cli` | OTH CLI Interface (ethereum command line interface client) |
 `oth-console` | OTH Console Interface |
-`othd` | OTH Daemon Client |
 
 ## Building Decentralized Applications
 The best way to use the codebase in its current prealpha stage is to fork the repository and experiment.
