@@ -6,24 +6,42 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var (
+	host string
+)
+
 func InitializeServer(onionHost, webUIPort string) (server *network.WebServer) {
 	gin.SetMode(gin.ReleaseMode)
-	r := gin.New()
-	r.LoadHTMLFiles("ui/webui/index.html")
-	//r.Static("/public/css/", "./public/css")
-	//r.Static("/public/js/", "./public/js/")
-	//r.Static("/public/fonts/", "./public/fonts/")
-	//r.Static("/public/img/", "./public/img/")
+	engine := gin.New()
+	host = onionHost
 
-	//r.GET("/", IndexRouter)
-	//r.GET("/about", AboutRoute)
-	//r.GET("/contact", ContactRoute)
-	//r.GET("/signin", SigninRoute)
-	//r.GET("/signup", SignupRoute)
-	r.GET("/", func(c *gin.Context) {
-		c.HTML(200, "index.html", gin.H{
-			"wsHost": onionHost,
-		})
+	engine.LoadHTMLGlob("ui/webui/templates/*")
+	engine.Static("/public/css/", "ui/webui/public/css")
+	engine.Static("/public/js/", "ui/webui/public/js/")
+	engine.Static("/public/fonts/", "ui/webui/public/fonts/")
+	engine.Static("/public/img/", "ui/webui/public/img/")
+
+	engine.GET("/", getIndex)
+	engine.GET("/about", getAbout)
+	engine.GET("/contact", getContact)
+
+	return network.InitializeWebServer(engine, ("127.0.0.1:" + webUIPort))
+}
+
+func getIndex(c *gin.Context) {
+	c.HTML(200, "index.html", gin.H{
+		"wsHost": host,
 	})
-	return network.InitializeWebServer(r, ("127.0.0.1:" + webUIPort))
+}
+
+func getAbout(c *gin.Context) {
+	c.HTML(200, "about.html", gin.H{
+		"wsHost": host,
+	})
+}
+
+func getContact(c *gin.Context) {
+	c.HTML(200, "contact.html", gin.H{
+		"wsHost": host,
+	})
 }

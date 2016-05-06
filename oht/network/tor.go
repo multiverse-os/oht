@@ -66,24 +66,10 @@ func InitializeTor(listenPort, socksPort, controlPort, webUIPort string) (tor *T
 		}
 	}
 	torCmd := exec.Command(tor.binaryFile, "-f", tor.configFile)
-	stdout, _ := torCmd.StdoutPipe()
-	err := torCmd.Start()
-	if err != nil {
-		log.Fatal("Tor: Failed to start: %s", err)
-	}
-	scanner := bufio.NewScanner(stdout)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if match, _ := regexp.Match("(100%|Is Tor already running?)", []byte(line)); match {
-			break
-		}
-	}
-	tor.process = torCmd.Process
-	tor.cmd = torCmd
-	tor.Pid = fmt.Sprintf("%d", torCmd.Process.Pid)
 	tor.OnionHost = tor.readOnionHost("internal")
 	tor.WebUIOnionHost = tor.readOnionHost("webui")
 	tor.authCookie = tor.readAuthCookie()
+	tor.cmd = torCmd
 	return tor
 }
 
@@ -119,6 +105,23 @@ func (tor *TorProcess) initializeConfig() error {
 	} else {
 		return nil
 	}
+}
+
+func (tor *TorProcess) Start() {
+	stdout, _ := tor.cmd.StdoutPipe()
+	err := tor.cmd.Start()
+	if err != nil {
+		log.Fatal("Tor: Failed to start: %s", err)
+	}
+	scanner := bufio.NewScanner(stdout)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if match, _ := regexp.Match("(100%|Is Tor already running?)", []byte(line)); match {
+			break
+		}
+	}
+	tor.process = tor.cmd.Process
+	tor.Pid = fmt.Sprintf("%d", tor.cmd.Process.Pid)
 }
 
 func (tor *TorProcess) controlCommand(command string) {
