@@ -80,7 +80,9 @@ func (i *Interface) GetConfig() *Config {
 func (i *Interface) SetConfigOption(key, value string) bool {
 	return i.config.setConfigOption(key, value)
 }
-func (i *Interface) UnsetConfigOption(key string) bool { return false }
+func (i *Interface) UnsetConfigOption(key string) bool {
+	return i.config.unsetConfigOption(key)
+}
 func (i *Interface) SaveConfig() bool {
 	return i.config.saveConfiguration()
 }

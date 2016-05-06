@@ -84,6 +84,7 @@ oth comes with several wrappers/executables found in
 ----------|---------|
 `oth-cli` | OTH CLI Interface (ethereum command line interface client) |
 `oth-console` | OTH Console Interface |
+`othd` | OTH Daemon Client |
 
 ## Building Decentralized Applications
 The best way to use the codebase in its current prealpha stage is to fork the repository and experiment.
@@ -100,7 +101,7 @@ A basic console is the first goal for the UI and will be used as a way of outlin
       CONFIG:
         /config                      - List configuration values
         /set [config] [option]       - Change configuration options
-        /unset [config]              - Unset configuration option (Not Implemented)
+        /unset [config]              - Unset configuration option
         /save                        - Save configuration values
     
       TOR:

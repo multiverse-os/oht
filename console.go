@@ -55,7 +55,7 @@ func main() {
 			fmt.Println("  CONFIG:")
 			fmt.Println("    /config                      - List configuration values")
 			fmt.Println("    /set [config] [option]       - Change configuration options")
-			fmt.Println("    /unset [config]              - Unset configuration option (Not Implemented)")
+			fmt.Println("    /unset [config]              - Unset configuration option")
 			fmt.Println("    /save                        - Save configuration values")
 			fmt.Println("\n  TOR:")
 			fmt.Println("    /tor [start|stop]            - Start or stop tor process (Not Implemented)")
@@ -102,7 +102,7 @@ func main() {
 		} else if body == "/config" || body == "/c" {
 			config, _ := json.Marshal(oht.Interface.GetConfig())
 			fmt.Println("Configuration: " + string(config))
-		} else if (len(body) > 4 && body[0:4] == "/set") || (len(body) == 2 && body[0:2] == "/s") {
+		} else if len(body) > 4 && body[0:4] == "/set" {
 			parts := strings.Split(body, " ")
 			if len(parts) >= 3 {
 				value := strings.Split(body, string(parts[1]+" "))
@@ -116,9 +116,32 @@ func main() {
 			} else {
 				fmt.Println("Configuration: Failed to set configuration option.")
 			}
+		} else if len(body) > 6 && body[0:6] == "/unset" {
+			parts := strings.Split(body, " ")
+			if len(parts) == 2 {
+				oht.Interface.UnsetConfigOption(parts[1])
+				config, err := json.Marshal(oht.Interface.GetConfig())
+				if err != nil {
+					fmt.Println("Configuration: Failed to unset configuration option.")
+				} else {
+					fmt.Println("Configuration: " + string(config))
+				}
+			} else {
+				fmt.Println("Configuration: Failed to unset configuration option.")
+			}
 		} else if body == "/save" {
-			fmt.Println("Configuration save: %v", oht.Interface.SaveConfig())
-		} else if body == "/webui" || body == "/w" {
+			if oht.Interface.SaveConfig() {
+				fmt.Println("Configuration: Saved.")
+				config, err := json.Marshal(oht.Interface.GetConfig())
+				if err != nil {
+					fmt.Println("Configuration: Failed to save.")
+				} else {
+					fmt.Println("Configuration: " + string(config))
+				}
+			} else {
+				fmt.Println("Configuration: Failed to save.")
+			}
+		} else if body == "/webui" {
 			oht.Interface.WebUIStart()
 		} else if body == "/quit" || body == "/q" || body == "exit" {
 			oht.Interface.Stop()
