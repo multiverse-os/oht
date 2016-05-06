@@ -55,8 +55,8 @@ The primary client during this stage of development is the console client.
         /predecessor                 - Previous peer in identifier ring (Not Implemented)
         /ftable                      - List ftable peers (Not Implemented)
         /create                      - Create new ring (Not Implemented)
-        /connect [onion address|id]  - Join to ring with peer (Not Implemented)
-        /lookup [onion address|id]   - Find onion address of account with id (Not Implemented)
+        /connect [onion address]     - Join to ring with peer
+        /lookup [id]                 - Find onion address of account with id (Not Implemented)
         /ping [onion address]        - Ping peer (Not Implemented)
         /ringcast [message]          - Message every peer in ring (Not Implemented)
     

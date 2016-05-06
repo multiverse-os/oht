@@ -141,6 +141,15 @@ func main() {
 			} else {
 				fmt.Println("Configuration: Failed to save.")
 			}
+		} else if len(body) > 8 && body[0:8] == "/connect" {
+			parts := strings.Split(body, " ")
+			if len(parts) == 2 {
+				if match, _ := regexp.Match(":", []byte(parts[1])); !match {
+					addressParts := strings.Split(body, ":")
+					parts[1] = addressParts[0]
+				}
+				oht.Interface.ConnectToPeer(parts[1])
+			}
 		} else if body == "/webui" {
 			oht.Interface.WebUIStart()
 		} else if body == "/quit" || body == "/q" || body == "exit" {
