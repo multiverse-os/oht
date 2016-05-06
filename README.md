@@ -24,6 +24,69 @@ rest | JSON Rest API |
 websockets | JSON websocket API |
 ipc | Interprocess communication  |
 
+### Usage
+The primary client during this stage of development is the console.
+
+#### Console Client
+
+    oht> /help
+    COMMANDS:
+      CONFIG:
+        /config                      - List configuration values
+        /set [config] [option]       - Change configuration options
+        /unset [config]              - Unset configuration option
+        /save                        - Save configuration values
+    
+      TOR:
+        /tor [start|stop]            - Start or stop tor process (Not Implemented)
+        /newtor                      - Obtain new Tor identity (Not Implemented)
+        /newonion                    - Obtain new onion address (Not Implemented)
+    
+      NETWORK:
+        /peers                       - List all connected peers (Not Implemented)
+        /successor                   - Next peer in identifier ring (Not Implemented)
+        /predecessor                 - Previous peer in identifier ring (Not Implemented)
+        /ftable                      - List ftable peers (Not Implemented)
+        /create                      - Create new ring (Not Implemented)
+        /connect [onion address|id]  - Join to ring with peer (Not Implemented)
+        /lookup [onion address|id]   - Find onion address of account with id (Not Implemented)
+        /ping [onion address]        - Ping peer (Not Implemented)
+        /ringcast [message]          - Message every peer in ring (Not Implemented)
+    
+      DHT:
+        /put [key] [value]           - Put key and value into database (Not Implemented)
+        /get [key]                   - Get value of key (Not Implemented)
+        /delete [key]                - Delete value of key (Not Implemented)
+    
+      WEBUI:
+        /webui                       - Start webUI
+    
+      ACCOUNT:
+        /accounts                    - List all accounts (Not Implemented)
+        /generate                    - Generate new account key pair (Not Implemented)
+        /delete                      - Delete an account key pair (Not Implemented)
+        /sign [id] [message]         - Sign with account key pair (Not Implemented)
+        /verify [id] [message]       - Verify a signed message with keypair (Not Implemented)
+        /encrypt [id] [message]      - Encrypt a message with keypair (Not Implemented)
+        /decrypt [id] [message]      - Decrypt a message with keypair (Not Implemented)
+    
+      CONTACTS:
+        /contacts                    - List all saved contacts (Not Implemented)
+        /request [id] [message]      - Request account to add your id to their contacts (Not Implemented)
+        /add [id]                    - Add account to contacts (Not Implemented)
+        /rm [id]                     - Remove account from contacts (Not Implemented)
+        /whisper [id] [message]      - Direct message peer (Not Implemented)
+        /contactcast [message]       - Message all contacts (Not Implemented)
+    
+      CHANNELS:
+        /channels                    - List all known channels (Not Implemented)
+        /channel                     - Generates a new channel (Not Implemented)
+        /join [id]                   - Join channel with id (Not Implemented)
+        /leave [id]                  - Leave channel with id (Not Implemented)
+        /channelcast [id] [message]  - Message all channel subscribers (Not Implemented)
+    
+        /quit
+
 ## oht Explanation and Comparison to Typical DHT
 
 Tor is misunderstood, for the purpose of this documentation, we will focus on how often people will confuse Tor Browser Bundle (TBB) with Tor. Tor is a client for a decentralized p2p onion routing network, which translates to adding additional proxy layers between you and your destination when accessing the internet. Tor works with any port, and is not restricted to port 80. Additional proxy layers provide a connection with additional security and bypass the regional restrictions being imposed on the world wide web. One example use case for onion routing is a journalist using TBB to bypass national firewalls to report accurate news. The aim is highlight that Tor provides more than just a solution for secure Internet browsing, Tor provides a solution for secure hosting through onion services. 
@@ -98,76 +161,12 @@ Easy identity sharing is important, possibly through the use of expirable human 
 
 Each one will include an interface.go file that matches the general structure of the oht/interface.go file. APIs and UIs will interact with these interfaces.
 
-
-
-
 ## Building Decentralized Applications
 The best way to use the codebase in its current prealpha stage is to fork the repository and experiment.
 
 The goal is for oht to create a framework analagous to Rails. How rails provides an intuitive framework for creating web applications rapidly, oht is planned to be a framework for creating secure decentalized applications rapidly.
 
 The first release candidate will include tools to build a boilerplate decentralized application.
-
-### Usage
-A basic console is the first goal for the UI and will be used as a way of outlining the basic functional requirements of the design. Much of the functionality works but just has not yet been tied to the console command.
-
-    oht> /help
-    COMMANDS:
-      CONFIG:
-        /config                      - List configuration values
-        /set [config] [option]       - Change configuration options
-        /unset [config]              - Unset configuration option
-        /save                        - Save configuration values
-    
-      TOR:
-        /tor [start|stop]            - Start or stop tor process (Not Implemented)
-        /newtor                      - Obtain new Tor identity (Not Implemented)
-        /newonion                    - Obtain new onion address (Not Implemented)
-    
-      NETWORK:
-        /peers                       - List all connected peers (Not Implemented)
-        /successor                   - Next peer in identifier ring (Not Implemented)
-        /predecessor                 - Previous peer in identifier ring (Not Implemented)
-        /ftable                      - List ftable peers (Not Implemented)
-        /create                      - Create new ring (Not Implemented)
-        /connect [onion address|id]  - Join to ring with peer (Not Implemented)
-        /lookup [onion address|id]   - Find onion address of account with id (Not Implemented)
-        /ping [onion address]        - Ping peer (Not Implemented)
-        /ringcast [message]          - Message every peer in ring (Not Implemented)
-    
-      DHT:
-        /put [key] [value]           - Put key and value into database (Not Implemented)
-        /get [key]                   - Get value of key (Not Implemented)
-        /delete [key]                - Delete value of key (Not Implemented)
-    
-      WEBUI:
-        /webui                       - Start webUI
-    
-      ACCOUNT:
-        /accounts                    - List all accounts (Not Implemented)
-        /generate                    - Generate new account key pair (Not Implemented)
-        /delete                      - Delete an account key pair (Not Implemented)
-        /sign [id] [message]         - Sign with account key pair (Not Implemented)
-        /verify [id] [message]       - Verify a signed message with keypair (Not Implemented)
-        /encrypt [id] [message]      - Encrypt a message with keypair (Not Implemented)
-        /decrypt [id] [message]      - Decrypt a message with keypair (Not Implemented)
-    
-      CONTACTS:
-        /contacts                    - List all saved contacts (Not Implemented)
-        /request [id] [message]      - Request account to add your id to their contacts (Not Implemented)
-        /add [id]                    - Add account to contacts (Not Implemented)
-        /rm [id]                     - Remove account from contacts (Not Implemented)
-        /whisper [id] [message]      - Direct message peer (Not Implemented)
-        /contactcast [message]       - Message all contacts (Not Implemented)
-    
-      CHANNELS:
-        /channels                    - List all known channels (Not Implemented)
-        /channel                     - Generates a new channel (Not Implemented)
-        /join [id]                   - Join channel with id (Not Implemented)
-        /leave [id]                  - Leave channel with id (Not Implemented)
-        /channelcast [id] [message]  - Message all channel subscribers (Not Implemented)
-    
-        /quit
 
 ## Contribute
 
