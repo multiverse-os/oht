@@ -31,6 +31,7 @@ type TorProcess struct {
 	onionServiceDirectory string
 	webUIOnionDirectory   string
 	dataDirectory         string
+	debugLog              string
 	binaryFile            string
 	configFile            string
 	pidFile               string
@@ -50,6 +51,7 @@ func InitializeTor(listenPort, socksPort, controlPort, webUIPort string) (tor *T
 		avoidDiskWrites:       0,
 		hardwareAcceleration:  1,
 		dataDirectory:         common.AbsolutePath(common.DefaultDataDir(), "tor/data"),
+		debugLog:              common.AbsolutePath(common.DefaultDataDir(), "tor/debug.log"),
 		onionServiceDirectory: common.AbsolutePath(common.DefaultDataDir(), "tor/onion_service"),
 		webUIOnionDirectory:   common.AbsolutePath(common.DefaultDataDir(), "tor/onion_webui"),
 		binaryFile:            common.AbsolutePath("oht/network/tor/bin/linux/64/", "tor"),
@@ -80,7 +82,7 @@ func (tor *TorProcess) Start() bool {
 	scanner := bufio.NewScanner(stdout)
 	for scanner.Scan() {
 		line := scanner.Text()
-		log.Println(line)
+		//log.Println(line)
 		if match, _ := regexp.Match("(100%|Is Tor already running?)", []byte(line)); match {
 			tor.Online = true
 			break
@@ -95,8 +97,9 @@ func (tor *TorProcess) Start() bool {
 }
 
 func (tor *TorProcess) Stop() bool {
-	//tor.Shutdown() - Was not effective, need to investigate if the control system is working
-	tor.cmd.Process.Kill()
+	if tor.Online {
+		tor.cmd.Process.Kill()
+	}
 	tor.Online = false
 	return tor.Online
 }
@@ -116,6 +119,8 @@ func (tor *TorProcess) initializeConfig() error {
 	config += fmt.Sprintf("AvoidDiskWrites %d\n", tor.avoidDiskWrites)
 	config += fmt.Sprintf("AutomapHostsOnResolve 1\n")
 	config += fmt.Sprintf("CookieAuthentication 1\n")
+	//config += fmt.Sprintf("SocksPolicy accept 192.168.0.0/16\n")
+	//config += fmt.Sprintf("Log debug file %s\n", tor.debugLog)
 	err := ioutil.WriteFile(tor.configFile, []byte(config), 0644)
 	if err != nil {
 		return err

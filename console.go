@@ -28,6 +28,7 @@ func main() {
 	log.SetFlags(0)
 	oht := oht.NewOHT(*listenPort, *socksPort, *controlPort, *webUIPort)
 	log.Println("Starting " + oht.Interface.ClientInfo())
+	oht.Interface.TorStart()
 	log.Println("Listening for peers: " + oht.Interface.TorOnionHost())
 	// Connect Directly To Known Peer And Join Ring
 	if *peerAddress != "" {
@@ -197,7 +198,7 @@ func main() {
 				}
 			}
 		} else if body == "/quit" || body == "/q" || body == "exit" {
-			oht.Interface.Stop()
+			oht.Stop()
 		} else {
 			oht.Interface.RingCast(username, body)
 		}

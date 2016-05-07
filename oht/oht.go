@@ -1,6 +1,7 @@
 package oht
 
 import (
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,45 +13,56 @@ import (
 )
 
 type OHT struct {
-	// Should client name,version and other information be cached here?
 	Interface *Interface
 	config    *Config
 	tor       *network.TorProcess
 	p2p       *p2p.Manager
 	webUI     *webui.WebUI
-	// Channel for shutting down the oht
-	//shutdownChan chan bool
-	//protocolManager *ProtocolManager -- will this be useful?
-	//eventMux *event.TypeMux
+	Shutdown  chan os.Signal
 }
 
-func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort string) *OHT {
-	// Initialize Data Directory
+func (oht *OHT) cleanShutdown(c chan os.Signal) {
+	signal.Notify(oht.Shutdown, os.Interrupt, syscall.SIGTERM)
+	<-c
+	oht.Stop()
+}
+
+func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort string) (oht *OHT) {
 	common.CreatePathUnlessExist("", 0700)
 	common.CreatePathUnlessExist("/keys", 0700)
-	// Set defaults for torPorts to use if not specified
 	config := InitializeConfig(torListenPort, torSocksPort, torControlPort, torWebUIPort)
-	// This should be read from the default initialization
-	// Should starting tor be a separate function from initialization? Functions to control Tor will be required...
+	log.Println("configed")
 	tor := network.InitializeTor(config.TorListenPort, config.TorSocksPort, config.TorControlPort, config.TorWebUIPort)
-	// Initialize WebUI Server
-	webUI := webui.InitializeWebUI(tor.WebUIOnionHost, tor.WebUIPort)
-	// Initialize & Start P2P Networking
-	p2p := p2p.InitializeP2PManager(torListenPort)
-	go p2p.Start()
-	// Define a clean shutdown process
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-c
-		tor.Shutdown()
-		os.Exit(1)
-	}()
-	return &OHT{
+	log.Println("torred")
+	p2p := p2p.InitializeP2PManager(config.TorListenPort)
+	log.Println("p2ped")
+	webUI := webui.InitializeWebUI(tor.WebUIOnionHost, config.TorWebUIPort)
+	log.Println("webuid")
+	oht = &OHT{
 		Interface: NewInterface(config, tor, webUI, p2p),
 		config:    config,
 		tor:       tor,
 		p2p:       p2p,
 		webUI:     webUI,
+		Shutdown:  make(chan os.Signal, 1),
 	}
+	go oht.cleanShutdown(oht.Shutdown)
+
+	return oht
+}
+
+func (oht *OHT) Start() bool {
+	oht.tor.Start()
+	go oht.p2p.Start()
+	return true
+}
+
+func (oht *OHT) Stop() bool {
+	// Stop webUI
+	oht.webUI.Server.Stop()
+	// Stop p2p
+	// Stop tor
+	oht.tor.Stop()
+	os.Exit(1)
+	return true
 }

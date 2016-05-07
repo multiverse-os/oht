@@ -2,7 +2,6 @@ package oht
 
 import (
 	"log"
-	"os"
 
 	"./common"
 	"./crypto"
@@ -28,7 +27,7 @@ func NewInterface(c *Config, t *network.TorProcess, w *webui.WebUI, p *p2p.Manag
 	}
 }
 
-// GENERAL INFORMATION
+// STATE INFORMATION
 func (i *Interface) ClientName() string    { return i.config.ClientName }
 func (i *Interface) ClientVersion() string { return i.config.clientVersion() }
 func (i *Interface) ClientInfo() string    { return i.config.clientInfo() }
@@ -44,17 +43,6 @@ func (i *Interface) TorWebUIOnionHost() string { return i.tor.WebUIOnionHost }
 func (i *Interface) MaxPendingPeers() int { return i.config.MaxPendingPeers }
 func (i *Interface) MaxPeers() int        { return i.config.MaxPeers }
 
-// QUIT
-func (i *Interface) Stop() {
-	if i.webUI.Server.Online {
-		i.webUI.Server.Stop()
-	}
-	// Stop everything
-	// Stop p2p networking
-	// Stop Tor
-	os.Exit(0)
-}
-
 // KEY STORE
 func (i *Interface) NewUnecryptedKeyStore() crypto.KeyStore {
 	return crypto.NewKeyStorePlain(common.DefaultDataDir() + "/keys")
@@ -63,7 +51,7 @@ func (i *Interface) NewEncryptedKeyStore() crypto.KeyStore {
 	return crypto.NewKeyStorePassphrase(common.DefaultDataDir()+"/keys", crypto.KDFStandard)
 }
 
-// CONFIG
+// CONFIG INTERFACE
 func (i *Interface) Config() *Config {
 	return i.config
 }
@@ -77,7 +65,7 @@ func (i *Interface) ConfigSave() bool {
 	return i.config.saveConfiguration()
 }
 
-// TOR
+// TOR INTERFACE
 func (i *Interface) TorOnline() bool {
 	return i.tor.Online
 }
@@ -95,26 +83,30 @@ func (i *Interface) TorCycleOnionAddresses() bool {
 	return true
 }
 
-// NETWORK
+// NETWORK INTERFACE
 func (i *Interface) ListPeers() (peers []string)    { return }
 func (i *Interface) PeerSuccessor() (peer string)   { return }
 func (i *Interface) PeerPredecessor() (peer string) { return }
 func (i *Interface) PeerFTable() (peers []string)   { return }
 func (i *Interface) NewRing() (ringData string)     { return }
-func (i *Interface) ConnectToPeer(peerAddress string) (successful bool) {
-	go i.p2p.ConnectToPeer(peerAddress, i.tor.ListenPort)
-	return true
+func (i *Interface) ConnectToPeer(peerAddress string) bool {
+	if i.tor.Online {
+		go i.p2p.ConnectToPeer(peerAddress, i.tor.ListenPort)
+		return true
+	} else {
+		return false
+	}
 }
-func (in *Interface) RingLookupPeerById(peerId string) (peer string) { return }
-func (in *Interface) RingPing(onionAddress string) (pong string)     { return }
-func (i *Interface) RingCast(username, body string) (successful bool) {
+func (in *Interface) RingLookupPeerById(peerId string) string { return "" }
+func (in *Interface) RingPing(onionAddress string) bool       { return false }
+func (i *Interface) RingCast(username, body string) bool {
 	message := types.NewMessage(username, body)
 	log.Println("[", message.Timestamp, "] ", message.Username, " : ", message.Body)
 	i.p2p.Broadcast <- message
 	return true
 }
 
-// DHT
+// DHT INTERFACE
 func (ohtInterface *Interface) Put(key string, value string) (successful bool) {
 	return
 }
@@ -125,13 +117,17 @@ func (ohtInterface *Interface) Delete(key string) (value string) {
 	return
 }
 
-// WEB UI
+// WEB UI INTERFACE
 func (i *Interface) WebUIOnline() bool {
 	return i.webUI.Server.Online
 }
 func (i *Interface) WebUIStart() bool {
-	err := i.webUI.Server.Start()
-	return (err == nil)
+	if i.tor.Online {
+		err := i.webUI.Server.Start()
+		return (err == nil)
+	} else {
+		return false
+	}
 }
 func (i *Interface) WebUIStop() bool {
 	return i.webUI.Server.Stop()

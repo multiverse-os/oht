@@ -2,6 +2,7 @@ package network
 
 import (
 	"errors"
+	"log"
 	"net"
 	"net/http"
 	"time"
@@ -42,7 +43,9 @@ func (wServer *WebServer) Start() error {
 		if err != nil {
 			return err
 		}
+		log.Println("turning on listener")
 		go hServer.Serve(wServer.listener)
+		log.Println("turned on listener")
 		wServer.Online = true
 		if err != nil {
 			if err != stoppedError {
@@ -56,9 +59,11 @@ func (wServer *WebServer) Start() error {
 }
 
 func (server *WebServer) Stop() bool {
-	close(server.listener.stop)
-	server.Online = false
-	return true
+	if server.Online {
+		close(server.listener.stop)
+		server.Online = false
+	}
+	return !server.Online
 }
 
 type tcpKeepAliveListener struct {
