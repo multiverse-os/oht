@@ -61,14 +61,14 @@ func main() {
 			fmt.Println("\n  TOR:")
 			fmt.Println("    /tor [start|stop]            - Start or stop tor process")
 			fmt.Println("    /newtor                      - Obtain new Tor identity (Not Implemented)")
-			fmt.Println("    /newonion                    - Obtain new onion address (Not Implemented)")
+			fmt.Println("    /newonions                   - Obtain new onion address")
 			fmt.Println("\n  NETWORK:")
+			fmt.Println("    /connect [onion address]     - Join identifier ring by connecting to peer")
 			fmt.Println("    /peers                       - List all connected peers (Not Implemented)")
 			fmt.Println("    /successor                   - Next peer in identifier ring (Not Implemented)")
 			fmt.Println("    /predecessor                 - Previous peer in identifier ring (Not Implemented)")
 			fmt.Println("    /ftable                      - List ftable peers (Not Implemented)")
 			fmt.Println("    /create                      - Create new ring (Not Implemented)")
-			fmt.Println("    /connect [onion address]     - Join to ring with peer")
 			fmt.Println("    /lookup [id]                 - Find onion address of account with id (Not Implemented)")
 			fmt.Println("    /ping [onion address|id]     - Ping peer (Not Implemented)")
 			fmt.Println("    /ringcast [message]          - Message every peer in ring (Not Implemented)")
@@ -165,6 +165,13 @@ func main() {
 					}
 				}
 			}
+		} else if body == "/newtor" {
+			oht.Interface.TorCycleIdentity()
+			log.Println("Tor: Obtained new Tor identity.")
+		} else if body == "/newonions" {
+			log.Println("Tor: Purging Tor onion service addresses.")
+			oht.Interface.TorCycleOnionAddresses()
+			log.Println("WebUI Listening: " + oht.Interface.TorWebUIOnionHost() + ":" + oht.Interface.TorWebUIPort())
 			//
 			// NETWORK
 		} else if len(body) > 8 && body[0:8] == "/connect" {

@@ -80,7 +80,9 @@ func (i *Interface) TorCycleIdentity() bool {
 	return true
 }
 func (i *Interface) TorCycleOnionAddresses() bool {
-	return true
+	i.tor.Stop()
+	i.tor.DeleteOnionFiles()
+	return i.tor.Start()
 }
 
 // NETWORK INTERFACE
@@ -101,8 +103,10 @@ func (in *Interface) RingLookupPeerById(peerId string) string { return "" }
 func (in *Interface) RingPing(onionAddress string) bool       { return false }
 func (i *Interface) RingCast(username, body string) bool {
 	message := types.NewMessage(username, body)
-	log.Println("[", message.Timestamp, "] ", message.Username, " : ", message.Body)
-	i.p2p.Broadcast <- message
+	if body != "" {
+		log.Println("[", message.Timestamp, "] ", message.Username, " : ", message.Body)
+		i.p2p.Broadcast <- message
+	}
 	return true
 }
 

@@ -82,7 +82,7 @@ func (tor *TorProcess) Start() bool {
 	scanner := bufio.NewScanner(stdout)
 	for scanner.Scan() {
 		line := scanner.Text()
-		log.Println(line)
+		//log.Println(line)
 		if match, _ := regexp.Match("(100%|Is Tor already running?)", []byte(line)); match {
 			tor.Online = true
 			break
@@ -102,6 +102,12 @@ func (tor *TorProcess) Stop() bool {
 	}
 	tor.Online = false
 	return tor.Online
+}
+
+func (tor *TorProcess) DeleteOnionFiles() bool {
+	os.RemoveAll(tor.onionServiceDirectory)
+	os.RemoveAll(tor.webUIOnionDirectory)
+	return true
 }
 
 // CONFIGURATION
