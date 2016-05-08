@@ -1,7 +1,6 @@
 package oht
 
 import (
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -31,13 +30,9 @@ func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort string) (o
 	common.CreatePathUnlessExist("", 0700)
 	common.CreatePathUnlessExist("/keys", 0700)
 	config := InitializeConfig(torListenPort, torSocksPort, torControlPort, torWebUIPort)
-	log.Println("configed")
 	tor := network.InitializeTor(config.TorListenPort, config.TorSocksPort, config.TorControlPort, config.TorWebUIPort)
-	log.Println("torred")
 	p2p := p2p.InitializeP2PManager(config.TorListenPort)
-	log.Println("p2ped")
 	webUI := webui.InitializeWebUI(tor.WebUIOnionHost, config.TorWebUIPort)
-	log.Println("webuid")
 	oht = &OHT{
 		Interface: NewInterface(config, tor, webUI, p2p),
 		config:    config,
@@ -47,7 +42,6 @@ func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort string) (o
 		Shutdown:  make(chan os.Signal, 1),
 	}
 	go oht.cleanShutdown(oht.Shutdown)
-
 	return oht
 }
 
@@ -58,10 +52,8 @@ func (oht *OHT) Start() bool {
 }
 
 func (oht *OHT) Stop() bool {
-	// Stop webUI
 	oht.webUI.Server.Stop()
 	// Stop p2p
-	// Stop tor
 	oht.tor.Stop()
 	os.Exit(1)
 	return true

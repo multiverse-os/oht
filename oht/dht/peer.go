@@ -65,7 +65,6 @@ type peer struct {
 
 func newPeer(version int, p *p2p.Peer, rw p2p.MsgReadWriter) *peer {
 	id := p.ID()
-
 	return &peer{
 		Peer:        p,
 		rw:          rw,
@@ -89,7 +88,6 @@ func (p *peer) Info() *PeerInfo {
 func (p *peer) Head() (hash common.Hash) {
 	p.lock.RLock()
 	defer p.lock.RUnlock()
-
 	copy(hash[:], p.head[:])
 	return hash
 }
@@ -98,7 +96,6 @@ func (p *peer) Head() (hash common.Hash) {
 func (p *peer) SetHead(hash common.Hash) {
 	p.lock.Lock()
 	defer p.lock.Unlock()
-
 	copy(p.head[:], hash[:])
 }
 
@@ -106,7 +103,6 @@ func (p *peer) SetHead(hash common.Hash) {
 func (p *peer) Td() *big.Int {
 	p.lock.RLock()
 	defer p.lock.RUnlock()
-
 	return new(big.Int).Set(p.td)
 }
 
@@ -114,7 +110,6 @@ func (p *peer) Td() *big.Int {
 func (p *peer) SetTd(td *big.Int) {
 	p.lock.Lock()
 	defer p.lock.Unlock()
-
 	p.td.Set(td)
 }
 
