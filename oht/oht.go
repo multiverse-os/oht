@@ -30,8 +30,8 @@ func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort string) (o
 	common.CreatePathUnlessExist("", 0700)
 	common.CreatePathUnlessExist("/keys", 0700)
 	config := InitializeConfig(torListenPort, torSocksPort, torControlPort, torWebUIPort)
-	tor := network.InitializeTor(config.TorListenPort, config.TorSocksPort, config.TorControlPort, config.TorWebUIPort)
-	p2p := p2p.InitializeP2PManager(config.TorListenPort)
+	tor := network.InitializeTor(config)
+	p2p := p2p.InitializeP2PManager(config)
 	webUI := webui.InitializeWebUI(tor.WebUIOnionHost, config.TorWebUIPort)
 	oht = &OHT{
 		Interface: NewInterface(config, tor, webUI, p2p),

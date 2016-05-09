@@ -7,12 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	defaultConnectionTimeout = 15 * time.Second
-	refreshPeersInterval     = 90 * time.Second
-	maxConnections           = 8
-)
-
 type Server struct {
 	WebSocket *gin.Engine
 	lock      sync.Mutex

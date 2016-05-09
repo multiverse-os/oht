@@ -10,18 +10,13 @@ import (
 	"../../types"
 )
 
-const (
-	writeWait      = 15 * time.Second
-	pongWait       = 60 * time.Second
-	pingPeriod     = (pongWait * 9) / 10
-	maxMessageSize = 1024
-)
-
 type EventFunc func(Manager *Manager, Peer *Peer)
 
 type Manager struct {
+	Config          *config.Config
 	PrivateKey      *ecdsa.PrivateKey
 	Server          *Server
+	MaxQueueSize    int
 	MaxPeers        int
 	MaxPendingPeers int
 	Peers           map[*Peer]bool
@@ -34,18 +29,17 @@ type Manager struct {
 	LastLookup      time.Time
 }
 
-func InitializeP2PManager(port string) *Manager {
+func InitializeP2PManager(config *config.Config) *Manager {
 	return &Manager{
-		// Need to add a new message with custom type to send out
-		// Info about current node, like onion address
 		Server:          &Server{Port: port},
 		MaxPeers:        8,
 		MaxPendingPeers: 8,
-		Broadcast:       make(chan types.Message, maxMessageSize),
-		Receive:         make(chan types.Message, maxMessageSize),
-		Register:        make(chan *Peer, maxMessageSize),
-		Unregister:      make(chan *Peer, maxMessageSize),
-		Peers:           make(map[*Peer]bool, maxMessageSize),
+		MaxQueueSize:    1024,
+		Broadcast:       make(chan types.Message, 1024),
+		Receive:         make(chan types.Message, 1024),
+		Register:        make(chan *Peer, 1024),
+		Unregister:      make(chan *Peer, 1024),
+		Peers:           make(map[*Peer]bool, 1024),
 		OnConnect:       nil,
 		OnClose:         nil,
 		LastLookup:      time.Now(),

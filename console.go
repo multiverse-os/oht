@@ -36,11 +36,11 @@ func main() {
 			*peerAddress += ":9042"
 		}
 		log.Printf("Connecting to peer (Websockets): " + *peerAddress)
-		oht.Interface.ConnectToPeer(*peerAddress)
+		//oht.Interface.ConnectToPeer(*peerAddress)
 	}
 	// Start WebUI
 	if *wui == true {
-		oht.Interface.WebUIStart()
+		//oht.Interface.WebUIStart()
 		log.Println("WebUI Listening: " + oht.Interface.TorWebUIOnionHost() + ":" + oht.Interface.TorWebUIPort())
 	}
 	// Console UI

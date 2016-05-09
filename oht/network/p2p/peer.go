@@ -12,7 +12,6 @@ import (
 )
 
 type Peer struct {
-	// Each peer needs its own crypto key to encrypt and decrypt shit
 	Id         string
 	Version    int
 	Reputation int32
