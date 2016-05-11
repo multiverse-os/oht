@@ -1,0 +1,30 @@
+Found arduino... /dev/ttyACM0
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET   /                         --> main.main.func1 (3 handlers)
+[GIN-debug] POST  /                         --> main.main.func2 (3 handlers)
+Light now listening on 0.0.0.0:8783
+
+Save the following to ~/.lctrl.yml if it does not already exist
+in order to use the lctrl command with this server.
+
+servers:
+  wall:
+    host_ip: 0.0.0.0
+    host_port: 8783
+[GIN-debug] Listening and serving HTTP on 0.0.0.0:8783
+Error: Failed to parse JSON  invalid character ',' looking for beginning of value
+[GIN] 2016/05/09 - 23:24:16 |[97;42m 200 [0m|  4.191521794s | 192.168.1.138 |[97;46m  [0m POST    /
+Error: Failed to parse JSON  invalid character ',' looking for beginning of value
+[GIN] 2016/05/09 - 23:24:34 |[97;42m 200 [0m|  4.207889487s | 192.168.1.138 |[97;46m  [0m POST    /
+[GIN] 2016/05/09 - 23:24:42 |[97;42m 200 [0m|  4.429470063s | 192.168.1.138 |[97;46m  [0m POST    /
+[GIN] 2016/05/09 - 23:24:56 |[97;42m 200 [0m|  4.572913796s | 192.168.1.138 |[97;46m  [0m POST    /
+[GIN] 2016/05/09 - 23:25:08 |[97;42m 200 [0m|  4.694755603s | 192.168.1.138 |[97;46m  [0m POST    /
+[GIN] 2016/05/09 - 23:25:23 |[97;42m 200 [0m|   4.63632503s | 192.168.1.138 |[97;46m  [0m POST    /
+[GIN] 2016/05/09 - 23:25:43 |[97;42m 200 [0m|  4.547521185s | 192.168.1.138 |[97;46m  [0m POST    /
+[GIN] 2016/05/11 - 21:56:01 |[97;42m 200 [0m|  4.474760885s | 192.168.1.138 |[97;46m  [0m POST    /
+[GIN] 2016/05/11 - 21:56:09 |[97;42m 200 [0m|  4.464977876s | 192.168.1.138 |[97;46m  [0m POST    /
+[GIN] 2016/05/11 - 21:56:37 |[97;42m 200 [0m|  4.543748608s | 192.168.1.138 |[97;46m  [0m POST    /
+[GIN] 2016/05/11 - 21:56:44 |[97;42m 200 [0m|  4.515038586s | 192.168.1.138 |[97;46m  [0m POST    /
