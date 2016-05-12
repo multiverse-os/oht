@@ -12,8 +12,10 @@ import (
 )
 
 type WebsocketClient struct {
-	Client    *websocket.Conn
-	OnionHost string
+	Client     *websocket.Conn
+	onionhost  string
+	remotehost string
+	socksPort  string
 }
 
 func (wsClient *WebsocketClient) Connect(remotehost, socksPort string) bool {
