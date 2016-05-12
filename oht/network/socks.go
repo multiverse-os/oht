@@ -1,85 +1,140 @@
+// Copyright 2012, Hailiang Wang. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package network
 
 import (
 	"errors"
-	"io"
+	"fmt"
 	"net"
 	"strconv"
 )
 
 const (
-	socks4aVersion       = 4
-	socks4aConnect       = 1
-	socks4aGranted       = 90
-	socks4aRejected      = 91
-	socks4aMissingIdentd = 92
-	socks4aFailedIdentd  = 93
+	SOCKS4 = iota
+	SOCKS4A
+	SOCKS5
 )
 
-type Socks4a struct {
-	Network string
-	Address string
+func DialProxy(socksType int, proxy string) func(string, string) (net.Conn, error) {
+	if socksType == SOCKS5 {
+		return func(_, targetAddr string) (conn net.Conn, err error) {
+			return dialSocks5(proxy, targetAddr)
+		}
+	}
+	return func(_, targetAddr string) (conn net.Conn, err error) {
+		return dialSocks4(socksType, proxy, targetAddr)
+	}
 }
 
-func (s *Socks4a) Dial(destination string) (net.Conn, error) {
-	destStr, portStr, err := net.SplitHostPort(destination)
+func dialSocks5(proxy, targetAddr string) (conn net.Conn, err error) {
+	conn, err = net.Dial("tcp", proxy)
 	if err != nil {
-		return nil, err
+		return
 	}
-	dest := []byte(destStr)
-
-	port, err := strconv.Atoi(portStr)
+	// version identifier/method selection request
+	req := []byte{
+		5, // version number
+		1, // number of methods
+		0, // method 0: no authentication (only anonymous access supported for now)
+	}
+	resp, err := sendReceive(conn, req)
 	if err != nil {
-		return nil, errors.New("Proxy: Failed to parse port number: " + portStr)
+		return
+	} else if len(resp) != 2 {
+		err = errors.New("Proxy: Server did not respond correctly.")
+		return
+	} else if resp[0] != 5 {
+		err = errors.New("Proxy: Server does not support Socks 5.")
+		return
+	} else if resp[1] != 0 { // no auth
+		err = errors.New("Proxy: Negotiation failed.")
+		return
 	}
-	if port < 1 || port > 0xffff {
-		return nil, errors.New("Proxy: Port number out of range: " + portStr)
+	// detail request
+	host, port, err := splitHostPort(targetAddr)
+	req = []byte{
+		5,               // version number
+		1,               // connect command
+		0,               // reserved, must be zero
+		3,               // address type, 3 means domain name
+		byte(len(host)), // address length
 	}
-
-	buf := make([]byte, 11+len(dest))
-	buf[0] = socks4aVersion
-	buf[1] = socks4aConnect
-	buf[2] = byte(port >> 8)
-	buf[3] = byte(port)
-	buf[4] = 0
-	buf[5] = 0
-	buf[6] = 0
-	buf[7] = 1
-	buf[8] = 65
-	buf[9] = 0
-	for i, c := range dest {
-		buf[10+i] = c
-	}
-	buf[10+len(dest)] = 0
-
-	conn, err := net.Dial(s.Network, s.Address)
+	req = append(req, []byte(host)...)
+	req = append(req, []byte{
+		byte(port >> 8), // higher byte of destination port
+		byte(port),      // lower byte of destination port (big endian)
+	}...)
+	resp, err = sendReceive(conn, req)
 	if err != nil {
-		return nil, err
+		return
+	} else if len(resp) != 10 {
+		err = errors.New("Proxy: Server did not respond correctly.")
+	} else if resp[1] != 0 {
+		err = errors.New("Proxy: Can't complete SOCKS5 connection.")
 	}
 
-	closeConn := &conn
-	defer func() {
-		if closeConn != nil {
-			(*closeConn).Close()
-		}
-	}()
+	return
+}
 
-	_, err = conn.Write(buf)
+func dialSocks4(socksType int, proxy, targetAddr string) (conn net.Conn, err error) {
+	conn, err = net.Dial("tcp", proxy)
 	if err != nil {
-		return nil, errors.New("Proxy: Failed to write CONNECT message to " + s.Address + ": " + err.Error())
+		return
 	}
 
-	_, err = io.ReadFull(conn, buf[:8])
+	host, port, err := splitHostPort(targetAddr)
 	if err != nil {
-		return nil, errors.New("Proxy: Failed to connect to " + s.Address + ": " + err.Error())
+		return
+	}
+	ip := net.IPv4(0, 0, 0, 1).To4()
+	req := []byte{
+		4,                          // version number
+		1,                          // command CONNECT
+		byte(port >> 8),            // higher byte of destination port
+		byte(port),                 // lower byte of destination port (big endian)
+		ip[0], ip[1], ip[2], ip[3], // special invalid IP address to indicate the host name is provided
+		0, // user id is empty, anonymous proxy only
+	}
+	if socksType == SOCKS4A {
+		req = append(req, []byte(host+"\x00")...)
 	}
 
-	if buf[0] != 0 {
-		return nil, errors.New("Proxy: " + s.Address + " has unexpected version " + strconv.Itoa(int(buf[0])))
+	resp, err := sendReceive(conn, req)
+	if err != nil {
+		return
+	} else if len(resp) != 8 {
+		err = errors.New("Proxy: Server did not respond correctly.")
+		return
 	}
-	if buf[1] != socks4aGranted {
-		return nil, errors.New("Proxy: " + s.Address + " failed acceptance")
+	switch resp[1] {
+	case 90:
+		// request granted
+	case 91:
+		err = errors.New("Proxy: Socks connection request rejected or failed.")
+	case 92:
+		err = errors.New("Proxy: Socks connection request rejected becasue SOCKS server cannot connect to identd on the client.")
+	case 93:
+		err = errors.New("Proxy: Socks connection request rejected because the client program and identd report different user-ids.")
+	default:
+		err = errors.New("Proxy: Socks connection request failed, unknown error.")
 	}
-	closeConn = nil
-	return conn, nil
+	return
+}
+
+func sendReceive(conn net.Conn, req []byte) (resp []byte, err error) {
+	_, err = conn.Write(req)
+	if err != nil {
+		return
+	}
+	resp, err = readAll(conn)
+	return
+}
+
+func readAll(conn net.Conn) (resp []byte, err error) {
+	resp = make([]byte, 1024)
+	n, err := conn.Read(resp)
+	resp = resp[:n]
+	return
 }

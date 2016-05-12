@@ -11,52 +11,26 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type Peer struct {
-	Id         string
-	Version    int8
-	Reputation int8
-	Connected  int8
-	OnionHost  string
-	WebSocket  *websocket.Conn
-	Manager    *Manager
-	Send       chan types.Message
-	Data       interface{}
-	Ignored    bool
+type WebsocketClient struct {
+	Client    *websocket.Conn
+	OnionHost string
 }
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
-
-func (manager *Manager) ConnectToPeer(peerHost, socksPort string) bool {
-	sock := &network.Socks4a{Network: "tcp", Address: ("127.0.0.1:" + socksPort)}
-	u := url.URL{Scheme: "ws", Host: peerHost, Path: "/ws"}
+func (wsClient *WebsocketClient) Connect(remotehost, socksPort string) bool {
+	u := url.URL{Scheme: "ws", Host: remotehost, Path: "/"}
 	d := websocket.Dialer{
-		NetDial:          func(network, addr string) (net.Conn, error) { return sock.Dial(peerHost) },
+		NetDial:          network.DialProxy(socks.SOCKS5, ("127.0.0.1:" + socksPort)),
 		HandshakeTimeout: 15 * time.Second,
 	}
 	ws, _, err := d.Dial(u.String(), nil)
 	if err != nil {
 		return false
 	} else {
-		p := &Peer{
-			Send:       make(chan types.Message, 256),
-			WebSocket:  ws,
-			Manager:    manager,
-			OnionHost:  peerHost,
-			Version:    1,
-			Reputation: 0,
-			Ignored:    false,
-		}
-		manager.Register <- p
-		go p.writeMessages()
-		p.readMessages()
 		return true
 	}
 }
 
-func (p *Peer) readMessages() {
+func (wsClient *WebsocketClient) readMessages() {
 	defer func() {
 		p.Manager.Unregister <- p
 	}()

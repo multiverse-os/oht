@@ -11,18 +11,18 @@ import (
 type WebUI struct {
 	Server       *network.WebServer
 	Engine       *gin.Engine
-	OnionHost    string
+	Onionhost    string
 	BaseTemplate string
 	Templates    map[string]*template.Template
 }
 
-func InitializeWebUI(onionHost, webUIPort string) *WebUI {
+func InitializeWebUI(onionhost, webUIPort string) *WebUI {
 	gin.SetMode(gin.ReleaseMode)
 	engine := gin.New()
 	webUI := &WebUI{
 		Server:       network.InitializeWebServer(engine, ("127.0.0.1:" + webUIPort)),
 		Engine:       engine,
-		OnionHost:    onionHost,
+		Onionhost:    onionhost,
 		BaseTemplate: "ui/webui/templates/layouts/application.html",
 		Templates:    make(map[string]*template.Template),
 	}
@@ -46,20 +46,20 @@ func InitializeWebUI(onionHost, webUIPort string) *WebUI {
 func (webUI *WebUI) getIndex(c *gin.Context) {
 	webUI.Engine.SetHTMLTemplate(webUI.Templates["index"])
 	c.HTML(200, "application.html", gin.H{
-		"wsHost": webUI.OnionHost,
+		"wsHost": webUI.Onionhost,
 	})
 }
 
 func (webUI *WebUI) getAbout(c *gin.Context) {
 	webUI.Engine.SetHTMLTemplate(webUI.Templates["about"])
 	c.HTML(200, "application.html", gin.H{
-		"wsHost": webUI.OnionHost,
+		"wsHost": webUI.Onionhost,
 	})
 }
 
 func (webUI *WebUI) getContact(c *gin.Context) {
 	webUI.Engine.SetHTMLTemplate(webUI.Templates["contact"])
 	c.HTML(200, "application.html", gin.H{
-		"wsHost": webUI.OnionHost,
+		"wsHost": webUI.Onionhost,
 	})
 }

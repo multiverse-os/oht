@@ -28,12 +28,11 @@
 //
 // import "gopkg.in/hockeypuck/conflux.v2"
 //
-package conflux
+package common
 
 import (
 	"bytes"
 	"fmt"
-	"math/big"
 )
 
 // Bitstring describes a sequence of bits.
