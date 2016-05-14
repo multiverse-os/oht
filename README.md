@@ -1,10 +1,10 @@
 # oht v0.1.0
-An onion distributed hash table, is a DHT that is routed through the onion network using Tor's onion services. oht is an implementation of an onion distributed hash table that is designed to be used as a framework for secure onion routed decentralized applications.  oht sets out to be a general purpose framework, design for broad set of use cases. oht can be used as the foundation decentralized web application replacement, decentralized chat, file sharing, VOIP or securely networking arm computers (IoT). 
+An onion distributed hash table is a DHT that is routed through the onion network using Tor's onion services. oht is an implementation of an onion distributed hash table that is designed to be used as a framework for secure onion routed decentralized applications.  oht sets out to be a general purpose framework, designed for a broad set of use cases. oht can be used as the foundation for decentralized web applications, chat, file sharing, VOIP or for securely networking ARM computers (IoT). 
 
 **oht is not affiliated with or endorsed by The Tor Project. This software is experimental, use with caution. The code is in flux at this pre-alpha stage.** 
 *The protocol specifications are still subject to major changes.*
 
-## Develpment Progress
+## Development Progress
 oht is under active development, currently only the necessary tor binaries for Linux and OSX are supplied. The code is being written to support Linux, OSX and Windows. 
 
 P2P communication is currently onion routed using Tor onion services similar to ricochet. Currently peer communications are handled through websockets.  Basic optional account system exist using ecdsa keypairs. oht builds out configuration files in a correct structure and in appropriate locations. A basic console UI is currently the primary client. Additionaly a basic client web interface onion service exists and can be accessed through TBB.
