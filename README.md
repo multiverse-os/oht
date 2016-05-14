@@ -5,11 +5,11 @@ An onion distributed hash table is a DHT that is routed through the onion networ
 *The protocol specifications are still subject to major changes.*
 
 ## Development Progress
-oht is under active development, currently only the necessary tor binaries for Linux and OSX are supplied. The code is being written to support Linux, OSX and Windows. 
+oht is under active development, and is currently only packaged with the Tor binaries necessary for Linux and OSX. The code is being written to support Linux, OSX and Windows. 
 
-P2P communication is currently onion routed using Tor onion services similar to ricochet. Currently peer communications are handled through websockets.  Basic optional account system exist using ecdsa keypairs. oht builds out configuration files in a correct structure and in appropriate locations. A basic console UI is currently the primary client. Additionaly a basic client web interface onion service exists and can be accessed through TBB.
+P2P communication is currently onion routed using Tor onion services similar to ricochet. Currently peer communications are handled through websockets. A basic optional account system exists using ECDSA keypairs. oht creates configuration files in a correct structure and in standard locations (relative to operating system). A basic console UI is currently the primary client. Additionally, a basic client web interface exists as an onion service accessible through the Tor Browser.
 
-The basic DHT functionality is still not yet implemented. Before the DHT can be started the peer communication needs to be moved to Nanomsg "scalable protocols" using protobuf. Ecdsa keys for authentication and encryption of messages. The existing websockets allow for direct connections an oht network with javascript which has been useful during development. 
+The basic DHT functionality is still not yet implemented. The first step will be implementing a networking library that works with a variety of transports to support a wide number of existing protocols, such as Kademlia, ricochet, WebRTC, and SIP. The peer to peer networking will use ECDSA keys for node authentication and encryption of messages. The existing websockets allowing for direct connections an oht network with javascript which has been useful during development. 
 
 It appears many of the individual components would be very useful by themselves so there needs to be a process of breaking down the code into libraries so the method of Tor control for example can be easier to implement into any program.
 
