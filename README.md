@@ -9,9 +9,9 @@ oht is under active development, and is currently only packaged with the Tor bin
 
 P2P communication is currently onion routed using Tor onion services similar to ricochet. Currently peer communications are handled through websockets. A basic optional account system exists using ECDSA keypairs. oht creates configuration files in a correct structure and in standard locations (relative to operating system). A basic console UI is currently the primary client. Additionally, a basic client web interface exists as an onion service accessible through the Tor Browser.
 
-The basic DHT functionality is still not yet implemented. The first step will be implementing a networking library that works with a variety of transports to support a wide number of existing protocols, such as Kademlia, ricochet, WebRTC, and SIP. The peer to peer networking will use ECDSA keys for node authentication and encryption of messages. The existing websockets allowing for direct connections an oht network with javascript which has been useful during development. 
+The basic DHT functionality is still not yet implemented. The first step will be implementing a networking library that works with a variety of transports to support a wide number of existing protocols, such as Kademlia, ricochet, WebRTC, and SIP. The peer to peer networking will use ECDSA keys for node authentication and encryption of messages.
 
-It appears many of the individual components would be very useful by themselves so there needs to be a process of breaking down the code into libraries so the method of Tor control for example can be easier to implement into any program.
+Individual components that would be useful by themselves, for example the method of Tor control, will be broken out into libraries to make it easier to implement in any program.
 
 ## Executables
 
