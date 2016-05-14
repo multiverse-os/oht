@@ -114,11 +114,9 @@ A **shared onion address** can simultaneouesly be used by mulitple peers to list
 
 A shared onion address used in this manner can act both the identifier for the p2p network and possibly more importantly as a catalyst to form the p2p network in a decentralized way. 
 
-Typically, a p2p network is reliant on predefined trusted boot strap nodes used to obtain an initial list of peers. 
+Typically, a p2p network is reliant on predefined trusted boot strap nodes used to obtain an initial list of peers but by using a shared onion address it may be possible to securely bootstrap a DHT network in a decentralized way. 
 
-**Decentralized bootstrapping and service discovery** can be accomplished by using a shared onion address to identify the network. Potential peers can use the shared onion address either hard coded into their client or in a configuration file or a converted from a mnemoic phrase. Meanwhile peers the client of peers already connected to the p2p network optionally send a random known peer address. After a potential peer collects enough active peer addresses the potential peer connects to the network if verification succeeds.       
-
-*Verfication may be possible by asking another random peer to give you a peer to send to the potential peer. The answer is signed by both peers and possibly include a checksum hash of the peer table. The potential peer ask for verification from both peers who generated the answer. This may allow banning based on ecdsa keys used to sign a message with incorrect data.*
+**Decentralized bootstrapping and service discovery** can be accomplished by using a shared onion address to identify the network (oht:address). Potential peers can use the shared onion address either hard coded into their client or in a configuration file or a converted from a easier to communicate mnemoic phrase. Meanwhile users who are already connected to the p2p network can randomly select a known peer and send the address to anyone listening on the known onion address. After a potential peer collects enough active peer addresses the potential peer connects to the network.       
 
 Shared onion addresses also may allow for **possible decentralized DHT API and decentralized web UI**.
 Active peers may optionally serve standard API defined by the protocol or configuration. For example, a simple REST API could be used to serve the DHT. Several requests can be made, checked for correctness and verified.
