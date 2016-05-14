@@ -110,9 +110,9 @@ Interoperability with Ricochet is important, this will be acheived by saving an 
 
 **Beyond providing additional security** onion routing has interesting emergent properties when combined with with the standard DHT. Onion services allow peers to avoid any issues with NAT transversal which is often problematic with p2p networks. Additionaly, an onion address key pair shared across all peers (shared onion address) by either hardcoding into the client or using a configuration can be used to solve problems with centralization that DHTs face with bootstrapping.
 
-A **shared onion address** can simultaneouesly be used by mulitple peers to listens over a port. Incoming connections to the shared address are randomly sent to any of the listeners. A set of information defined by the client can be sent to the shared onion address. 
+A **shared onion address** can simultaneouesly be used by mulitple peers to listen over a port. Incoming connections to the shared address are routed to one of the listeners. This be used to serve information about the DHT network to a decentralized but static location.
 
-A shared onion address used in this manner can act both the identifier for the p2p network and more importantly the catalyst to form the p2p network in a decentralized way. 
+A shared onion address used in this manner can act both the identifier for the p2p network and possibly more importantly as a catalyst to form the p2p network in a decentralized way. 
 
 Typically, a p2p network is reliant on predefined trusted boot strap nodes used to obtain an initial list of peers. 
 
