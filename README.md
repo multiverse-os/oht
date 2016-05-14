@@ -7,9 +7,9 @@ An onion distributed hash table is a DHT that is routed through the onion networ
 ## Development Progress
 oht is under active development, and is currently only packaged with the Tor binaries necessary for Linux and OSX. The code is being written to support Linux, OSX and Windows. 
 
-P2P communication is currently onion routed using Tor onion services similar to ricochet. Currently peer communications are handled through WebSockets. A basic optional account system exists using ECDSA keypairs. oht creates configuration files in a correct structure and in standard locations (relative to operating system). A basic console UI is currently the primary client. Additionally, a basic client web interface exists as an onion service accessible through the Tor Browser.
+P2P communication is currently onion routed using Tor onion services similar to Ricochet. Currently peer communications are handled through WebSockets. A basic optional account system exists using ECDSA keypairs. oht creates configuration files in a correct structure and in standard locations (relative to operating system). A basic console UI is currently the primary client. Additionally, a basic client web interface exists as an onion service accessible through the Tor Browser.
 
-The basic DHT functionality is still not yet implemented. The first step will be implementing a networking library that works with a variety of transports to support a wide number of existing protocols, such as Kademlia, ricochet, WebRTC, and SIP. The peer to peer networking will use ECDSA keys for node authentication and encryption of messages.
+The basic DHT functionality is still not yet implemented. The first step will be implementing a networking library that works with a variety of transports to support a wide number of existing protocols, such as Kademlia, Ricochet, WebRTC, and SIP. The peer to peer networking will use ECDSA keys for node authentication and encryption of messages.
 
 Individual components that would be useful by themselves, for example the method of Tor control, will be broken out into libraries to easily implement in any program.
 
@@ -99,14 +99,14 @@ The primary client during this stage of development is the console client.
 
 ## oht Explanation and Comparison to Typical DHT
 
-Tor is often misunderstood. People often confuse the Tor Browser Bundle (TBB) with Tor itself. Tor is a client for a decentralized p2p onion routing network, which can be simply described as adding additional proxy layers between you and your destination when accessing the internet. This "onion" of proxy layers also obscures the location of the user. TBB is a browser (based on Mozilla Firefox) bundled with the Tor binary for easy and secure access to websites through the Tor network. Tor works with any port, and is not restricted to the common http/https ports (80 and 443). The additional proxy layers provide a connection with additional security and can bypass the regional restrictions being imposed on the world wide web. One example use case for onion routing is a journalist using TBB to bypass national firewalls to report news. One aim of this project is to highlight that Tor provides more than just a solution for secure Internet browsing, Tor provides a solution for secure hosting through onion services. 
+Tor is often misunderstood. People often confuse the Tor Browser Bundle (TBB) with Tor itself. Tor is a client for a decentralized p2p onion routing network, which can be simply described as adding additional proxy layers between you and your destination when accessing the internet. This "onion" of proxy layers also obscures the location of the user. TBB is a browser (based on Mozilla Firefox) bundled with the Tor binary for easy and secure access to websites through the Tor network. Tor works with any port, and is not restricted to the common http/https ports (80 and 443). The additional proxy layers provide a connection with additional security and can bypass the regional restrictions being imposed on the world wide web. An example use case for onion routing is a journalist using TBB to bypass national firewalls to report news. One aim of this project is to highlight that Tor provides more than just a solution for secure Internet browsing, Tor provides a solution for secure hosting through onion services. 
 
-**Onion services** create end-to-end encrypted (/w perfect forward secrecy) onion routed connections. Onion services do not use Tor Exit Nodes, but instead rendezvous points outside of both peers' networks. This solves the issue of NAT transversal when connecting peers. A typical DHT when used in combination with Tor can potentially be used in correlation attacks, but when routing DHT traffic through onion services this problem is avoided. 
+**Onion services** create end-to-end encrypted onion routed connections with perfect forward secrecy. Onion services do not use Tor Exit Nodes, but instead rendezvous points outside of both peers' networks. This solves the issue of NAT transversal when connecting peers. A typical DHT when used in combination with Tor can potentially be used in correlation attacks, but when routing DHT traffic through onion services this problem is avoided. 
 
-oht utilizes a similar onion routing design pattern to ricochet or onionshare, where each peer in the network establishs an onion service to communicate.  
+oht utilizes a similar onion routing design pattern to Ricochet or OnionShare, where each peer in the network establishes an onion service to communicate.  
 
-This allows for peers to interact with a public DHT securely by limiting the amount of metadata. Peers do not receive the IP address and geographic location of connected peers. Instead peers rely on emphemeral onion address key pair shared with peers and authenticate with a separate key pair that can be compatible with Bitcoin/Ethereum or telehash. 
-Interoperability with ricochet is important, this will be acheived by saving an onion address key pair in a custom meta-data field on an account or general configuration. Core functionality will include library in networking to provide compadibility with the v2 ricochet protocol.
+This allows for peers to interact with a public DHT securely by limiting the amount of metadata shared. Peers do not receive the IP address and geographic location of connected peers. Instead, peers rely on ephemeral onion addresses to connect to each other and authenticate with a separate key pair that can be compatible with Bitcoin/Ethereum or telehash. 
+Interoperability with Ricochet is important, this will be acheived by saving an onion address key pair in a custom meta-data field on an account or general configuration. Core functionality will include library in networking to provide compatibility with the v2 Ricochet protocol.
 
 **Beyond providing additional security** onion routing has interesting emergent properties when combined with with the standard DHT. Onion services allow peers to avoid any issues with NAT transversal which is often problematic with p2p networks. Additionaly, an onion address key pair shared across all peers (shared onion address) by either hardcoding into the client or using a configuration can be used to solve problems with centralization that DHTs face with bootstrapping.
 
@@ -156,11 +156,11 @@ oht is at its core a distributed hash table built to route through Tor. oht is d
 
 Accounts based on encrypted assymetric keys similar to telehash or Bitcoin/Ethereum. Some backup system that leverages the DHT would be interesting to experiment with.
 
-**Contacts** - A contact system with approval, presence, grandulated relationship transversal (e.g. bestFriend.friend.aquaitance). Capable of storing ricochet contacts. Flexible contact meta data to make it easier to extend functionality.
+**Contacts** - A contact system with approval, presence, grandulated relationship transversal (e.g. bestFriend.friend.aquaitance). Capable of storing Ricochet contacts. Flexible contact meta data to make it easier to extend functionality.
 
 Easy identity sharing is important, possibly through the use of expirable human readable mnemoics to add contacts or making it easy to leverage existing name systems.
 
-**Channels** - A broadly defined channel system, built to be compatible with ricochet's protocol, to be used for multiuser chat rooms and any other abstraction that requires variable isolation.
+**Channels** - A broadly defined channel system, built to be compatible with Ricochet's protocol, to be used for multiuser chat rooms and any other abstraction that requires variable isolation.
 
 Each one will include an interface.go file that matches the general structure of the oht/interface.go file. APIs and UIs will interact with these interfaces.
 
