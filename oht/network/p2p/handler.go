@@ -44,7 +44,7 @@ type ProtocolManager struct {
 	networkId int
 
 	fastSync bool
-	//chaindb    othdb.Database
+	//chaindb    ohtdb.Database
 
 	//downloader *downloader.Downloader
 	//fetcher    *fetcher.Fetcher
@@ -711,15 +711,15 @@ func (pm *ProtocolManager) BroadcastMessage(hash common.Hash, message string) {
 //	}
 //}
 
-//type OthNodeInfo struct {
+//type OhtNodeInfo struct {
 //	Network    int      `json:"network"`    // Network ID
 //	Genesis    string   `json:"genesis"`    // SHA3 hash of the host's genesis block
 //	Head       string   `json:"head"`       // SHA3 hash of the host's best owned block
 //}
 //
 //// NodeInfo retrieves some protocol metadata about the running host node.
-//func (self *ProtocolManager) NodeInfo() *OthNodeInfo {
-//	return &OthNodeInfo{
+//func (self *ProtocolManager) NodeInfo() *OhtNodeInfo {
+//	return &OhtNodeInfo{
 //		Network:    self.networkId,
 //		Genesis:    fmt.Sprintf("%x", self.blockchain.Genesis().Hash()),
 //		Head:       fmt.Sprintf("%x", self.blockchain.CurrentBlock().Hash()),
