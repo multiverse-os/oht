@@ -15,17 +15,17 @@ Individual components that would be useful by themselves, for example the method
 
 ## Executables
 
-oth comes with three wrappers/executables found in
+oht comes with three wrappers/executables found in
 [the `ui` directory](https://github.com/onionhash/oht/tree/master/ui):
 
  Command  |         |
 ----------|---------|
-`othd` | OTH Daemon Client |
-`oth-cli` | OTH CLI Interface (ethereum command line interface client) |
-`oth-console` | OTH Console Interface |
+`ohtd` | OHT Daemon |
+`oht-cli` | OHT CLI Interface (command line interface client) |
+`oht-console` | OHT Console Interface |
 
 ## APIs
-oth comes with three APIs found in
+oht comes with three APIs found in
 [the `api` directory](https://github.com/onionhash/oht/tree/master/api):
 
  Proposed APIs  |         |
