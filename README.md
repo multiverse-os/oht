@@ -116,10 +116,10 @@ A shared onion address used in this manner can act both the identifier for the p
 
 Typically, a p2p network is reliant on predefined trusted boot strap nodes used to obtain an initial list of peers but by using a shared onion address it may be possible to securely bootstrap a DHT network in a decentralized way. 
 
-**Decentralized bootstrapping and service discovery** can be accomplished by using a shared onion address to identify the network (oht:address). Potential peers can use the shared onion address either hard coded into their client or in a configuration file or a converted from a easier to communicate mnemoic phrase. Meanwhile users who are already connected to the p2p network can randomly select a known peer and send the address to anyone listening on the known onion address. After a potential peer collects enough active peer addresses the potential peer connects to the network.       
+**Decentralized bootstrapping and service discovery** can be accomplished by using a shared onion address to identify the network (oht:address). Potential peers can use the shared onion address either hard coded into their client or in a configuration file or a converted from a easier to communicate mnemoic phrase. Meanwhile users who are already connected to the p2p network can randomly select a known peer and send the address to anyone listening on the shared onion address. After a potential peer collects enough active peer addresses the potential peer connects to the network.       
 
 Shared onion addresses also may allow for **possible decentralized DHT API and decentralized web UI**.
-Active peers may optionally serve standard API defined by the protocol or configuration. For example, a simple REST API could be used to serve the DHT. To verify the API results, a user could make several requests to obtain a larger sample of responses.
+Active peers may optionally serve standard API or web UI defined by the client or configuration. For example, a simple REST API could be used to serve the DHT by providing basic GET, PUT, DEL commands. To verify the API results, a user could make several requests to obtain a larger sample of responses.
 
 It may be possible to use a basic decentralized web UI. Using this a user could interact with the decentralized application without needing to run the full client, just TBB and the onion address required to connect.
 
