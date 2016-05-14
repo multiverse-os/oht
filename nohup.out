@@ -28,3 +28,5 @@ Error: Failed to parse JSON  invalid character ',' looking for beginning of valu
 [GIN] 2016/05/11 - 21:56:09 |[97;42m 200 [0m|  4.464977876s | 192.168.1.138 |[97;46m  [0m POST    /
 [GIN] 2016/05/11 - 21:56:37 |[97;42m 200 [0m|  4.543748608s | 192.168.1.138 |[97;46m  [0m POST    /
 [GIN] 2016/05/11 - 21:56:44 |[97;42m 200 [0m|  4.515038586s | 192.168.1.138 |[97;46m  [0m POST    /
+Error: Write error write /dev/ttyACM0: input/output error
+[GIN] 2016/05/14 - 00:34:33 |[97;42m 200 [0m|    4.757201ms | 192.168.1.138 |[97;46m  [0m POST    /

@@ -5,24 +5,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type WebsocketServer struct {
+type HTTPServer struct {
 	Server    *network.WebServer
 	Engine    *gin.Engine
 	Onionhost string
 }
 
-func InitializeWebsocket(onionhost, websocketPort string) *WebsocketServer {
+func InitializeHTTP(onionhost, httpPort string) *HTTPServer {
 	gin.SetMode(gin.ReleaseMode)
 	engine := gin.New()
-	websocket := &WebsocketServer{
-		Server:    network.InitializeWebServer(engine, ("127.0.0.1:" + websocketPort)),
+	http := &HTTPServer{
+		Server:    network.InitializeWebServer(engine, ("127.0.0.1:" + httpPort)),
 		Engine:    engine,
 		Onionhost: onionhost,
 	}
 
 	engine.GET("/", func(c *gin.Context) {
-		server.Manager.Serve(c.Writer, c.Request)
+		// Provide basic protocol features over REST
 	})
 
-	return websocket
+	return http
 }
