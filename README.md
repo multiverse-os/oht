@@ -3,7 +3,6 @@ An onion distributed hash table, is a DHT that is routed through the onion netwo
 
 **oht is not affiliated with or endorsed by The Tor Project. This software is experimental, use with caution. The code is in flux at this pre-alpha stage.** 
 *The protocol specifications are still subject to major changes.*
-**
 
 ## Develpment Progress
 oht is under active development, currently only the necessary tor binaries for Linux and OSX are supplied. The code is being written to support Linux, OSX and Windows. 
