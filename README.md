@@ -7,7 +7,7 @@ An onion distributed hash table, is a DHT that is routed through the onion netwo
 ## Develpment Progress
 oht is under active development, currently only the necessary tor binaries for Linux and OSX are supplied. The code is being written to support Linux, OSX and Windows. 
 
-P2p communication is currently onion routed using Tor onion services similar to ricochet. Currently peer communications are handled through websockets.  Basic optional account system exist using ecdsa keypairs. oht builds out configuration files in a correct structure and in appropriate locations. A basic console UI is currently the primary client. Additionaly a basic client web interface onion service exists and can be accessed through TBB.
+P2P communication is currently onion routed using Tor onion services similar to ricochet. Currently peer communications are handled through websockets.  Basic optional account system exist using ecdsa keypairs. oht builds out configuration files in a correct structure and in appropriate locations. A basic console UI is currently the primary client. Additionaly a basic client web interface onion service exists and can be accessed through TBB.
 
 The basic DHT functionality is still not yet implemented. Before the DHT can be started the peer communication needs to be moved to Nanomsg "scalable protocols" using protobuf. Ecdsa keys for authentication and encryption of messages. The existing websockets allow for direct connections an oht network with javascript which has been useful during development. 
 
