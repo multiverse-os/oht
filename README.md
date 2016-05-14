@@ -104,7 +104,7 @@ Tor is misunderstood, for the purpose of this documentation, we will focus on ho
 
 **Onion services** create end-to-end encrypted (/w perfect forward secrecy) onion routed connections. Onion services do not use Tor Exit Nodes, but instead rendevouz points outside of both peers networks which solves the issue of NAT transversal when connecting peers. A typical DHT when used in combination with Tor can potentially be used in correlation attacks, but when routing DHT traffic through onion services this problem is avoided. 
 
-oht utilizes a similar onion routing design pattern to ricochet or onionshare. Onion routed in this case is being defined as each peer in the network establish an onion service to communicate communication.  
+oht utilizes a similar onion routing design pattern to ricochet or onionshare. Onion routed in this case is being defined as each peer in the network establish an onion service to communicate.  
 
 This allows for peers to interact with a public DHT securely by limiting the amount of metadata. Peers do not receive the IP address and geographic location of connected peers. Instead peers rely on emphemeral onion address key pair shared with peers and authenticate with a separate key pair that can be compatible with Bitcoin/Ethereum or telehash. 
 Interoperability with ricochet is important, this will be acheived by saving an onion address key pair in a custom meta-data field on an account or general configuration. Core functionality will include library in networking to provide compadibility with the v2 ricochet protocol.
