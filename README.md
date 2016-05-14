@@ -119,9 +119,9 @@ Typically, a p2p network is reliant on predefined trusted boot strap nodes used 
 **Decentralized bootstrapping and service discovery** can be accomplished by using a shared onion address to identify the network (oht:address). Potential peers can use the shared onion address either hard coded into their client or in a configuration file or a converted from a easier to communicate mnemoic phrase. Meanwhile users who are already connected to the p2p network can randomly select a known peer and send the address to anyone listening on the known onion address. After a potential peer collects enough active peer addresses the potential peer connects to the network.       
 
 Shared onion addresses also may allow for **possible decentralized DHT API and decentralized web UI**.
-Active peers may optionally serve standard API defined by the protocol or configuration. For example, a simple REST API could be used to serve the DHT. Several requests can be made, checked for correctness and verified.
+Active peers may optionally serve standard API defined by the protocol or configuration. For example, a simple REST API could be used to serve the DHT. To verify the API results, a user could make several requests to obtain a larger sample of responses.
 
-It may be possible to use a decentralized API to provide checksums for a Firefox plugin for javascript files served by a decentralized web UI. Using this a user could interact with the decentralized application without needing to run the full client, just TBB.
+It may be possible to use a basic decentralized web UI. Using this a user could interact with the decentralized application without needing to run the full client, just TBB and the onion address required to connect.
 
 ### Core Features
 The core features of oht are varrying stages of completion.
@@ -136,13 +136,13 @@ The core features of oht are varrying stages of completion.
 
 **Local Database** - The DHT for the peers and files are cached locally using encrypted BoltDB databases. Alternatively, a memory only cache may be used.
 
-**File Transfer & Streaming** - A basic system to do file transfer between peers, 1-to-1 and m-to-n. Files should be broken into blocks, tracked using merkel trees and transfered in a manner similar to torrents. Can implement using existing torrent code or leverage existing storage networks.
+**File Transfer & Streaming** - A basic system to do file transfer between peers, 1-to-1 and m-to-n. Files should be broken into blocks, tracked using merkel trees and transfered in a manner similar to torrents. Can implement using existing torrent code or leverage existing storage networks such as IPFS.
 
 1-to-1 peer streaming of data/music/video, possibly using WebRTC. *WebRTC* can be intergrated using existing WebSocket p2p connections, the onion address bypasses the need for NAT transversal, allowing serverless p2p webRTC connections to be established without a stun/turn server. WebRTC must be modified to only offer onion service ice candidates, early research has begun on this topic.
 
 **User Interfaces** - Provide several ways to implement a user interface for the distributed application. Web interface available through an individual onion address. Terminal command line interface and console for interacting with the DHT. A text only browser may be an effective way to rapid prototype fairly complex terminal based UIs. Basic GUI client using QT/wxWidgets or possibly a standalone browser executable for desktop clients.
 
-*Possible Decentralized APIs and WebUI* through the use of shared public keys and verification of checksum of all served files. (Why are standard js libraries not already been actively checked against a published checksum on every site?)
+*Possible Decentralized APIs and WebUI* through the use of shared public keys. Using a simple API to serve the checksums of the web UI verification may be faster. (Why are standard js libraries not already been actively checked against a published checksum on every site?)
 
 **Localization** - Localization is important and needs to be designed to exist within the framework from the
 beginning.
@@ -150,11 +150,11 @@ beginning.
 ### Optional Modules
 oht is at its core a distributed hash table built to route through Tor. oht is designed to be used by others to create more complex software. In order to satisfy and standardize the basic features of most applications oht is packaged with optional modules to extend the base features.
 
-**Accounts** - An account system based on ecdsa keys, supports handling multiple accounts and encrypted storage of keys.
+**Accounts** - An account system based on ECDSA keys, supports handling multiple accounts and encrypted storage of keys.
 
 Accounts based on encrypted assymetric keys similar to telehash or Bitcoin/Ethereum. Some backup system that leverages the DHT would be interesting to experiment with.
 
-**Contacts** - A contact system with approval, presence, grandulated relationship transversal (e.g. bestFriend.friend.aquaitance). Capable of storing Ricochet contacts. Flexible contact meta data to make it easier to extend functionality.
+**Contacts** - A contact system with approval, presence, relationship transversal (e.g. bestFriend.friend.aquaitance). Capable of storing Ricochet contacts. Flexible contact meta data to make it easier to extend functionality.
 
 Easy identity sharing is important, possibly through the use of expirable human readable mnemoics to add contacts or making it easy to leverage existing name systems.
 
