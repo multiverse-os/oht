@@ -7,11 +7,11 @@ An onion distributed hash table is a DHT that is routed through the onion networ
 ## Development Progress
 oht is under active development, and is currently only packaged with the Tor binaries necessary for Linux and OSX. The code is being written to support Linux, OSX and Windows. 
 
-P2P communication is currently onion routed using Tor onion services similar to ricochet. Currently peer communications are handled through websockets. A basic optional account system exists using ECDSA keypairs. oht creates configuration files in a correct structure and in standard locations (relative to operating system). A basic console UI is currently the primary client. Additionally, a basic client web interface exists as an onion service accessible through the Tor Browser.
+P2P communication is currently onion routed using Tor onion services similar to ricochet. Currently peer communications are handled through WebSockets. A basic optional account system exists using ECDSA keypairs. oht creates configuration files in a correct structure and in standard locations (relative to operating system). A basic console UI is currently the primary client. Additionally, a basic client web interface exists as an onion service accessible through the Tor Browser.
 
 The basic DHT functionality is still not yet implemented. The first step will be implementing a networking library that works with a variety of transports to support a wide number of existing protocols, such as Kademlia, ricochet, WebRTC, and SIP. The peer to peer networking will use ECDSA keys for node authentication and encryption of messages.
 
-Individual components that would be useful by themselves, for example the method of Tor control, will be broken out into libraries to make it easier to implement in any program.
+Individual components that would be useful by themselves, for example the method of Tor control, will be broken out into libraries to easily implement in any program.
 
 ## Executables
 
@@ -31,7 +31,7 @@ oht comes with three APIs found in
  Proposed APIs  |         |
 ----------|---------|
 rest | JSON Rest API |
-websockets | JSON websocket API |
+websockets | JSON WebSocket API |
 ipc | Interprocess communication  |
 
 ### Usage
@@ -48,7 +48,7 @@ The primary client during this stage of development is the console client.
         /save                        - Save configuration values
     
       TOR:
-        /tor [start|stop]            - Start or stop tor process
+        /tor [start|stop]            - Start or stop Tor process
         /newtor                      - Obtain new Tor identity (Not Implemented)
         /newonions                   - Obtain new onion address
     
@@ -58,31 +58,31 @@ The primary client during this stage of development is the console client.
         /predecessor                 - Previous peer in identifier ring (Not Implemented)
         /ftable                      - List ftable peers (Not Implemented)
         /create                      - Create new ring (Not Implemented)
-        /connect [onion address]     - Join to ring with peer
-        /lookup [id]                 - Find onion address of account with id (Not Implemented)
+        /connect [onion address]     - Join ring containing peer with [onion address]
+        /lookup [id]                 - Find onion address of account with [id] (Not Implemented)
         /ping [onion address]        - Ping peer (Not Implemented)
         /ringcast [message]          - Message every peer in ring (Not Implemented)
     
       DHT:
         /put [key] [value]           - Put key and value into database (Not Implemented)
         /get [key]                   - Get value of key (Not Implemented)
-        /delete [key]                - Delete value of key (Not Implemented)
+        /delete [key]                - Delete key and its value from database (Not Implemented)
     
       WEBUI:
         /webui [start|stop]          - Start or stop webUI server
     
       ACCOUNT:
-        /accounts                    - List all accounts (Not Implemented)
+        /accounts                    - List all local accounts (Not Implemented)
         /generate                    - Generate new account key pair (Not Implemented)
         /delete                      - Delete an account key pair (Not Implemented)
         /sign [id] [message]         - Sign with account key pair (Not Implemented)
-        /verify [id] [message]       - Verify a signed message with keypair (Not Implemented)
-        /encrypt [id] [message]      - Encrypt a message with keypair (Not Implemented)
-        /decrypt [id] [message]      - Decrypt a message with keypair (Not Implemented)
+        /verify [id] [message]       - Verify a signed message with key pair (Not Implemented)
+        /encrypt [id] [message]      - Encrypt a message with key pair (Not Implemented)
+        /decrypt [id] [message]      - Decrypt a message with key pair (Not Implemented)
     
       CONTACTS:
         /contacts                    - List all saved contacts (Not Implemented)
-        /request [id] [message]      - Request account to add your id to their contacts (Not Implemented)
+        /request [id] [message]      - Send [message] requesting account with [id] to add your id to their contacts (Not Implemented)
         /add [id]                    - Add account to contacts (Not Implemented)
         /rm [id]                     - Remove account from contacts (Not Implemented)
         /whisper [id] [message]      - Direct message peer (Not Implemented)
@@ -95,7 +95,7 @@ The primary client during this stage of development is the console client.
         /leave [id]                  - Leave channel with id (Not Implemented)
         /channelcast [id] [message]  - Message all channel subscribers (Not Implemented)
     
-        /quit
+        /quit                        - Quit oht console
 
 ## oht Explanation and Comparison to Typical DHT
 
@@ -140,7 +140,7 @@ The core features of oht are varrying stages of completion.
 
 **File Transfer & Streaming** - A basic system to do file transfer between peers, 1-to-1 and m-to-n. Files should be broken into blocks, tracked using merkel trees and transfered in a manner similar to torrents. Can implement using existing torrent code or leverage existing storage networks.
 
-1-to-1 peer streaming of data/music/video, possibly using WebRTC. *WebRTC* can be intergrated using existing websockets p2p connections, the onion address bypasses the need for NAT transversal, allowing serverless p2p webRTC connections to be established without a stun/turn server. WebRTC must be modified to only offer onion service ice candidates, early research has begun on this topic.
+1-to-1 peer streaming of data/music/video, possibly using WebRTC. *WebRTC* can be intergrated using existing WebSocket p2p connections, the onion address bypasses the need for NAT transversal, allowing serverless p2p webRTC connections to be established without a stun/turn server. WebRTC must be modified to only offer onion service ice candidates, early research has begun on this topic.
 
 **User Interfaces** - Provide several ways to implement a user interface for the distributed application. Web interface available through an individual onion address. Terminal command line interface and console for interacting with the DHT. A text only browser may be an effective way to rapid prototype fairly complex terminal based UIs. Basic GUI client using QT/wxWidgets or possibly a standalone browser executable for desktop clients.
 
