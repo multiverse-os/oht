@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with go-ethereum. If not, see <http://www.gnu.org/licenses/>.
 
-// geth is the official command-line client for Ethereum.
+// Using geth cli as a example to build the oht client, they have a good structure to work from
 package main
 
 import (
@@ -29,16 +29,16 @@ import (
 	"time"
 
 	"./../accounts"
-	"./../oth"
-	"./../oth/common"
-	"./../oth/database"
+	"./../oht"
+	"./../oht/common"
+	"./../oht/database"
 	"./cmd/utils"
 
 	"github.com/codegangsta/cli"
 )
 
 const (
-	ClientIdentifier = "Oth"
+	ClientIdentifier = "oht"
 	Version          = "0.1.0"
 	VersionMajor     = 0
 	VersionMinor     = 1
@@ -58,20 +58,16 @@ func init() {
 		nodeNameVersion = Version + "-" + gitCommit[:8]
 	}
 
-	app = utils.NewApp(Version, "the oth command line interface")
+	app = utils.NewApp(Version, "the oht command line interface")
 	app.Action = run
 	app.HideVersion = true // we have a command to print the version
 	app.Commands = []cli.Command{
 		{
-			Action: blockRecovery,
-			Name:   "recover",
-			Usage:  "Attempts to recover a corrupted database by setting a new block by number or hash",
+			Action: getConfig,
+			Name:   "config",
+			Usage:  "Displays the active oht configuration",
 			Description: `
-The recover commands will attempt to read out the last
-block based on that.
-
-recover #number recovers by number
-recover <hex> recovers by hash
+Display configuration in JSON format
 `,
 		},
 		blocktestCommand,

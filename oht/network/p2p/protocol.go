@@ -24,16 +24,14 @@ import (
 
 // Constants to match up protocol versions and messages
 const (
-	oth61 = 61
-	oth62 = 62
-	oth63 = 63
+	oht01 = 01
 )
 
 // Official short name of the protocol used during capability negotiation.
-var ProtocolName = "oth"
+var ProtocolName = "oht"
 
 // Supported versions of the eth protocol (first is primary).
-var ProtocolVersions = []uint{oth63, oth62, oth61}
+var ProtocolVersions = []uint{oth01}
 
 // Number of implemented message corresponding to different protocol versions.
 var ProtocolLengths = []uint64{17, 8, 9}

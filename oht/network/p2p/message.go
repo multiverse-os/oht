@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-var ProtocolName = "oth"
+var ProtocolName = "oht"
 
 type errCode int
 

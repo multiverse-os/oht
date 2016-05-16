@@ -29,11 +29,11 @@ import (
 	"runtime"
 	"strconv"
 
-	"./../../oth/accounts"
-	"./../../oth/common"
-	"./../../oth/core"
-	"./../../oth/crypto"
-	"./../../oth/database"
+	"./../../oht/accounts"
+	"./../../oht/common"
+	"./../../oht/core"
+	"./../../oht/crypto"
+	"./../../oht/database"
 
 	"github.com/codegangsta/cli"
 )
