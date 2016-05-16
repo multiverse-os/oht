@@ -10,12 +10,18 @@ import (
 	"../../types"
 )
 
+type Server struct {
+	Transport string
+	OnionHost string
+	Port      string
+}
+
 type EventFunc func(Manager *Manager, Peer *Peer)
 
 type Manager struct {
 	Config          *config.Config
 	PrivateKey      *ecdsa.PrivateKey
-	Server          *Server
+	Servers         []*Server
 	MaxQueueSize    int
 	MaxPeers        int
 	MaxPendingPeers int
@@ -31,7 +37,6 @@ type Manager struct {
 
 func InitializeP2PManager(config *config.Config) *Manager {
 	return &Manager{
-		Server:          &Server{Port: port},
 		MaxPeers:        8,
 		MaxPendingPeers: 8,
 		MaxQueueSize:    1024,
@@ -47,7 +52,6 @@ func InitializeP2PManager(config *config.Config) *Manager {
 }
 
 func (manager *Manager) Start() {
-	manager.Server.Start()
 	for {
 		select {
 		case p := <-manager.Register:
@@ -91,21 +95,4 @@ func (manager *Manager) DumpPeers() {
 		log.Println("Active Peers")
 		log.Println("Connection: ", p.OnionHost)
 	}
-}
-
-// Serve handles websocket requests from the peer
-func (manager *Manager) Serve(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		http.Error(w, "Method not allowed", 405)
-		return
-	}
-	ws, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	p := &Peer{Send: make(chan types.Message, 256), WebSocket: ws}
-	manager.Register <- p
-	go p.writeMessages()
-	p.readMessages()
 }

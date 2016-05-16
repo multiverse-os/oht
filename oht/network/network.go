@@ -3,12 +3,27 @@ package main
 import (
 	"log"
 	"net/url"
+
+	"./transports"
 )
 
 func main() {
 	Connect("http://cool.com")
 	Connect("oht:cool.com")
 	Connect("ricochet:testos.com")
+}
+
+func Listen(protocol, listenHost, listenPort string) {
+	if protocol == "http" {
+		log.Println("http")
+		transports.InitializeHTTP(listenHost, listenPort)
+	} else if protocol == "oht" {
+		log.Println("oht")
+		transports.InitializeTCP(listenHost, listenPort)
+	} else if protocol == "ricochet" {
+		log.Println("ricochet")
+		transports.InitializeTCP(listenHost, listenPort)
+	}
 }
 
 func Connect(peerUrl string) {

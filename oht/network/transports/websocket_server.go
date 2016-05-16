@@ -21,8 +21,24 @@ func InitializeWebsocket(onionhost, websocketPort string) *WebsocketServer {
 	}
 
 	engine.GET("/", func(c *gin.Context) {
-		server.Manager.Serve(c.Writer, c.Request)
+		Serve(c.Writer, c.Request)
 	})
 
 	return websocket
+}
+
+func (manager *Manager) Serve(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "Method not allowed", 405)
+		return
+	}
+	ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	p := &Peer{Send: make(chan types.Message, 256), WebSocket: ws}
+	manager.Register <- p
+	go p.writeMessages()
+	p.readMessages()
 }
