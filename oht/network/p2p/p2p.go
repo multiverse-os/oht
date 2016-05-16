@@ -1,13 +1,9 @@
-package p2p
+package network
 
 import (
 	"crypto/ecdsa"
-	"fmt"
 	"log"
-	"net/http"
 	"time"
-
-	"../../types"
 )
 
 type Server struct {
@@ -16,10 +12,10 @@ type Server struct {
 	Port      string
 }
 
-type EventFunc func(Manager *Manager, Peer *Peer)
+type EventFunc func(Manager *Manager, Peer *transports.Peer)
 
 type Manager struct {
-	Config          *config.Config
+	Config          *Config
 	PrivateKey      *ecdsa.PrivateKey
 	Servers         []*Server
 	MaxQueueSize    int

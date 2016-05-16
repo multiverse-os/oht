@@ -6,12 +6,9 @@ import (
 	"time"
 
 	"../../network"
-	"../../types"
-
-	"github.com/gorilla/websocket"
 )
 
-type HttpClient struct {
+type HTTPClient struct {
 	//Client     *websocket.Conn
 	onionhost     string
 	remotehost    string
@@ -19,7 +16,7 @@ type HttpClient struct {
 	routingConfig string // routing defined by a json config
 }
 
-func (hClient *HttpClient) Connect(remotehost, socksPort string) bool {
+func (hClient *HTTPClient) Connect(remotehost, socksPort string) bool {
 	err := nil
 	if err != nil {
 		return false
@@ -28,7 +25,7 @@ func (hClient *HttpClient) Connect(remotehost, socksPort string) bool {
 	}
 }
 
-func (hClient *HttpClient) readMessages() {
+func (hClient *HTTPClient) readMessages() {
 	defer func() {
 		p.Manager.Unregister <- p
 	}()

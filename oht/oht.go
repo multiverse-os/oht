@@ -7,7 +7,6 @@ import (
 
 	"./common"
 	"./network"
-	"./network/p2p"
 	"./network/webui"
 )
 
@@ -15,7 +14,7 @@ type OHT struct {
 	Interface *Interface
 	config    *Config
 	tor       *network.TorProcess
-	p2p       *p2p.Manager
+	p2p       *network.Manager
 	webUI     *webui.WebUI
 	Shutdown  chan os.Signal
 }
@@ -47,14 +46,14 @@ func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort string) (o
 
 func (oht *OHT) Start() bool {
 	oht.tor.Start()
-	go oht.p2p.Start()
+	go oht.network.Start()
 	return true
 }
 
 func (oht *OHT) Stop() bool {
 	oht.webUI.Server.Stop()
 	// Stop p2p
-	oht.tor.Stop()
+	oht.network.Stop()
 	os.Exit(1)
 	return true
 }

@@ -1,10 +1,8 @@
-package main
+package network
 
 import (
 	"log"
 	"net/url"
-
-	"./transports"
 )
 
 func main() {

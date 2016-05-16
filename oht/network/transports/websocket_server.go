@@ -11,6 +11,49 @@ type WebsocketServer struct {
 	Onionhost string
 }
 
+type Peer struct {
+	Id        string
+	Connected int8
+	WebSocket *websocket.Conn
+	Manager   *network.Manager
+	Send      chan types.Message
+	Data      interface{}
+}
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+func (p *Peer) readMessages() {
+	defer func() {
+		p.Manager.Unregister <- p
+	}()
+	p.WebSocket.SetReadLimit(maxMessageSize)
+	p.WebSocket.SetReadDeadline(time.Now().Add(pongWait))
+	p.WebSocket.SetPongHandler(func(string) error {
+		p.WebSocket.SetReadDeadline(time.Now().Add(pongWait))
+		return nil
+	})
+	for {
+		var message types.Message
+		err := p.WebSocket.ReadJSON(&message)
+		if err != nil {
+			break
+		}
+		p.Manager.Receive <- message
+	}
+}
+
+func (p *Peer) writeMessage(messageType int, payload types.Message) error {
+	p.WebSocket.SetWriteDeadline(time.Now().Add(writeWait))
+	return p.WebSocket.WriteJSON(payload)
+}
+
+func (p *Peer) writeControl(messageType int) error {
+	return p.WebSocket.WriteControl(messageType, []byte{}, time.Now().Add(writeWait))
+}
+
 func InitializeWebsocket(onionhost, websocketPort string) *WebsocketServer {
 	gin.SetMode(gin.ReleaseMode)
 	engine := gin.New()

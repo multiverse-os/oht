@@ -11,13 +11,16 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
-
-	"../common"
-	"../config"
 )
 
+type TorConfig struct {
+	ListenPort  string
+	WebUIPort   string
+	SocksPort   string
+	ControlPort string
+}
+
 type TorProcess struct {
-	Config                *config.Config
 	Online                bool
 	process               *os.Process
 	cmd                   *exec.Cmd
@@ -40,17 +43,17 @@ type TorProcess struct {
 	authCookie            string
 }
 
-func InitializeTor(config *config.Config) (tor *TorProcess) {
+func InitializeTor(config *TorConfig) (tor *TorProcess) {
 	common.CreatePathUnlessExist("/tor", 0700)
 	common.CreatePathUnlessExist("/tor/onion_service", 0700)
 	common.CreatePathUnlessExist("/tor/onion_webui", 0700)
 	tor = &TorProcess{
 		Config:                config,
 		Online:                false,
-		ListenPort:            config.TorListenPort,
-		WebUIPort:             config.TorWebUIPort,
-		SocksPort:             config.TorSocksPort,
-		ControlPort:           config.TorControlPort,
+		ListenPort:            config.ListenPort,
+		WebUIPort:             config.WebUIPort,
+		SocksPort:             config.SocksPort,
+		ControlPort:           config.ControlPort,
 		avoidDiskWrites:       0,
 		hardwareAcceleration:  1,
 		dataDirectory:         common.AbsolutePath(common.DefaultDataDir(), "tor/data"),

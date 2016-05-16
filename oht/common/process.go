@@ -1,4 +1,4 @@
-package process
+package common
 
 import (
 	"fmt"
@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"time"
 )
+
+// It would be better to migrate the Tor controller to a more standardized process manager system
 
 type Process struct {
 	Label      string
