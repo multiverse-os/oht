@@ -3,6 +3,8 @@ package network
 import (
 	"log"
 	"net/url"
+
+	"../network/transports"
 )
 
 func main() {
@@ -14,13 +16,13 @@ func main() {
 func Listen(protocol, listenHost, listenPort string) {
 	if protocol == "http" {
 		log.Println("http")
-		transports.InitializeHTTP(listenHost, listenPort)
+		InitializeHTTP(listenHost, listenPort)
 	} else if protocol == "oht" {
 		log.Println("oht")
-		transports.InitializeTCP(listenHost, listenPort)
+		InitializeTCP(listenHost, listenPort)
 	} else if protocol == "ricochet" {
 		log.Println("ricochet")
-		transports.InitializeTCP(listenHost, listenPort)
+		InitializeTCP(listenHost, listenPort)
 	}
 }
 
@@ -37,7 +39,6 @@ func Connect(peerUrl string) {
 	} else if parsedUrl.Scheme == "ricochet" {
 		log.Println("RICOCHET scheme")
 		log.Println(parsedUrl.Opaque)
-		//
 	} else if parsedUrl.Scheme == "oht" {
 		log.Println("OHT scheme")
 		log.Println(parsedUrl.Opaque)

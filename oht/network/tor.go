@@ -16,59 +16,80 @@ import (
 )
 
 type InitializeConfig struct {
-	SocksPort          string
-	ControlPort        string
-	OnionServerConfigs []*OnionServerConfig
+	BinaryPath          string
+	Directory           string
+	SocksPort           string
+	ControlPort         string
+	OnionServiceConfigs []*OnionServiceConfig
 }
 
-type OnionServerConfig struct {
+type OnionServiceConfig struct {
 	DirectoryName    string
 	OnionHost        string
 	RemoteListenPort string
 	LocalListenPort  string
 }
 
+type TorRuntimeConfig struct {
+	OnionServiceConfigs    []*OnionServiceConfig
+	SocksPort              string
+	ControlPort            string
+	DNSPort                string
+	oRPort                 []string
+	extORPort              []string
+	dataDirectory          string
+	debugLogFile           string
+	serverTransportPlugin  []string
+	virtualAddrNetworkIPv4 []string
+	transPort              []string
+	exitPolicy             []string
+	dnsPort                []string
+	socksPolicy            []string
+	runAsDaemon            int
+	avoidDiskWrites        int
+	hardwareAcceleration   int
+	cookieAuthentication   int
+	automapHostsOnResolve  int
+	bridgeRelay            int
+}
+
 type TorProcess struct {
-	Online               bool
-	process              *os.Process
-	cmd                  *exec.Cmd
-	Pid                  string
-	OnionServerConfigs   []*OnionServerConfig
-	SocksPort            string
-	ControlPort          string
-	avoidDiskWrites      int
-	hardwareAcceleration int
-	dataDirectory        string
-	debugLog             string
-	binaryFile           string
-	configFile           string
-	pidFile              string
-	authCookie           string
+	Online              bool
+	authCookie          string
+	binaryFile          string
+	configFile          string
+	pidFile             string
+	OnionServiceConfigs []*OnionServiceConfig
+	process             *common.Process
+	torRC               *TorRuntimeConfig
 }
 
 func InitializeTor(config *InitializeConfig) (tor *TorProcess) {
 	common.CreatePathUnlessExist("/tor", 0700)
 	// Iterate for each onion service and initialize folders
-	for i := 0; i < len(tor.OnionServerConfigs); i++ {
-		common.CreatePathUnlessExist(("/tor/" + tor.OnionServerConfigs[i].DirectoryName), 0700)
+	for i := 0; i < len(tor.OnionServiceConfigs); i++ {
+		common.CreatePathUnlessExist(("/tor/" + tor.OnionServiceConfigs[i].DirectoryName), 0700)
 	}
-
 	tor = &TorProcess{
-		Online:               false,
-		SocksPort:            config.SocksPort,
-		ControlPort:          config.ControlPort,
-		avoidDiskWrites:      0,
-		hardwareAcceleration: 1,
-		dataDirectory:        common.AbsolutePath(common.DefaultDataDir(), "tor/data"),
-		debugLog:             common.AbsolutePath(common.DefaultDataDir(), "tor/debug.log"),
-		binaryFile:           common.AbsolutePath("oht/network/tor/bin/linux/64/", "tor"),
-		configFile:           common.AbsolutePath(common.DefaultDataDir(), "tor/torrc"),
-		pidFile:              common.AbsolutePath(common.DefaultDataDir(), "tor/tor.pid"),
+		Online:     false,
+		configFile: common.AbsolutePath(config.Directory, "tor/torrc"),
+		pidFile:    common.AbsolutePath(config.Directory, "tor/tor.pid"),
+		torRC: &TorRuntimeConfig{
+			SocksPort:            config.SocksPort,
+			ControlPort:          config.ControlPort,
+			dataDirectory:        common.AbsolutePath(config.Directory, "tor/data"),
+			avoidDiskWrites:      0,
+			hardwareAcceleration: 1,
+			debugLogFile:         common.AbsolutePath(config.Directory, "tor/debug.log"),
+			cookieAuthentication: 1,
+		},
 	}
 	if runtime.GOOS == "darwin" {
-		tor.binaryFile = common.AbsolutePath("oht/network/tor/bin/osx/", "tor")
+		tor.binaryFile = common.AbsolutePath((config.BinaryPath + "/osx/"), "tor")
 	} else if runtime.GOOS == "windows" {
-		log.Fatal("Tor: No windows binary in the source yet, sorry.")
+		log.Fatal("Tor: No windows binary is included the source yet, sorry. It is more secure to build it locally.")
+	} else {
+		tor.binaryFile = common.AbsolutePath((config.BinaryPath + "/linux/64/"), "tor")
 	}
 	if !common.FileExist(tor.configFile) {
 		err := tor.initializeConfig()
@@ -77,10 +98,10 @@ func InitializeTor(config *InitializeConfig) (tor *TorProcess) {
 		}
 	}
 	return tor
-}
 
+}
 func (tor *TorProcess) Start() bool {
-	tor.cmd = exec.Command(tor.binaryFile, "-f", tor.configFile)
+	tor.process.cmd = exec.Command(tor.binaryFile, "-f", tor.configFile)
 	stdout, _ := tor.cmd.StdoutPipe()
 	err := tor.cmd.Start()
 	if err != nil {
@@ -126,18 +147,18 @@ func (tor *TorProcess) DeleteOnionFiles() bool {
 // CONFIGURATION
 func (tor *TorProcess) initializeConfig() error {
 	config := ""
-	config += fmt.Sprintf("SOCKSPort 127.0.0.1:%s\n", tor.SocksPort)
-	config += fmt.Sprintf("ControlPort 127.0.0.1:%s\n", tor.ControlPort)
-	config += fmt.Sprintf("DataDirectory %s\n", tor.dataDirectory)
-	config += fmt.Sprintf("HardwareAccel %d\n", tor.hardwareAcceleration)
-	config += fmt.Sprintf("RunAsDaemon 0\n")
-	for i := 0; i < len(tor.OnionServerConfigs); i++ {
-		config += fmt.Sprintf("HiddenServiceDir %s\n", tor.OnionServerConfigs[i].DirectoryName)
-		config += fmt.Sprintf("HiddenServicePort %s 127.0.0.1:%s\n", tor.OnionServerConfigs[i].RemoteListenPort, tor.OnionServerConfigs[i].LocalListenPort)
+	config += fmt.Sprintf("SOCKSPort 127.0.0.1:%s\n", tor.torRC.SocksPort)
+	config += fmt.Sprintf("ControlPort 127.0.0.1:%s\n", tor.torRC.ControlPort)
+	config += fmt.Sprintf("DataDirectory %s\n", tor.torRC.dataDirectory)
+	config += fmt.Sprintf("HardwareAccel %d\n", tor.torRC.hardwareAcceleration)
+	config += fmt.Sprintf("RunAsDaemon %d\n", tor.torRC.runAsDaemon)
+	for i := 0; i < len(tor.torRC.OnionServiceConfigs); i++ {
+		config += fmt.Sprintf("HiddenServiceDir %s\n", tor.torRC.OnionServiceConfigs.DirectoryName)
+		config += fmt.Sprintf("HiddenServicePort %s 127.0.0.1:%s\n", tor.torRC.OnionServerConfigs[i].RemoteListenPort, tor.torRC.OnionServerConfigs[i].LocalListenPort)
 	}
-	config += fmt.Sprintf("AvoidDiskWrites %d\n", tor.avoidDiskWrites)
-	config += fmt.Sprintf("AutomapHostsOnResolve 1\n")
-	config += fmt.Sprintf("CookieAuthentication 1\n")
+	config += fmt.Sprintf("AvoidDiskWrites %d\n", tor.torRC.avoidDiskWrites)
+	config += fmt.Sprintf("AutomapHostsOnResolve %d\n", tor.torRC.automapHostsOnResolve)
+	config += fmt.Sprintf("CookieAuthentication %d\n", tor.torRC.cookieAuthentication)
 	// Should restrict socks access
 	//config += fmt.Sprintf("SocksPolicy accept 192.168.0.0/16\n")
 	// This does not work because we are using the hacky method of watching stdout

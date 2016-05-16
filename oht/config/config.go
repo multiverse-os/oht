@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"../common"
+	"../crypto"
 )
 
 var (
