@@ -1,12 +1,9 @@
-package p2p
+package network
 
 import (
 	"net"
 	"net/url"
 	"time"
-
-	"../../network"
-	"../../types"
 
 	"github.com/gorilla/websocket"
 )
@@ -21,7 +18,7 @@ type WebsocketClient struct {
 func (wsClient *WebsocketClient) Connect(remotehost, socksPort string) bool {
 	u := url.URL{Scheme: "ws", Host: remotehost, Path: "/"}
 	d := websocket.Dialer{
-		NetDial:          network.DialProxy(socks.SOCKS5, ("127.0.0.1:" + socksPort)),
+		NetDial:          DialProxy(socks.SOCKS5, ("127.0.0.1:" + socksPort)),
 		HandshakeTimeout: 15 * time.Second,
 	}
 	ws, _, err := d.Dial(u.String(), nil)

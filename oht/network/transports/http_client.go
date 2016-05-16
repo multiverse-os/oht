@@ -1,11 +1,9 @@
-package transports
+package network
 
 import (
 	"net"
 	"net/url"
 	"time"
-
-	"../../network"
 )
 
 type HTTPClient struct {

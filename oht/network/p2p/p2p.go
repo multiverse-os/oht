@@ -4,6 +4,8 @@ import (
 	"crypto/ecdsa"
 	"log"
 	"time"
+
+	"../../config"
 )
 
 type Server struct {
@@ -15,7 +17,7 @@ type Server struct {
 type EventFunc func(Manager *Manager, Peer *transports.Peer)
 
 type Manager struct {
-	Config          *Config
+	Config          *config.Config
 	PrivateKey      *ecdsa.PrivateKey
 	Servers         []*Server
 	MaxQueueSize    int

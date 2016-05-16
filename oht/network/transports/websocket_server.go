@@ -1,12 +1,11 @@
-package transports
+package network
 
 import (
-	"../../network"
 	"github.com/gin-gonic/gin"
 )
 
 type WebsocketServer struct {
-	Server    *network.WebServer
+	Server    *WebServer
 	Engine    *gin.Engine
 	Onionhost string
 }
@@ -15,7 +14,7 @@ type Peer struct {
 	Id        string
 	Connected int8
 	WebSocket *websocket.Conn
-	Manager   *network.Manager
+	Manager   *Manager
 	Send      chan types.Message
 	Data      interface{}
 }
@@ -58,7 +57,7 @@ func InitializeWebsocket(onionhost, websocketPort string) *WebsocketServer {
 	gin.SetMode(gin.ReleaseMode)
 	engine := gin.New()
 	websocket := &WebsocketServer{
-		Server:    network.InitializeWebServer(engine, ("127.0.0.1:" + websocketPort)),
+		Server:    InitializeWebServer(engine, ("127.0.0.1:" + websocketPort)),
 		Engine:    engine,
 		Onionhost: onionhost,
 	}

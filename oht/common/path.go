@@ -9,9 +9,9 @@ import (
 	"strings"
 )
 
-func CreatePathUnlessExist(relativePath string, perm os.FileMode) {
-	if !FileExist(DefaultDataDir() + relativePath) {
-		os.MkdirAll(DefaultDataDir()+relativePath, os.FileMode(perm))
+func CreatePathUnlessExist(path string, perm os.FileMode) {
+	if !FileExist(path) {
+		os.MkdirAll(path, os.FileMode(perm))
 	}
 }
 
@@ -41,8 +41,7 @@ func AbsolutePath(Datadir string, filename string) string {
 	return filepath.Join(Datadir, filename)
 }
 
-func DefaultDataDir() string {
-	// Try to place the data folder in the user's home dir
+func DefaultDataDir(name string) string {
 	var home string
 	if usr, err := user.Current(); err == nil {
 		home = usr.HomeDir
@@ -51,13 +50,12 @@ func DefaultDataDir() string {
 	}
 	if home != "" {
 		if runtime.GOOS == "darwin" {
-			return filepath.Join(home, "Library", "Oht")
+			return filepath.Join(home, "Library", name)
 		} else if runtime.GOOS == "windows" {
-			return filepath.Join(home, "AppData", "Roaming", "Oht")
+			return filepath.Join(home, "AppData", "Roaming", name)
 		} else {
-			return filepath.Join(home, ".oht")
+			return filepath.Join(home, ("." + name))
 		}
 	}
-	// As we cannot guess a stable location, return empty and handle later
 	return ""
 }

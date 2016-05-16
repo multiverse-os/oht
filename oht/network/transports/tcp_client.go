@@ -1,12 +1,9 @@
-package p2p
+package network
 
 import (
 	"net"
 	"net/url"
 	"time"
-
-	"../../network"
-	"../../types"
 )
 
 type TCPClient struct {

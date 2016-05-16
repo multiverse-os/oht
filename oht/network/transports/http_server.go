@@ -1,7 +1,6 @@
-package transports
+package network
 
 import (
-	"../../network"
 	"github.com/gin-gonic/gin"
 )
 

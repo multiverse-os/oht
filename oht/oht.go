@@ -12,7 +12,7 @@ import (
 
 type OHT struct {
 	Interface *Interface
-	config    *Config
+	config    *config.Config
 	tor       *network.TorProcess
 	p2p       *network.Manager
 	webUI     *webui.WebUI
@@ -26,9 +26,9 @@ func (oht *OHT) cleanShutdown(c chan os.Signal) {
 }
 
 func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort string) (oht *OHT) {
-	common.CreatePathUnlessExist("", 0700)
-	common.CreatePathUnlessExist("/keys", 0700)
 	config := InitializeConfig(torListenPort, torSocksPort, torControlPort, torWebUIPort)
+	common.CreatePathUnlessExist(config.DataDirectory+"", 0700)
+	common.CreatePathUnlessExist(config.DataDirectory+"keys", 0700)
 	tor := network.InitializeTor(config)
 	p2p := p2p.InitializeP2PManager(config)
 	webUI := webui.InitializeWebUI(tor.WebUIOnionHost, config.TorWebUIPort)

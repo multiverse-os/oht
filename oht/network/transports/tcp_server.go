@@ -1,8 +1,6 @@
 package transports
 
-import (
-	"../../network"
-)
+import ()
 
 type TCPServer struct {
 	Server    string
