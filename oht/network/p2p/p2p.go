@@ -1,4 +1,4 @@
-package network
+package p2p
 
 import (
 	"crypto/ecdsa"
@@ -31,7 +31,7 @@ type Manager struct {
 	LastLookup      time.Time
 }
 
-func InitializeP2PManager(config *config.Config) *Manager {
+func InitializeP2PManager(config *Config) *Manager {
 	return &Manager{
 		MaxPeers:        8,
 		MaxPendingPeers: 8,

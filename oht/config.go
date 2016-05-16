@@ -14,6 +14,13 @@ var (
 	configOptions = common.Attributes(&Config{})
 )
 
+type TorConfig struct {
+	ListenPort  string
+	SocksPort   string
+	ControlPort string
+	WebUIPort   string
+}
+
 type Config struct {
 	ClientName         string
 	ClientMajorVersion string
@@ -21,10 +28,7 @@ type Config struct {
 	ClientPatchVersion string
 	MaxPeers           int
 	MaxPendingPeers    int
-	TorListenPort      string
-	TorSocksPort       string
-	TorControlPort     string
-	TorWebUIPort       string
+	TorConfig          *TorConfig
 	Locale             string
 	DevMode            bool
 	DataDir            string
@@ -42,15 +46,17 @@ func InitializeConfig(torListenPort, torSocksPort, torControlPort, torWebUIPort 
 		ClientPatchVersion: "0",
 		MaxPeers:           8,
 		MaxPendingPeers:    8,
-		TorListenPort:      "9042",
-		TorSocksPort:       "9142",
-		TorControlPort:     "9555",
-		TorWebUIPort:       "8080",
-		Locale:             "en",
-		DevMode:            false,
-		LogFile:            "log.json",
-		LogVerbosity:       1,
-		Custom:             make(map[string]string),
+		TorConfig: &TorConfig{
+			ListenPort:  "9042",
+			SocksPort:   "9142",
+			ControlPort: "9555",
+			WebUIPort:   "8080",
+		},
+		Locale:       "en",
+		DevMode:      false,
+		LogFile:      "log.json",
+		LogVerbosity: 1,
+		Custom:       make(map[string]string),
 	}
 	if _, err := ioutil.ReadFile(common.AbsolutePath(common.DefaultDataDir(), "config.json")); err != nil {
 		jsonFile, err := json.Marshal(config)
@@ -64,16 +70,16 @@ func InitializeConfig(torListenPort, torSocksPort, torControlPort, torWebUIPort 
 		log.Fatal(err)
 	}
 	if torListenPort != "" {
-		config.TorListenPort = torListenPort
+		config.TorConfig.ListenPort = torListenPort
 	}
 	if torSocksPort != "" {
-		config.TorSocksPort = torSocksPort
+		config.TorConfig.SocksPort = torSocksPort
 	}
 	if torControlPort != "" {
-		config.TorControlPort = torControlPort
+		config.TorConfig.ControlPort = torControlPort
 	}
 	if torWebUIPort != "" {
-		config.TorWebUIPort = torWebUIPort
+		config.TorConfig.WebUIPort = torWebUIPort
 	}
 	return config
 }

@@ -6,6 +6,7 @@ import (
 	"./common"
 	"./crypto"
 	"./network"
+	"./network/p2p"
 	"./network/webui"
 	"./types"
 )

@@ -11,58 +11,58 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
+
+	"../common"
 )
 
-type TorConfig struct {
-	ListenPort  string
-	WebUIPort   string
-	SocksPort   string
-	ControlPort string
+type InitializeConfig struct {
+	SocksPort          string
+	ControlPort        string
+	OnionServerConfigs []*OnionServerConfig
+}
+
+type OnionServerConfig struct {
+	DirectoryName    string
+	OnionHost        string
+	RemoteListenPort string
+	LocalListenPort  string
 }
 
 type TorProcess struct {
-	Online                bool
-	process               *os.Process
-	cmd                   *exec.Cmd
-	Pid                   string
-	OnionHost             string
-	WebUIOnionHost        string
-	ListenPort            string
-	WebUIPort             string
-	SocksPort             string
-	ControlPort           string
-	avoidDiskWrites       int
-	hardwareAcceleration  int
-	onionServiceDirectory string
-	webUIOnionDirectory   string
-	dataDirectory         string
-	debugLog              string
-	binaryFile            string
-	configFile            string
-	pidFile               string
-	authCookie            string
+	Online               bool
+	process              *os.Process
+	cmd                  *exec.Cmd
+	Pid                  string
+	OnionServerConfigs   []*OnionServerConfig
+	SocksPort            string
+	ControlPort          string
+	avoidDiskWrites      int
+	hardwareAcceleration int
+	dataDirectory        string
+	debugLog             string
+	binaryFile           string
+	configFile           string
+	pidFile              string
+	authCookie           string
 }
 
-func InitializeTor(config *TorConfig) (tor *TorProcess) {
+func InitializeTor(config *InitializeConfig) (tor *TorProcess) {
 	common.CreatePathUnlessExist("/tor", 0700)
+	// Iterate for each onion service and initialize folders
 	common.CreatePathUnlessExist("/tor/onion_service", 0700)
 	common.CreatePathUnlessExist("/tor/onion_webui", 0700)
+
 	tor = &TorProcess{
-		Config:                config,
-		Online:                false,
-		ListenPort:            config.ListenPort,
-		WebUIPort:             config.WebUIPort,
-		SocksPort:             config.SocksPort,
-		ControlPort:           config.ControlPort,
-		avoidDiskWrites:       0,
-		hardwareAcceleration:  1,
-		dataDirectory:         common.AbsolutePath(common.DefaultDataDir(), "tor/data"),
-		debugLog:              common.AbsolutePath(common.DefaultDataDir(), "tor/debug.log"),
-		onionServiceDirectory: common.AbsolutePath(common.DefaultDataDir(), "tor/onion_service"),
-		webUIOnionDirectory:   common.AbsolutePath(common.DefaultDataDir(), "tor/onion_webui"),
-		binaryFile:            common.AbsolutePath("oht/network/tor/bin/linux/64/", "tor"),
-		configFile:            common.AbsolutePath(common.DefaultDataDir(), "tor/torrc"),
-		pidFile:               common.AbsolutePath(common.DefaultDataDir(), "tor/tor.pid"),
+		Online:               false,
+		SocksPort:            config.SocksPort,
+		ControlPort:          config.ControlPort,
+		avoidDiskWrites:      0,
+		hardwareAcceleration: 1,
+		dataDirectory:        common.AbsolutePath(common.DefaultDataDir(), "tor/data"),
+		debugLog:             common.AbsolutePath(common.DefaultDataDir(), "tor/debug.log"),
+		binaryFile:           common.AbsolutePath("oht/network/tor/bin/linux/64/", "tor"),
+		configFile:           common.AbsolutePath(common.DefaultDataDir(), "tor/torrc"),
+		pidFile:              common.AbsolutePath(common.DefaultDataDir(), "tor/tor.pid"),
 	}
 	if runtime.GOOS == "darwin" {
 		tor.binaryFile = common.AbsolutePath("oht/network/tor/bin/osx/", "tor")
@@ -96,8 +96,11 @@ func (tor *TorProcess) Start() bool {
 	}
 	tor.process = tor.cmd.Process
 	tor.Pid = fmt.Sprintf("%d", tor.cmd.Process.Pid)
+
+	// Iterate for each onion service and initialize folders
 	tor.OnionHost = tor.readOnionHost("internal")
 	tor.WebUIOnionHost = tor.readOnionHost("webui")
+
 	tor.authCookie = tor.readAuthCookie()
 	return tor.Online
 }
@@ -124,14 +127,17 @@ func (tor *TorProcess) initializeConfig() error {
 	config += fmt.Sprintf("DataDirectory %s\n", tor.dataDirectory)
 	config += fmt.Sprintf("HardwareAccel %d\n", tor.hardwareAcceleration)
 	config += fmt.Sprintf("RunAsDaemon 0\n")
-	config += fmt.Sprintf("HiddenServiceDir %s\n", tor.onionServiceDirectory)
-	config += fmt.Sprintf("HiddenServicePort %s 127.0.0.1:%s\n", tor.ListenPort, tor.ListenPort)
-	config += fmt.Sprintf("HiddenServiceDir %s\n", tor.webUIOnionDirectory)
-	config += fmt.Sprintf("HiddenServicePort %s 127.0.0.1:%s\n", tor.WebUIPort, tor.WebUIPort)
+	// For each loop to insert hidden services defined in the initial config
+	for i := 0; i < len(tor.OnionServerConfigs); i++ {
+		config += fmt.Sprintf("HiddenServiceDir %s\n", tor.OnionServerConfigs[i].Name)
+		config += fmt.Sprintf("HiddenServicePort %s 127.0.0.1:%s\n", tor.OnionServerConfigs[i].RemoteListenPort, tor.OnionServerConfigs[i].LocalListenPort)
+	}
 	config += fmt.Sprintf("AvoidDiskWrites %d\n", tor.avoidDiskWrites)
 	config += fmt.Sprintf("AutomapHostsOnResolve 1\n")
 	config += fmt.Sprintf("CookieAuthentication 1\n")
+	// Should restrict socks access
 	//config += fmt.Sprintf("SocksPolicy accept 192.168.0.0/16\n")
+	// This does not work because we are using the hacky method of watching stdout
 	//config += fmt.Sprintf("Log debug file %s\n", tor.debugLog)
 	err := ioutil.WriteFile(tor.configFile, []byte(config), 0644)
 	if err != nil {

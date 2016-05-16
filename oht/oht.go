@@ -46,14 +46,14 @@ func NewOHT(torListenPort, torSocksPort, torControlPort, torWebUIPort string) (o
 
 func (oht *OHT) Start() bool {
 	oht.tor.Start()
-	go oht.network.Start()
+	go oht.p2p.Start()
 	return true
 }
 
 func (oht *OHT) Stop() bool {
 	oht.webUI.Server.Stop()
 	// Stop p2p
-	oht.network.Stop()
+	oht.p2p.Stop()
 	os.Exit(1)
 	return true
 }
