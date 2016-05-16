@@ -2,8 +2,6 @@ package network
 
 import (
 	"net"
-	"net/url"
-	"time"
 )
 
 type TCPClient struct {

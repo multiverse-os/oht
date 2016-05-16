@@ -7,14 +7,14 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type WebsocketClient struct {
+type WebSocketClient struct {
 	Client     *websocket.Conn
 	onionhost  string
 	remotehost string
 	socksPort  string
 }
 
-func (wsClient *WebsocketClient) Connect(remotehost, socksPort string) bool {
+func (wsClient *WebSocketClient) Connect(remotehost, socksPort string) bool {
 	u := url.URL{Scheme: "ws", Host: remotehost, Path: "/"}
 	d := websocket.Dialer{
 		NetDial:          DialProxy(socks.SOCKS5, ("127.0.0.1:" + socksPort)),
@@ -28,7 +28,7 @@ func (wsClient *WebsocketClient) Connect(remotehost, socksPort string) bool {
 	}
 }
 
-func (wsClient *WebsocketClient) readMessages() {
+func (wsClient *WebSocketClient) readMessages() {
 	defer func() {
 		p.Manager.Unregister <- p
 	}()
@@ -48,19 +48,19 @@ func (wsClient *WebsocketClient) readMessages() {
 	}
 }
 
-func (p *Peer) writeMessage(messageType int, payload types.Message) error {
-	p.WebSocket.SetWriteDeadline(time.Now().Add(writeWait))
-	return p.WebSocket.WriteJSON(payload)
+func (ws *WebSocketClient) writeMessage(messageType int, payload types.Message) error {
+	ws.WebSocket.SetWriteDeadline(time.Now().Add(writeWait))
+	return ws.WebSocket.WriteJSON(payload)
 }
 
-func (p *Peer) writeControl(messageType int) error {
-	return p.WebSocket.WriteControl(messageType, []byte{}, time.Now().Add(writeWait))
+func (ws *WebSocketClient) writeControl(messageType int) error {
+	return ws.WebSocket.WriteControl(messageType, []byte{}, time.Now().Add(writeWait))
 }
 
-func (p *Peer) writeMessages() {
+func (ws *WebSocketClient) writeMessages(p *Peer) {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
-		p.Manager.Unregister <- p
+		ws.Manager.Unregister <- p
 		ticker.Stop()
 	}()
 	for {
@@ -70,9 +70,9 @@ func (p *Peer) writeMessages() {
 				p.writeControl(websocket.CloseMessage)
 				return
 			}
-			_ = p.writeMessage(websocket.TextMessage, message)
+			_ = ws.writeMessage(websocket.TextMessage, message)
 		case <-ticker.C:
-			_ = p.writeControl(websocket.PingMessage)
+			_ = ws.writeControl(websocket.PingMessage)
 		}
 	}
 }

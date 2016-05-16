@@ -1,7 +1,12 @@
 package network
 
 import (
+	"time"
+
+	"../p2p"
+
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 type WebsocketServer struct {
@@ -12,10 +17,10 @@ type WebsocketServer struct {
 
 type Peer struct {
 	Id        string
-	Connected int8
+	Connected bool
 	WebSocket *websocket.Conn
 	Manager   *Manager
-	Send      chan types.Message
+	Send      chan Message
 	Data      interface{}
 }
 
@@ -24,7 +29,22 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func (p *Peer) readMessages() {
+func InitializeWebSocket(onionhost, webSocketPort string) *WebSocketServer {
+	gin.SetMode(gin.ReleaseMode)
+	engine := gin.New()
+	webSocket := &WebsocketServer{
+		Server:    InitializeWebServer(engine, ("127.0.0.1:" + webSocketPort)),
+		Engine:    engine,
+		Onionhost: onionhost,
+	}
+
+	engine.GET("/", func(c *gin.Context) {
+		Serve(c.Writer, c.Request)
+	})
+	return webSocket
+}
+
+func (ws *WebSocketServer) readMessages() {
 	defer func() {
 		p.Manager.Unregister <- p
 	}()
@@ -44,43 +64,27 @@ func (p *Peer) readMessages() {
 	}
 }
 
-func (p *Peer) writeMessage(messageType int, payload types.Message) error {
-	p.WebSocket.SetWriteDeadline(time.Now().Add(writeWait))
-	return p.WebSocket.WriteJSON(payload)
+func (ws *WebSocketServer) writeMessage(messageType int, payload types.Message) error {
+	ws.SetWriteDeadline(time.Now().Add(writeWait))
+	return ws.WriteJSON(payload)
 }
 
-func (p *Peer) writeControl(messageType int) error {
-	return p.WebSocket.WriteControl(messageType, []byte{}, time.Now().Add(writeWait))
+func (ws *WebSocketServer) writeControl(messageType int) error {
+	return ws.WriteControl(messageType, []byte{}, time.Now().Add(writeWait))
 }
 
-func InitializeWebsocket(onionhost, websocketPort string) *WebsocketServer {
-	gin.SetMode(gin.ReleaseMode)
-	engine := gin.New()
-	websocket := &WebsocketServer{
-		Server:    InitializeWebServer(engine, ("127.0.0.1:" + websocketPort)),
-		Engine:    engine,
-		Onionhost: onionhost,
-	}
-
-	engine.GET("/", func(c *gin.Context) {
-		Serve(c.Writer, c.Request)
-	})
-
-	return websocket
-}
-
-func (manager *Manager) Serve(w http.ResponseWriter, r *http.Request) {
+func (ws *WebSocketServer) Serve(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		http.Error(w, "Method not allowed", 405)
 		return
 	}
-	ws, err := upgrader.Upgrade(w, r, nil)
+	connection, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	p := &Peer{Send: make(chan types.Message, 256), WebSocket: ws}
-	manager.Register <- p
-	go p.writeMessages()
-	p.readMessages()
+	p := &Peer{Connected: true, Send: make(chan types.Message, 256), Connection: connection, LastSeen: time.Time()}
+	ws.Manager.Register <- p
+	go ws.writeMessages()
+	ws.readMessages()
 }

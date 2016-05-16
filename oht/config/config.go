@@ -1,7 +1,6 @@
 package config
 
 import (
-	"crypto"
 	"crypto/ecdsa"
 	"encoding/json"
 	"io/ioutil"
@@ -146,14 +145,6 @@ func (config *Config) NodeKey() *ecdsa.PrivateKey {
 		}
 	}
 	return config.PrivateKey
-}
-
-func (config *Config) StaticNodes() []*discover.Node {
-	return config.parsePersistentNodes(datadirStaticNodes)
-}
-
-func (config *Config) TrusterNodes() []*discover.Node {
-	return config.parsePersistentNodes(datadirTrustedNodes)
 }
 
 func (config *Config) zeroValue(key string) bool {

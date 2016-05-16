@@ -1,4 +1,4 @@
-package p2p
+package network
 
 import (
 	"crypto/ecdsa"
@@ -24,8 +24,8 @@ type Manager struct {
 	MaxPeers        int
 	MaxPendingPeers int
 	Peers           map[*Peer]bool
-	Broadcast       chan types.Message
-	Receive         chan types.Message
+	Broadcast       chan Message
+	Receive         chan Message
 	Register        chan *Peer
 	Unregister      chan *Peer
 	OnConnect       EventFunc
@@ -38,8 +38,8 @@ func InitializeP2PManager(config *Config) *Manager {
 		MaxPeers:        8,
 		MaxPendingPeers: 8,
 		MaxQueueSize:    1024,
-		Broadcast:       make(chan types.Message, 1024),
-		Receive:         make(chan types.Message, 1024),
+		Broadcast:       make(chan Message, 1024),
+		Receive:         make(chan Message, 1024),
 		Register:        make(chan *Peer, 1024),
 		Unregister:      make(chan *Peer, 1024),
 		Peers:           make(map[*Peer]bool, 1024),

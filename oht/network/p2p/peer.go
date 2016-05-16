@@ -1,4 +1,4 @@
-package p2p
+package network
 
 import (
 	"time"
@@ -10,8 +10,8 @@ type Peer struct {
 	Id        string
 	Connected int8
 	WebSocket *websocket.Conn
-	Manager   *network.Manager
-	Send      chan types.Message
+	Manager   *Manager
+	Send      chan Message
 	Data      interface{}
 }
 

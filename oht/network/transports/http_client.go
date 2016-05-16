@@ -1,8 +1,6 @@
 package network
 
 import (
-	"net"
-	"net/url"
 	"time"
 )
 
