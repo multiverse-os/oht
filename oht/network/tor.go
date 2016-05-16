@@ -49,8 +49,9 @@ type TorProcess struct {
 func InitializeTor(config *InitializeConfig) (tor *TorProcess) {
 	common.CreatePathUnlessExist("/tor", 0700)
 	// Iterate for each onion service and initialize folders
-	common.CreatePathUnlessExist("/tor/onion_service", 0700)
-	common.CreatePathUnlessExist("/tor/onion_webui", 0700)
+	for i := 0; i < len(tor.OnionServerConfigs); i++ {
+		common.CreatePathUnlessExist(("/tor/" + tor.OnionServerConfigs[i].DirectoryName), 0700)
+	}
 
 	tor = &TorProcess{
 		Online:               false,
@@ -96,26 +97,29 @@ func (tor *TorProcess) Start() bool {
 	}
 	tor.process = tor.cmd.Process
 	tor.Pid = fmt.Sprintf("%d", tor.cmd.Process.Pid)
-
-	// Iterate for each onion service and initialize folders
-	tor.OnionHost = tor.readOnionHost("internal")
-	tor.WebUIOnionHost = tor.readOnionHost("webui")
-
+	for i := 0; i < len(tor.OnionServerConfigs); i++ {
+		tor.OnionServerConfigs[i].OnionHost = tor.readOnionHost(tor.OnionServerConfigs[i].DirectoryName)
+	}
 	tor.authCookie = tor.readAuthCookie()
 	return tor.Online
 }
 
-func (tor *TorProcess) Stop() bool {
+func (tor *TorProcess) Stop(kill bool) bool {
 	if tor.Online {
-		tor.cmd.Process.Kill()
+		if kill {
+			tor.cmd.Process.Kill()
+		} else {
+			tor.cmd.Process.Signal(os.Interrupt)
+		}
 	}
 	tor.Online = false
 	return tor.Online
 }
 
 func (tor *TorProcess) DeleteOnionFiles() bool {
-	os.RemoveAll(tor.onionServiceDirectory)
-	os.RemoveAll(tor.webUIOnionDirectory)
+	for i := 0; i < len(tor.OnionServerConfigs); i++ {
+		os.RemoveAll(tor.OnionServerConfigs[i].DirectoryName)
+	}
 	return true
 }
 
@@ -127,9 +131,8 @@ func (tor *TorProcess) initializeConfig() error {
 	config += fmt.Sprintf("DataDirectory %s\n", tor.dataDirectory)
 	config += fmt.Sprintf("HardwareAccel %d\n", tor.hardwareAcceleration)
 	config += fmt.Sprintf("RunAsDaemon 0\n")
-	// For each loop to insert hidden services defined in the initial config
 	for i := 0; i < len(tor.OnionServerConfigs); i++ {
-		config += fmt.Sprintf("HiddenServiceDir %s\n", tor.OnionServerConfigs[i].Name)
+		config += fmt.Sprintf("HiddenServiceDir %s\n", tor.OnionServerConfigs[i].DirectoryName)
 		config += fmt.Sprintf("HiddenServicePort %s 127.0.0.1:%s\n", tor.OnionServerConfigs[i].RemoteListenPort, tor.OnionServerConfigs[i].LocalListenPort)
 	}
 	config += fmt.Sprintf("AvoidDiskWrites %d\n", tor.avoidDiskWrites)
@@ -147,11 +150,8 @@ func (tor *TorProcess) initializeConfig() error {
 	}
 }
 
-func (tor *TorProcess) readOnionHost(serviceType string) string {
-	directory := tor.onionServiceDirectory + "/hostname"
-	if serviceType == "webui" {
-		directory = tor.webUIOnionDirectory + "/hostname"
-	}
+func (tor *TorProcess) readOnionHost(directoryName string) string {
+	directory := tor.dataDirectory + "/" + directoryName + "/hostname"
 	onion, err := ioutil.ReadFile(directory)
 	if err != nil {
 		log.Fatal("Tor: Failed reading onion hostname file: %v", err)
