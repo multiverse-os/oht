@@ -52,7 +52,7 @@ func (oht *OHT) Start() bool {
 
 func (oht *OHT) Stop() bool {
 	oht.webUI.Server.Stop()
-	// Stop p2p
+	oht.tor.Stop(false)
 	oht.p2p.Stop()
 	os.Exit(1)
 	return true
