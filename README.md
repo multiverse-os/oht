@@ -13,6 +13,8 @@ The basic DHT functionality is still not yet implemented. The first step will be
 
 Individual components that would be useful by themselves, for example the method of Tor control, will be broken out into libraries to easily implement in any program.
 
+To demonstrate the framework, an example application will be developed alongside the framework. The application will be a encrypt decentralized geolocal and global chat that includes a set of tools to help organize groups of people.
+
 ## Executables
 
 oht comes with three wrappers/executables found in
