@@ -1,5 +1,5 @@
 # oht v0.1.0
-An onion distributed hash table is a DHT that is routed through the onion network using Tor's onion services. oht is an implementation of an onion distributed hash table that is designed to be used as a framework for secure onion routed decentralized applications.  oht sets out to be a general purpose framework, designed for a broad set of use cases. oht can be used as the foundation for decentralized web applications, chat, file sharing, VOIP or for securely networking ARM computers (IoT). 
+An onion distributed hash table is a DHT that is routed through Tor's onion network using onion services. oht is an implementation of an onion distributed hash table that is designed to be used as a framework for secure onion routed decentralized applications.  oht sets out to be a general purpose framework, designed for a broad set of use cases. oht can be used as the foundation for decentralized web applications, chat, file sharing, VOIP or for securely networking ARM computers (IoT). 
 
 **oht is not affiliated with or endorsed by The Tor Project. This software is experimental, use with caution. The code is in flux at this pre-alpha stage.** 
 *The protocol specifications are still subject to major changes and the documentation is still mostly a patchwork of notes.*
@@ -9,9 +9,13 @@ oht is under active development, and is currently only packaged with the Tor bin
 
 P2P communication is currently onion routed using Tor onion services similar to Ricochet. Currently peer communications are handled through WebSockets. A basic optional account system exists using ECDSA keypairs. oht creates configuration files in a correct structure and in standard locations (relative to operating system). A basic console UI is currently the primary client. Additionally, a basic client web interface exists as an onion service accessible through the Tor Browser.
 
-The basic DHT functionality is still not yet implemented. The first step will be implementing a networking library that works with a variety of transports to support a wide number of existing protocols, such as Kademlia, Ricochet, WebRTC, and SIP. The peer to peer networking will use ECDSA keys for node authentication and encryption of messages.
+The basic DHT functionality is still not yet implemented. The first step will be implementing a networking library that works with a variety of transports to support a wide number of existing protocols, such as Kademlia, Ricochet, WebRTC, and SIP. 
+
+Unlike ricochet, instead of using the onion service keypair, oht uses a separate key pair for node Authentication. Currently ECDSA keys compatible with Ethereum are used for node authentication and encryption of messages.
 
 Individual components that would be useful by themselves, for example the method of Tor control, will be broken out into libraries to easily implement in any program.
+
+To demonstrate the framework, an example application will be developed alongside the framework. The application will be a encrypt decentralized geolocal and global chat that includes a set of tools to help organize groups of people.
 
 ## Executables
 
@@ -99,42 +103,44 @@ The primary client during this stage of development is the console client.
 
 ## oht Explanation and Comparison to Typical DHT
 
-Tor is often misunderstood. People often confuse the Tor Browser Bundle (TBB) with Tor itself. Tor is a client for a decentralized p2p onion routing network, which can be simply described as adding additional proxy layers between you and your destination when accessing the internet. This "onion" of proxy layers also obscures the location of the user. TBB is a browser (based on Mozilla Firefox) bundled with the Tor binary for easy and secure access to websites through the Tor network. Tor works with any port, and is not restricted to the common http/https ports (80 and 443). The additional proxy layers provide a connection with additional security and can bypass the regional restrictions being imposed on the world wide web. An example use case for onion routing is a journalist using TBB to bypass national firewalls to report news. One aim of this project is to highlight that Tor provides more than just a solution for secure Internet browsing, Tor provides a solution for secure hosting through onion services. 
+Tor is often misunderstood. People often confuse the Tor Browser Bundle (TBB) with Tor itself. Tor is a client for a decentralized P2P onion routing network, which can be simply described as adding additional proxy layers between you and your destination when accessing the internet. This "onion" of proxy layers also obscures the location of the user. TBB is a browser (based on Mozilla Firefox) bundled with the Tor binary for easy and secure access to websites through the Tor network. Tor works with any port, and is not restricted to the common http/https ports (80 and 443). The additional proxy layers provide a connection with additional security and can bypass the regional restrictions being imposed on the world wide web. An example use case for onion routing is a journalist using TBB to bypass national firewalls to report news. One aim of this project is to highlight that Tor provides more than just a solution for secure Internet browsing, Tor provides a solution for secure hosting through onion services.  Secure p2p connections can be made by having peers offer **onion services**.
 
 **Onion services** create end-to-end encrypted onion routed connections with perfect forward secrecy. Onion services do not use Tor Exit Nodes, but instead rendezvous points outside of both peers' networks. This solves the issue of NAT transversal when connecting peers. A typical DHT when used in combination with Tor can potentially be used in correlation attacks, but when routing DHT traffic through onion services this problem is avoided. 
 
 oht utilizes a similar onion routing design pattern to Ricochet or OnionShare, where each peer in the network establishes an onion service to communicate.  
 
-This allows for peers to interact with a public DHT securely by limiting the amount of metadata shared. Peers do not receive the IP address and geographic location of connected peers. Instead, peers rely on ephemeral onion addresses to connect to each other and authenticate with a separate key pair that can be compatible with Bitcoin/Ethereum or telehash. 
-Interoperability with Ricochet is important, this will be acheived by saving an onion address key pair in a custom meta-data field on an account or general configuration. Core functionality will include library in networking to provide compatibility with the v2 Ricochet protocol.
+This allows for peers to interact with a public DHT securely by limiting the amount of metadata shared. Peers do not receive the IP address and geographic location of connected peers. Instead, peers rely on ephemeral onion addresses to connect to each other and authenticate with a separate key pair that can be compatible with Bitcoin/Ethereum or telehash. Without geographic information, a latency map between peers can be generated to obtain better preformance.
+Interoperability with Ricochet is important, this will be acheived by saving an onion address key pair in a custom meta-data field on an account or general configuration. Core functionality will include a networking library to provide compatibility with the v2 Ricochet protocol.
 
-**Beyond providing additional security** onion routing has interesting emergent properties when combined with with the standard DHT. Onion services allow peers to avoid any issues with NAT transversal which is often problematic with p2p networks. Additionaly, an onion address key pair shared across all peers (shared onion address) by either hardcoding into the client or using a configuration can be used to solve problems with centralization that DHTs face with bootstrapping.
+**Beyond providing additional security** onion routing has interesting emergent properties when combined with with the standard DHT. Because onion services use rendevous points, it allows for peers to avoid any issues with NAT transversal, which is often problematic with p2p networks. Additionaly, an onion address key pair shared across all peers (shared onion address) by either hardcoding into a client or stored in a configuration file can be used to solve problems with centralization that DHTs face with bootstrapping.
 
-A **shared onion address** can simultaneouesly be used by mulitple peers to listen over a port. Incoming connections to the shared address are routed to one of the listeners. This can be used to serve information about the DHT network to a decentralized but static location.
+A **shared onion address** can simultaneouesly be used by mulitple peers to listen over a port. Incoming connections to the shared address are routed to one of the listeners randomly. This can be used to serve information about the DHT network to a decentralized but static location.
 
-A shared onion address used in this manner can act both the identifier for the p2p network and possibly more importantly as a catalyst to form the p2p network in a decentralized way. 
+A shared onion address used in this manner can act both as the identifier for the p2p network and possibly more importantly as a catalyst to form the p2p network in a decentralized way. This feature allows for smaller DHT's to remain cohesive without standing up dedicated peer seeding servers.
 
-Typically, a p2p network is reliant on predefined trusted boot strap nodes used to obtain an initial list of peers but by using a shared onion address it may be possible to securely bootstrap a DHT network in a decentralized way. 
+Typically, a p2p network is reliant on predefined trusted boot strap nodes used to obtain an initial list of peers but by using a shared onion address it may be possible to solve this problem in a secure and decentralized way. 
 
-**Decentralized bootstrapping and service discovery** can be accomplished by using a shared onion address to identify the network (oht:address). Potential peers can use the shared onion address either hard coded into their client or in a configuration file or a converted from a easier to communicate mnemoic phrase. Meanwhile users who are already connected to the p2p network can randomly select a known peer and send the address to anyone listening on the shared onion address. After a potential peer collects enough active peer addresses the potential peer connects to the network.       
+**Decentralized bootstrapping and service discovery** can be accomplished by using a shared onion address to identify the network (oht:address). Potential peers interested in joining the p2p network can use the shared onion address either hard coded into their client (or configuration, name resolution, mnemonic) and listen for peers. Meanwhile users who are already connected to the p2p network can randomly select a known peer and submit it to the shared onion address.  If one or more is listening they will be randomly selected and receive a peer. After a potential peer collects a large enough sample of active peer addresses the potential peer connects to the network.       
 
 Shared onion addresses also may allow for **possible decentralized DHT API and decentralized web UI**.
-Active peers may optionally serve standard API or web UI defined by the client or configuration. For example, a simple REST API could be used to serve the DHT by providing basic GET, PUT, DEL commands. To verify the API results, a user could make several requests to obtain a larger sample of responses.
+Active peers may optionally serve standard API or web UI defined by the client or configuration. For example, a simple REST API could be used to serve the DHT by providing basic GET, PUT, DEL commands. To verify the API results, a user could make several requests to obtain a larger sample of responses. This rabbit hole is deep, a OHT network could provide consensus defined code to run on a client with built in standardized docker VM support that routes similar to Whonix. This is just scratching the surface, there are a lot of very interesting possibilities.
 
 It may be possible to use a basic decentralized web UI. Using this a user could interact with the decentralized application without needing to run the full client, just TBB and the onion address required to connect.
 
+There are a lot of interesting possibilities that can be explored once the software forms.
+
 ### Core Features
-The core features of oht are varrying stages of completion.
+The core features of oht are at various stages of completion.
 
 **Onion routed** - All connections are done using Tor's onion services, ensuring each connection is encrypted, anonymous and eliminates the need for port forwarding. 
 
-**Decentralized Bootstrap** - Using a known onion address keypair, randomly peers can broadcast known peers to the known kepair. Peers looking to join the network can listen using this known keypair and obtain peers to connect to. This also compartmentalizes a DHT and provides an ID.
+**Decentralized Bootstrap** - Using a shared onion address, potential peers interested in joining the network can obtain peers. This also compartmentalizes a DHT and provides an ID.
 
 **Name Resolution** - Name resolution leveraging the oht or an existing name system (GnuNet, Bitcoin/Ethereum)
 
 **DHT** - A DHT sharded across participating peers as encrypted blocks. DHT should feature private shards and shards with expiration timers.
 
-**Local Database** - The DHT for the peers and files are cached locally using encrypted BoltDB databases. Alternatively, a memory only cache may be used.
+**Local Database** - The DBs needed to track peers, dht key/values are encrypted BoltDB databases. Alternatively, a memory only cache may be used.
 
 **File Transfer & Streaming** - A basic system to do file transfer between peers, 1-to-1 and m-to-n. Files should be broken into blocks, tracked using merkel trees and transfered in a manner similar to torrents. Can implement using existing torrent code or leverage existing storage networks such as IPFS.
 
@@ -173,4 +179,4 @@ The first release candidate will include tools to build a boilerplate decentrali
 
 Everyone is encouraged to test out the software and experiment with it. Everyone is welcome to contribute to the project, report bugs and submit pull requests.
 
-Developer communication platforms (mailing list, irc) can be established if a community grows. Until they exist anyone is welcome to create github issues to request support.
+Developer communication platforms (mailing list, irc) can be established if a community grows. Until they exist everyone is welcome to create github issues to request support.
