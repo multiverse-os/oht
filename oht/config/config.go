@@ -20,6 +20,12 @@ var (
 	configOptions = common.Attributes(&Config{})
 )
 
+type P2PConfig struct {
+	MaxPeers        int
+	MaxPendingPeers int
+	MaxQueueSize    int
+}
+
 type TorConfig struct {
 	ListenPort  string
 	SocksPort   string
@@ -32,8 +38,7 @@ type Config struct {
 	ClientMajorVersion string
 	ClientMinorVersion string
 	ClientPatchVersion string
-	MaxPeers           int
-	MaxPendingPeers    int
+	P2PConfig          *P2PConfig
 	TorConfig          *TorConfig
 	Locale             string
 	DevMode            bool
@@ -54,8 +59,13 @@ func InitializeConfig(torListenPort, torSocksPort, torControlPort, torWebUIPort 
 		ClientMajorVersion: "0",
 		ClientMinorVersion: "1",
 		ClientPatchVersion: "0",
-		MaxPeers:           8,
-		MaxPendingPeers:    8,
+		P2PConfig: &P2PConfig{
+			MaxPeers:        8,
+			MaxPendingPeers: 8,
+			MaxQueueSize:    1024,
+		},
+		MaxPeers:        8,
+		MaxPendingPeers: 8,
 		TorConfig: &TorConfig{
 			ListenPort:  "9042",
 			SocksPort:   "9142",

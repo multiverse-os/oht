@@ -10,7 +10,11 @@ import (
 	"./network/webui"
 )
 
+// Need to scrap the current struct with pointers for a nested interface system
+// Networking, P2P, Tor libraries should be emitting events that this file can listen in on
+// then handle those events in a switch case surrounded by a for loop.
 type OHT struct {
+	// None of these points are concurrent safe. Where possible they should be converted to values
 	Interface *Interface
 	config    *config.Config
 	tor       *network.TorProcess

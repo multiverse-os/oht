@@ -1,6 +1,7 @@
 package network
 
 import (
+	"net/url"
 	"time"
 )
 
@@ -10,10 +11,11 @@ const (
 )
 
 type Message struct {
-	Type       string
-	Id         string
-	Timestamp  int64  `json:",omitempty"`
-	OriginHost string `json:",omitempty"`
-	Username   string `json:",omitempty"`
-	Body       string `json:",omitempty"`
+	SubProtocol string
+	Id          string
+	Type        string
+	OriginURL   *url.URL
+	Timestamp   int64  `json:",omitempty"`
+	Username    string `json:",omitempty"`
+	Body        string `json:",omitempty"`
 }

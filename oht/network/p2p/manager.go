@@ -22,6 +22,7 @@ type Server struct {
 type EventFunc func(Manager *Manager, Peer *Peer)
 
 type Manager struct {
+	// Need to switch these to values instead of pointers so they are concurrency safe
 	Config          *P2PConfig
 	PrivateKey      *ecdsa.PrivateKey
 	Servers         []*Server
