@@ -7,40 +7,67 @@ import (
 	"../network/transports"
 )
 
-func main() {
-	Connect("http://cool.com")
-	Connect("oht:cool.com")
-	Connect("ricochet:testos.com")
+type ConnectionPool struct {
+	Connections []*Connection
 }
 
-func Listen(protocol, listenHost, listenPort string) {
-	if protocol == "http" {
-		log.Println("http")
-		InitializeHTTP(listenHost, listenPort)
-	} else if protocol == "oht" {
-		log.Println("oht")
-		InitializeTCP(listenHost, listenPort)
-	} else if protocol == "ricochet" {
-		log.Println("ricochet")
-		InitializeTCP(listenHost, listenPort)
-	}
+type Connection struct {
+	Transport   interface{}
+	SubProtocol string
+	ListenURL   *url.URL
 }
 
-func Connect(peerUrl string) {
-	// Break up the URL into
-	// protocol :// hostname, throw out any non onion hosted addresses
-	parsedUrl, err := url.Parse(peerUrl)
-	if err != nil {
-		log.Println("Network: Error! ", err)
+type Transport interface {
+	InitializeTransport()
+	Listen(listenURL *url.URL)
+	Stop()
+	Connect(peerURL *url.URL)
+	Read(peerURL *url.URL, message string)
+	Write(peerURL *url.URL, message string)
+}
+
+func InitializeConnectionPool() *ConnectionPool {
+	return &Connections{}
+}
+
+func (cp *ConnectionPool) InitializeConnection(listenURL) *ConnectionPool {
+	connection := &Connection{ListenURL: listenURL}
+	// Detect subprotocols
+	if connection.Scheme == "oht" {
+		connection.SubProtocol = "oht"
+		connection.ListenURL.Scheme = "tcp"
+	} else if connection.Scheme == "ricochet" {
+		connection.SubProtocol = "ricochet"
+		connection.ListenURL.Scheme = "tcp"
+	} else if len(connection.Path) > 1 {
+		connection.SubProtocol = connection.Path[1:]
 	}
-	if parsedUrl.Scheme == "http" {
-		log.Println("HTTP scheme")
-		log.Println(parsedUrl.Host)
-	} else if parsedUrl.Scheme == "ricochet" {
-		log.Println("RICOCHET scheme")
-		log.Println(parsedUrl.Opaque)
-	} else if parsedUrl.Scheme == "oht" {
-		log.Println("OHT scheme")
-		log.Println(parsedUrl.Opaque)
+	// Initialize Transport
+	if connection.Scheme == "tcp" {
+		connection.Transport = InitializeTCP(connection.listenURL)
+	} else if connection.Scheme == "http" {
+		connection.Transport = InitializeHTTP(connection.listenURL)
+	} else if connection.Scheme == "ws" {
+		connection.Transport = InitializeWS(connection.listenURL)
+	}
+	return cp.Append(collection)
+}
+
+func (cp *ConnectionPool) Interface(connection Transport, action string, remoteURL *url.URL) {
+	if action == "initialize" {
+		connection.InitializeTransport()
+	} else if action == "listen" {
+		connection.Listen(connection.listenURL)
+	} else if action == "stop" {
+		connection.Stop()
+	} else if action == "connect" {
+		connection.Connect(remoteURL)
+		p := &Peer{Connected: true, Send: make(chan types.Message, 256), Connection: connection, LastSeen: time.Time()}
+		ws.Manager.Register <- p
+		go ws.writeMessages()
+		ws.readMessages()
+	} else if action == "read" {
+		connection.Read("peerAddress")
+	} else if action == "write" {
 	}
 }

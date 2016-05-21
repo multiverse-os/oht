@@ -2,11 +2,16 @@ package network
 
 import (
 	"crypto/ecdsa"
+	"fmt"
 	"log"
 	"time"
-
-	"../../config"
 )
+
+type P2PConfig struct {
+	MaxPeers        int
+	MaxPendingPeers int
+	MaxQueueSize    int
+}
 
 type Server struct {
 	Transport string
@@ -14,15 +19,15 @@ type Server struct {
 	Port      string
 }
 
-type EventFunc func(Manager *Manager, Peer *transports.Peer)
+type EventFunc func(Manager *Manager, Peer *Peer)
 
 type Manager struct {
-	Config          *config.Config
+	Config          *P2PConfig
 	PrivateKey      *ecdsa.PrivateKey
 	Servers         []*Server
-	MaxQueueSize    int
 	MaxPeers        int
 	MaxPendingPeers int
+	MaxQueueSize    int
 	Peers           map[*Peer]bool
 	Broadcast       chan Message
 	Receive         chan Message
@@ -30,22 +35,23 @@ type Manager struct {
 	Unregister      chan *Peer
 	OnConnect       EventFunc
 	OnClose         EventFunc
-	LastLookup      time.Time
+	LastActivity    time.Time
 }
 
-func InitializeP2PManager(config *Config) *Manager {
+func InitializeP2PManager(config *P2PConfig) *Manager {
 	return &Manager{
-		MaxPeers:        8,
-		MaxPendingPeers: 8,
-		MaxQueueSize:    1024,
-		Broadcast:       make(chan Message, 1024),
-		Receive:         make(chan Message, 1024),
-		Register:        make(chan *Peer, 1024),
-		Unregister:      make(chan *Peer, 1024),
-		Peers:           make(map[*Peer]bool, 1024),
+		Config:          config,
+		MaxPeers:        config.MaxPeers,
+		MaxPendingPeers: config.MaxPendingPeers,
+		MaxQueueSize:    config.MaxQueueSize,
+		Broadcast:       make(chan Message, config.MaxQueueSize),
+		Receive:         make(chan Message, config.MaxQueueSize),
+		Register:        make(chan *Peer, config.MaxQueueSize),
+		Unregister:      make(chan *Peer, config.MaxQueueSize),
+		Peers:           make(map[*Peer]bool, config.MaxQueueSize),
 		OnConnect:       nil,
 		OnClose:         nil,
-		LastLookup:      time.Now(),
+		LastActivity:    time.Now(),
 	}
 }
 
@@ -54,7 +60,7 @@ func (manager *Manager) Start() {
 		select {
 		case p := <-manager.Register:
 			manager.Peers[p] = true
-			log.Println("P2P: Peer connection established: ", p.OnionHost)
+			log.Println("P2P: Peer connection established: ", p.Config.OnionHost)
 			fmt.Printf("oht> ")
 			if manager.OnConnect != nil {
 				go manager.OnConnect(manager, p)
@@ -88,9 +94,8 @@ func (manager *Manager) Start() {
 func (manager *Manager) Stop() {
 }
 
-func (manager *Manager) DumpPeers() {
-	for p := range manager.Peers {
-		log.Println("Active Peers")
-		log.Println("Connection: ", p.OnionHost)
-	}
-}
+//func (manager *Manager) DumpPeers() {
+//	for p := range manager.Peers {
+//		log.Println("Active Peers")
+//	}
+//}
