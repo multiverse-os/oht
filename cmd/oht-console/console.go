@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 
-	"./oht"
+	"lib/oht/core"
 )
 
 var (
