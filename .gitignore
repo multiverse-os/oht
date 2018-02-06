@@ -1,6 +1,8 @@
 *.swp
 *.swa
-src
+src/github.com
+src/gopkg.in
+src/golang.org
 pkg
 notes
 libs

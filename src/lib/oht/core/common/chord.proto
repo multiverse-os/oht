@@ -1,0 +1,67 @@
+/*
+dendrite protobuf message definitions.
+*/
+package dendrite;
+
+
+// PBProtoVnode represents Vnode structure.
+message PBProtoVnode {
+    required bytes id = 1;
+    required string host = 2;
+}
+
+// PBProtoPing is simple structure for pinging remote vnodes.
+message PBProtoPing {
+  required int64 version = 1;
+}
+
+// PBProtoAck is generic response message with boolean 'ok' state.
+message PBProtoAck {
+  required int64 version = 1;
+  required bool ok = 2;
+}
+
+// PBProtoErr defines error message.
+message PBProtoErr {
+  required string error = 2;
+}
+
+// PBProtoForward is sent to caller if request should be forwarded to another vnode.
+message PBProtoForward {
+  required PBProtoVnode vnode = 1;
+}
+
+// PBProtoLeave (not used)
+message PBProtoLeave {
+  required PBProtoVnode source = 1;
+  required PBProtoVnode dest = 2;
+}
+
+// PBProtoListVnodes - request the list of vnodes from remote vnode.
+message PBProtoListVnodes {
+  // no params are needed
+}
+
+// PBProtoListVnodesResp is a structure for returning multiple vnodes to a caller.
+message PBProtoListVnodesResp {
+  repeated PBProtoVnode vnodes = 1;
+}
+
+// PBProtoFindSuccessors is a structure to request successors for a key.
+message PBProtoFindSuccessors {
+  required bytes key = 1;
+  required PBProtoVnode dest = 2;
+  optional int32 limit = 3;
+}
+
+// PBProtoGetPredecessor - request immediate predecessor from vnode.
+message PBProtoGetPredecessor {
+  required PBProtoVnode dest = 1;
+}
+
+// PBProtoNotify is a message to notify the remote vnode of origin's existence.
+message PBProtoNotify {
+  required PBProtoVnode dest = 1;
+  required PBProtoVnode vnode = 2;
+}
+
