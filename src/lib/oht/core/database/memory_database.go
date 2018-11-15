@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"lib/oht/core/common"
+	"github.com/multiverse-os/libs/oht/core/common"
 )
 
 /*

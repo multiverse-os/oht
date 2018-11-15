@@ -5,9 +5,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"lib/oht/core/common"
-	"lib/oht/core/network"
-	"lib/oht/core/network/webui"
+	"github.com/multiverse-os/libs/oht/core/common"
+	"github.com/multiverse-os/libs/oht/core/network"
+	"github.com/multiverse-os/libs/oht/core/network/webui"
+	"gopkg.in/src-d/go-git.v4/config"
 )
 
 // Need to scrap the current struct with pointers for a nested interface system

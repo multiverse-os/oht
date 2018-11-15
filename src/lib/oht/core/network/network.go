@@ -1,11 +1,8 @@
 package network
 
 import (
-	"log"
 	"net/url"
-
-	"lib/oht/core/network/p2p"
-	"lib/oht/core/network/transports"
+	"time"
 )
 
 type ConnectionPool struct {

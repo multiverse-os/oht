@@ -1,10 +1,11 @@
 package database
 
 import (
-	"github.com/boltdb/bolt"
 	"log"
 
-	"lib/oht/core/common"
+	"github.com/boltdb/bolt"
+
+	"github.com/multiverse-os/libs/oht/core/common"
 )
 
 func InitializeDatabase() {

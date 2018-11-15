@@ -3,12 +3,12 @@ package oht
 import (
 	"log"
 
-	"lib/oht/core/common"
-	"lib/oht/core/crypto"
-	"lib/oht/core/network"
-	"lib/oht/core/network/p2p"
-	"lib/oht/core/network/webui"
-	"lib/oht/core/types"
+	"github.com/multiverse-os/libs/oht/core/common"
+	"github.com/multiverse-os/libs/oht/core/crypto"
+	"github.com/multiverse-os/libs/oht/core/network"
+	"github.com/multiverse-os/libs/oht/core/network/p2p"
+	"github.com/multiverse-os/libs/oht/core/network/webui"
+	"github.com/multiverse-os/libs/oht/core/types"
 )
 
 type Interface struct {

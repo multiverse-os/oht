@@ -9,6 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TODO: Im in favor of switching to chi or using echo for this portion of the
+// codebase OR even there is this puma rebuild in Go that is low level and
+// gives you the meat of a HTTP server we can use to really control the nitty
+// gritty and try to fake as if we are real traffic, even if it means transf
+// fering encrypted packets via reddit PMs.
+
 var stoppedError = errors.New("Gin: Webserver is being stopped")
 
 type stoppableListener struct {

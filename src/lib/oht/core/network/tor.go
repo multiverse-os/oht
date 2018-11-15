@@ -12,8 +12,15 @@ import (
 	"runtime"
 	"strings"
 
-	"lib/oht/core/common"
+	"github.com/multiverse-os/libs/oht/core/common"
 )
+
+// TODO: We are definitely going to move to a model where we package within
+// our signle binaries other binaries like Tor to simplify release. but
+// if we do that we need to build in the checkls for updates against tor
+// so this changeble binary code can be updated. but also need to be caituosu
+// about the execution of thiks since its a massive security fuck up waiting
+// to happen if you are not strict about signatures and checksums and so on
 
 type InitializeConfig struct {
 	BinaryPath          string

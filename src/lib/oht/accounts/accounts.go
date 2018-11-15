@@ -1,8 +1,6 @@
 package accounts
 
-import (
-	"lib/oht/core"
-)
+import oht "github.com/multiverse-os/oht/src/lib/oht/core"
 
 type Accounts struct {
 	oht       *oht.OHT

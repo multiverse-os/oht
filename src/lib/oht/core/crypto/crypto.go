@@ -7,13 +7,13 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/sha256"
+	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"math/big"
 	"os"
-	"encoding/hex"
-	"errors"
 
 	"lib/oht/core/common"
 	"lib/oht/core/crypto/ecies"
@@ -23,6 +23,11 @@ import (
 	"github.com/pborman/uuid"
 	"golang.org/x/crypto/ripemd160"
 )
+
+// TODO: We will be making a concious effort to abandon any ethereum related
+// code and move to using components of btcd to create a bitcoin wallet for
+// built into the account system not ethereum because only ETC is worth it
+// and thats not really worth it either
 
 var secp256k1n *big.Int
 

@@ -2,14 +2,7 @@ package i18n
 
 import (
 	"errors"
-	"fmt"
 	"html/template"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"path"
-	"sort"
-	"strconv"
 	"strings"
 )
 

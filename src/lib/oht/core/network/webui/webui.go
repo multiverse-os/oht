@@ -3,7 +3,7 @@ package webui
 import (
 	"html/template"
 
-	"lib/oht/core/network"
+	"github.com/multiverse-os/libs/oht/core/network"
 
 	"github.com/gin-gonic/gin"
 )
