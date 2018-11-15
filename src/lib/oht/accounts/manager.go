@@ -15,8 +15,8 @@ import (
 	"sync"
 	"time"
 
-	"lib/oht/common"
-	"lib/oht/crypto"
+	"github.com/multiverse-os/libs/oht/common"
+	"github.com/multiverse-os/libs/oht/crypto"
 )
 
 var (
