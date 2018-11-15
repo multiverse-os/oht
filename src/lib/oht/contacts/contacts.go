@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 
-	"lib/oht/common"
+	"github.com/multiverse-os/libs/oht/common"
 )
 
 type Contacts struct {
